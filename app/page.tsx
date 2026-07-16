@@ -5,7 +5,6 @@ import { Header } from "@/components/layout/Header";
 import { Explorer } from "@/components/layout/Explorer";
 import { Canvas } from "@/components/canvas/Canvas";
 import { Inspector } from "@/components/layout/Inspector";
-import { Console } from "@/components/layout/Console";
 import { useStore } from "@/lib/store";
 
 export default function Page() {
@@ -73,7 +72,7 @@ export default function Page() {
 
   if (loading) {
     return (
-      <div className="flex-1 h-full flex flex-col justify-center items-center gap-3 bg-background text-foreground">
+      <div className="h-screen w-full flex flex-col justify-center items-center gap-3 bg-background text-foreground">
         <div className="animate-spin size-8 rounded-full border-2 border-primary border-t-transparent" />
         <span className="text-xs font-semibold tracking-wider uppercase text-muted-foreground">
           Initializing Workspace...
@@ -84,7 +83,7 @@ export default function Page() {
 
   if (error) {
     return (
-      <div className="flex-1 h-full flex flex-col justify-center items-center gap-3 bg-background text-foreground p-6 text-center">
+      <div className="h-screen w-full flex flex-col justify-center items-center gap-3 bg-background text-foreground p-6 text-center">
         <div className="text-destructive font-semibold">Workspace Loading Failed</div>
         <p className="text-xs text-muted-foreground max-w-sm">{error}</p>
         <button 
@@ -98,7 +97,7 @@ export default function Page() {
   }
 
   return (
-    <div className="flex-1 h-full flex flex-col overflow-hidden bg-background">
+    <div className="h-screen w-full flex flex-col overflow-hidden bg-background">
       {/* Header Toolbar */}
       <Header />
 
@@ -113,9 +112,6 @@ export default function Page() {
         {/* Right Sidebar: Inspector */}
         <Inspector />
       </div>
-
-      {/* Bottom Console Panel */}
-      <Console />
     </div>
   );
 }
