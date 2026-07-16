@@ -60,7 +60,12 @@ const PRESET_COLORS = [
   { name: "Slate", value: "#64748b" }
 ];
 
-export function Inspector() {
+interface InspectorProps {
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+export function Inspector({ className, style }: InspectorProps = {}) {
   const { theme } = useTheme();
 
   // Zustand State
@@ -230,7 +235,7 @@ export function Inspector() {
   };
 
   return (
-    <aside className="w-[400px] border-l bg-card text-card-foreground flex flex-col shrink-0 select-none overflow-hidden h-full">
+    <aside style={style} className={cn("sidebar-panel bg-card text-card-foreground flex flex-col shrink-0 select-none overflow-hidden h-full", className)}>
       <Tabs 
         value={activeTab} 
         onValueChange={setActiveTab} 
@@ -239,30 +244,30 @@ export function Inspector() {
         {/* Top Tab List */}
         <div className="px-4 py-2 border-b bg-muted/10 shrink-0">
           <TabsList className="grid grid-cols-5 w-full h-8">
-            <TabsTrigger value="inspector" className="text-[11px] gap-1 px-0">
-              <Info className="size-3.5" />
-              Inspect
+            <TabsTrigger value="inspector" className="text-[11px] gap-1 px-0 flex items-center justify-center">
+              <Info className="size-3.5 inspector-tab-icon" />
+              <span className="inspector-tab-text">Inspect</span>
             </TabsTrigger>
-            <TabsTrigger value="sql" className="text-[11px] gap-1 px-0">
-              <Database className="size-3.5" />
-              SQL
+            <TabsTrigger value="sql" className="text-[11px] gap-1 px-0 flex items-center justify-center">
+              <Database className="size-3.5 inspector-tab-icon" />
+              <span className="inspector-tab-text">SQL</span>
             </TabsTrigger>
-            <TabsTrigger value="types" className="text-[11px] gap-1 px-0">
-              <Code className="size-3.5" />
-              TS
+            <TabsTrigger value="types" className="text-[11px] gap-1 px-0 flex items-center justify-center">
+              <Code className="size-3.5 inspector-tab-icon" />
+              <span className="inspector-tab-text">TS</span>
             </TabsTrigger>
-            <TabsTrigger value="errors" className="text-[11px] gap-1 px-0 relative">
-              <AlertTriangle className="size-3.5" />
-              Errors
+            <TabsTrigger value="errors" className="text-[11px] gap-1 px-0 relative flex items-center justify-center">
+              <AlertTriangle className="size-3.5 inspector-tab-icon" />
+              <span className="inspector-tab-text">Errors</span>
               {validationErrors.length > 0 && (
                 <span className="absolute -top-1 -right-1 flex size-3.5 items-center justify-center rounded-full bg-destructive text-[9px] font-bold text-destructive-foreground">
                   {validationErrors.length}
                 </span>
               )}
             </TabsTrigger>
-            <TabsTrigger value="logs" className="text-[11px] gap-1 px-0">
-              <Terminal className="size-3.5" />
-              Logs
+            <TabsTrigger value="logs" className="text-[11px] gap-1 px-0 flex items-center justify-center">
+              <Terminal className="size-3.5 inspector-tab-icon" />
+              <span className="inspector-tab-text">Logs</span>
             </TabsTrigger>
           </TabsList>
         </div>
@@ -467,16 +472,16 @@ export function Inspector() {
                     <Card key={col.id} className="border bg-card shadow-sm hover:shadow-md transition-shadow">
                       <CardContent className="p-3 flex flex-col gap-3">
                         {/* Header */}
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between gap-2 min-w-0">
                           <Input
                             value={col.name}
                             onChange={(e) => updateColumn(table.id, col.id, { name: e.target.value })}
-                            className="h-7 w-[60%] text-xs font-mono border-none focus-visible:ring-1 focus-visible:ring-muted p-0 px-1 bg-transparent hover:bg-muted/30"
+                            className="h-7 flex-1 min-w-0 text-xs font-mono border-none focus-visible:ring-1 focus-visible:ring-muted p-0 px-1 bg-transparent hover:bg-muted/30"
                             placeholder="column_name"
                           />
                           
                           {/* Control buttons */}
-                          <div className="flex items-center gap-0.5">
+                          <div className="flex items-center gap-0.5 shrink-0">
                             <Button
                               variant="ghost"
                               size="icon"
@@ -507,7 +512,7 @@ export function Inspector() {
                         </div>
 
                         {/* Column type / constraints */}
-                        <div className="grid grid-cols-2 gap-2">
+                        <div className="grid grid-cols-2 gap-2 column-settings-grid">
                           <div className="flex flex-col gap-1">
                             <Label className="text-[10px] text-muted-foreground font-semibold">Type</Label>
                             <Select
@@ -546,7 +551,7 @@ export function Inspector() {
                         </div>
 
                         {/* Checkboxes for key constraints */}
-                        <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 pt-1">
+                        <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 pt-1 column-constraints-grid">
                           <div className="flex items-center justify-between">
                             <Label className="text-[10px] font-semibold cursor-pointer">Primary Key (PK)</Label>
                             <Switch
@@ -695,7 +700,11 @@ export function Inspector() {
                 lineNumbers: "on",
                 scrollBeyondLastLine: false,
                 automaticLayout: true,
-                padding: { top: 12, bottom: 12 }
+                padding: { top: 12, bottom: 12 },
+                folding: true,
+                foldingHighlight: true,
+                showFoldingControls: "always",
+                foldingStrategy: "indentation"
               }}
             />
           </div>
@@ -737,7 +746,11 @@ export function Inspector() {
                 lineNumbers: "on",
                 scrollBeyondLastLine: false,
                 automaticLayout: true,
-                padding: { top: 12, bottom: 12 }
+                padding: { top: 12, bottom: 12 },
+                folding: true,
+                foldingHighlight: true,
+                showFoldingControls: "always",
+                foldingStrategy: "indentation"
               }}
             />
           </div>

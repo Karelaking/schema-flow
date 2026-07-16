@@ -6,7 +6,14 @@ import { useStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-export function Explorer() {
+import { cn } from "@/lib/utils";
+
+interface ExplorerProps {
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+export function Explorer({ className, style }: ExplorerProps = {}) {
   const tables = useStore(state => state.tables);
   const addTable = useStore(state => state.addTable);
   const selectTable = useStore(state => state.selectTable);
@@ -35,11 +42,11 @@ export function Explorer() {
   };
 
   return (
-    <aside className="w-64 border-r bg-card text-card-foreground flex flex-col shrink-0 select-none">
+    <aside style={style} className={cn("sidebar-panel bg-card text-card-foreground flex flex-col shrink-0 select-none", className)}>
       {/* Search & Actions Header */}
       <div className="p-4 border-b flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <span className="font-semibold text-xs uppercase tracking-wider text-muted-foreground">
+          <span className="explorer-title font-semibold text-xs uppercase tracking-wider text-muted-foreground truncate">
             Explorer
           </span>
           <Button 
@@ -57,7 +64,7 @@ export function Explorer() {
         <div className="relative">
           <Search className="absolute left-2.5 top-2.5 size-3.5 text-muted-foreground" />
           <Input
-            placeholder="Filter tables..."
+            placeholder="Filter..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-8 h-8 text-xs bg-muted/30 border-border"
@@ -87,14 +94,14 @@ export function Explorer() {
                   <button
                     key={table.id}
                     onClick={() => selectTable(table.id)}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-colors flex items-center justify-between ${
+                    className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-colors flex items-center justify-between gap-1.5 min-w-0 ${
                       isSelected
                         ? "bg-primary text-primary-foreground"
                         : "hover:bg-muted text-foreground"
                     }`}
                   >
-                    <span className="truncate">{table.name}</span>
-                    <span className={`text-[10px] uppercase font-mono ${
+                    <span className="truncate min-w-0 flex-1">{table.name}</span>
+                    <span className={`text-[10px] uppercase font-mono shrink-0 ${
                       isSelected ? "text-primary-foreground/70" : "text-muted-foreground"
                     }`}>
                       {table.columns.length} cols

@@ -132,12 +132,13 @@ function CanvasInner() {
         />
         <Controls showInteractive={false} className="!bg-card !border-border !text-foreground" />
         <MiniMap 
+          style={{ width: 120, height: 90 }}
           nodeColor={node => {
             const tableNode = node.data as { table?: { color?: string } } | undefined;
             return tableNode?.table?.color || "#3b82f6";
           }}
           maskColor={theme === "dark" ? "rgba(15, 23, 42, 0.6)" : "rgba(255, 255, 255, 0.6)"}
-          className="!bg-card !border-border !text-foreground"
+          className="!bg-card !border-border !text-foreground !w-[120px] !h-[90px]"
         />
       </ReactFlow>
     </div>
