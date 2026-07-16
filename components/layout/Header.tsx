@@ -177,8 +177,13 @@ export function Header() {
           if (remaining.length > 0) {
             await handleSwitchProject(remaining[0].id);
           } else {
-            // No projects left — reload to trigger default creation
-            window.location.reload();
+            // No projects left — clear store so empty state renders
+            loadProject({
+              project: { id: "", name: "", description: "", createdAt: "", updatedAt: "" },
+              settings: { dialect: "sqlite", theme: "dark" },
+              tables: {},
+              relations: {}
+            });
           }
         }
         await fetchProjects();
