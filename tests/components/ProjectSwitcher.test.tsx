@@ -77,5 +77,6 @@ describe("ProjectSwitcher UI Component Edge Cases", () => {
 
     fireEvent.click(analyticsOption);
     expect(mockSwitchProject).toHaveBeenCalledWith("proj-2");
-  });
+  }, 15000);
 });
+

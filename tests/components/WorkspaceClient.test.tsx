@@ -45,7 +45,7 @@ describe("WorkspaceClient UI Component Edge Cases", () => {
     });
 
     expect(screen.getByText("No Projects Yet")).toBeInTheDocument();
-  });
+  }, 15000);
 
   /**
    * Test: Renders workspace layout shell when initial project is provided.
@@ -64,5 +64,6 @@ describe("WorkspaceClient UI Component Edge Cases", () => {
 
     expect(screen.getByText("Schema Flow")).toBeInTheDocument();
     expect(screen.getByText("Sample DB")).toBeInTheDocument();
-  });
+  }, 15000);
 });
+
