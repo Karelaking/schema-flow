@@ -1,4 +1,4 @@
-import React from "react";
+import Link from "next/link";
 import { Database } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { ProjectSwitcher } from "@/components/modals/ProjectSwitcher";
@@ -13,12 +13,12 @@ export function Header(): React.JSX.Element {
     <header className="flex h-14 items-center justify-between border-b bg-card px-6 text-card-foreground">
       {/* Left: Project Branding & Switcher */}
       <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2">
-          <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold shadow-xs">
+        <Link href="/" className="flex items-center gap-2 group transition-opacity hover:opacity-90">
+          <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold shadow-xs group-hover:scale-105 transition-transform">
             <Database className="size-4" />
           </div>
           <span className="font-bold text-sm tracking-tight hidden sm:inline-block">Schema Flow</span>
-        </div>
+        </Link>
 
         <Separator orientation="vertical" className="h-10 hidden sm:block" />
 

@@ -108,6 +108,6 @@ export const dbRelationsRelations = relations(dbRelations, ({ one }) => ({
 export const dbIndexesRelations = relations(dbIndexes, ({ one }) => ({
   table: one(dbTables, {
     fields: [dbIndexes.tableId],
-    references: [dbIndexes.id],
+    references: [dbTables.id],
   }),
 }));

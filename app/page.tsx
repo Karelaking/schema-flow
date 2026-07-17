@@ -1,22 +1,26 @@
-import { getDbService } from "@/packages/db";
-import { WorkspaceClient } from "@/components/layout/WorkspaceClient";
+import { LandingHeader } from "@/components/landing/LandingHeader";
+import { HeroSection } from "@/components/landing/HeroSection";
+import { InteractiveCanvasDemo } from "@/components/landing/InteractiveCanvasDemo";
+import { FeaturesSection } from "@/components/landing/FeaturesSection";
+import { DrizzleSection } from "@/components/landing/DrizzleSection";
+import { Footer } from "@/components/landing/Footer";
 
-export const dynamic = "force-dynamic";
+export const metadata = {
+  title: "Schema Flow - Visual Database Schema & Drizzle ORM Designer",
+  description: "Visually design database architectures, auto-generate Drizzle ORM models & migrations, export raw SQL, and sync with Turso Edge Cloud.",
+};
 
-export default async function Page() {
-  const db = getDbService();
-  const initialProjectsList = await db.listProjects();
-
-  let initialProject = null;
-  if (initialProjectsList.length > 0) {
-    initialProject = await db.getProject(initialProjectsList[0].id);
-  }
-
-
+export default function HomePage() {
   return (
-    <WorkspaceClient
-      initialProjectsList={initialProjectsList}
-      initialProject={initialProject}
-    />
+    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans antialiased selection:bg-primary/20 selection:text-primary">
+      <LandingHeader />
+      <main className="flex-1">
+        <HeroSection />
+        <InteractiveCanvasDemo />
+        <FeaturesSection />
+        <DrizzleSection />
+      </main>
+      <Footer />
+    </div>
   );
 }
