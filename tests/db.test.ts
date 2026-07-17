@@ -61,6 +61,14 @@ describe("DatabaseService Edge Cases", () => {
               type: "INTEGER",
               constraints: { isPrimaryKey: true, isNullable: false, isUnique: false, isAutoIncrement: true }
             }
+          ],
+          indexes: [
+            {
+              id: "idx-user-id",
+              name: "idx_users_id",
+              columns: [{ columnName: "id", order: "ASC" }],
+              isUnique: true
+            }
           ]
         }
       },
@@ -78,6 +86,9 @@ describe("DatabaseService Edge Cases", () => {
     expect(loaded?.project.name).toBe("E-Commerce DB");
     expect(loaded?.tables["tbl-users"]).toBeDefined();
     expect(loaded?.tables["tbl-users"].columns[0].name).toBe("id");
+    expect(loaded?.tables["tbl-users"].indexes?.length).toBe(1);
+    expect(loaded?.tables["tbl-users"].indexes?.[0].name).toBe("idx_users_id");
+    expect(loaded?.tables["tbl-users"].indexes?.[0].isUnique).toBe(true);
   });
 
   it("should overwrite project on save and handle project deletion", () => {

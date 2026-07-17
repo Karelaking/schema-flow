@@ -1,9 +1,9 @@
 "use client";
 
-import React from "react";
-import { Plus, Trash2, ArrowUp, ArrowDown, Palette } from "lucide-react";
+import React, { useState } from "react";
+import { Plus, Trash2, ArrowUp, ArrowDown, Palette, GripVertical, BookmarkPlus } from "lucide-react";
 import { useStore } from "@/lib/store";
-import { Table, Column } from "@/packages/schema-core";
+import { TableInspectorProps } from "@/types/TableInspector.interface";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,27 +20,28 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 
-const PRESET_COLORS = [
+const PRESET_COLORS: { name: string, value: string }[] = [
   { name: "Blue", value: "#3b82f6" },
   { name: "Green", value: "#10b981" },
   { name: "Purple", value: "#8b5cf6" },
   { name: "Pink", value: "#ec4899" },
   { name: "Orange", value: "#f97316" },
   { name: "Red", value: "#ef4444" },
-  { name: "Slate", value: "#64748b" }
+  { name: "Slate", value: "#64748b" },
+  { name: "Yellow", value: "#facc15" },
+  { name: "Cyan", value: "#06b6d4" },
+  { name: "Lime", value: "#84cc16" },
+  { name: "Turquoise", value: "#38bdf8" },
+  { name: "Indigo", value: "#6366f1" },
+  { name: "Rose", value: "#f43f5e" },
+  { name: "Amber", value: "#f59e0b" },
+  { name: "Zinc", value: "#71717a" },
+  { name: "Gray", value: "#6b7280" },
+  { name: "Stone", value: "#78716c" },
 ];
 
-export interface TableInspectorProps {
-  /** Selected table instance */
-  selectedTable: Table;
-  /** Currently active column ID inside the table form */
-  selectedColId: string | null;
-  /** Callback to set selected column ID */
-  setSelectedColId: (id: string | null) => void;
-}
-
 /**
- * SRP Component: Manages table metadata editing, color picking, and column CRUD operations.
+ * SRP Component: Manages table metadata editing, color picking, column drag-and-drop, and table indexes.
  */
 export function TableInspector({ selectedTable, selectedColId, setSelectedColId }: TableInspectorProps) {
   const updateTable = useStore(state => state.updateTable);
@@ -49,10 +50,15 @@ export function TableInspector({ selectedTable, selectedColId, setSelectedColId 
   const updateColumn = useStore(state => state.updateColumn);
   const deleteColumn = useStore(state => state.deleteColumn);
   const reorderColumns = useStore(state => state.reorderColumns);
+  const addIndex = useStore(state => state.addIndex);
+  const updateIndex = useStore(state => state.updateIndex);
+  const deleteIndex = useStore(state => state.deleteIndex);
+
+  const [draggedColIndex, setDraggedColIndex] = useState<number | null>(null);
 
   const selectedCol = selectedTable.columns.find(c => c.id === selectedColId);
 
-  const handleAddColumn = () => {
+  const handleAddColumn = (): void => {
     const colCount = selectedTable.columns.length + 1;
     const newColId = addColumn(selectedTable.id, {
       name: `col_${colCount}`,
@@ -67,7 +73,7 @@ export function TableInspector({ selectedTable, selectedColId, setSelectedColId 
     setSelectedColId(newColId);
   };
 
-  const handleMoveColumn = (index: number, direction: 'up' | 'down') => {
+  const handleMoveColumn = (index: number, direction: 'up' | 'down'): void => {
     const newColumns = [...selectedTable.columns];
     const targetIndex = direction === 'up' ? index - 1 : index + 1;
     
@@ -77,6 +83,35 @@ export function TableInspector({ selectedTable, selectedColId, setSelectedColId 
     newColumns.splice(targetIndex, 0, moved);
     
     reorderColumns(selectedTable.id, newColumns);
+  };
+
+  const handleDragStart = (e: React.DragEvent, index: number): void => {
+    setDraggedColIndex(index);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleDragOver = (e: React.DragEvent): void => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  };
+
+  const handleDrop = (e: React.DragEvent, dropIndex: number): void => {
+    e.preventDefault();
+    if (draggedColIndex === null || draggedColIndex === dropIndex) return;
+
+    const newColumns = [...selectedTable.columns];
+    const [draggedItem] = newColumns.splice(draggedColIndex, 1);
+    newColumns.splice(dropIndex, 0, draggedItem);
+
+    reorderColumns(selectedTable.id, newColumns);
+    setDraggedColIndex(null);
+  };
+
+  const handleAddIndex = (): void => {
+    if (selectedTable.columns.length === 0) return;
+    const firstCol = selectedTable.columns[0].name;
+    const idxName = `idx_${selectedTable.name}_${firstCol}`;
+    addIndex(selectedTable.id, idxName, [{ columnName: firstCol }], false);
   };
 
   return (
@@ -142,7 +177,7 @@ export function TableInspector({ selectedTable, selectedColId, setSelectedColId 
 
       <Separator />
 
-      {/* Columns List & Add Action */}
+      {/* Columns List & Add Action with Drag and Drop */}
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
@@ -163,12 +198,17 @@ export function TableInspector({ selectedTable, selectedColId, setSelectedColId 
           {selectedTable.columns.map((col, idx) => (
             <div 
               key={col.id}
+              draggable
+              onDragStart={(e) => handleDragStart(e, idx)}
+              onDragOver={handleDragOver}
+              onDrop={(e) => handleDrop(e, idx)}
               onClick={() => setSelectedColId(col.id)}
               className={`flex items-center justify-between p-2 rounded-md border text-xs cursor-pointer transition-colors ${
                 selectedColId === col.id ? "border-primary bg-primary/5 font-semibold" : "border-border hover:bg-muted/50"
-              }`}
+              } ${draggedColIndex === idx ? "opacity-40 border-dashed" : ""}`}
             >
               <div className="flex items-center gap-2 min-w-0 flex-1">
+                <GripVertical className="size-3 text-muted-foreground shrink-0 cursor-grab active:cursor-grabbing" />
                 <span className="truncate">{col.name}</span>
                 <Badge variant="secondary" className="text-[9px] px-1 py-0 uppercase shrink-0 font-mono">
                   {col.type}
@@ -310,6 +350,107 @@ export function TableInspector({ selectedTable, selectedColId, setSelectedColId 
           </CardContent>
         </Card>
       )}
+
+      <Separator />
+
+      {/* Table Indexes Section */}
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center justify-between">
+          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
+            <BookmarkPlus className="size-3" />
+            Indexes ({selectedTable.indexes?.length || 0})
+          </span>
+          <Button 
+            size="sm" 
+            variant="outline" 
+            className="h-7 text-xs gap-1 cursor-pointer"
+            onClick={handleAddIndex}
+            disabled={selectedTable.columns.length === 0}
+          >
+            <Plus className="size-3.5" />
+            Add Index
+          </Button>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          {(!selectedTable.indexes || selectedTable.indexes.length === 0) && (
+            <span className="text-xs text-muted-foreground italic">No indexes configured.</span>
+          )}
+          {selectedTable.indexes?.map(idx => (
+            <Card key={idx.id} className="border shadow-2xs">
+              <CardContent className="p-3 flex flex-col gap-2.5">
+                <div className="flex items-center justify-between gap-2">
+                  <Input 
+                    value={idx.name}
+                    onChange={(e) => updateIndex(selectedTable.id, idx.id, { name: e.target.value })}
+                    className="h-7 text-xs font-mono flex-1"
+                    placeholder="index_name"
+                  />
+                  <button
+                    onClick={() => deleteIndex(selectedTable.id, idx.id)}
+                    className="size-5 flex items-center justify-center text-muted-foreground hover:text-destructive cursor-pointer shrink-0"
+                    title="Delete Index"
+                  >
+                    <Trash2 className="size-3" />
+                  </button>
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <Label className="text-[11px] text-muted-foreground">Index Columns</Label>
+                  <div className="flex flex-wrap gap-1">
+                    {selectedTable.columns.map(col => {
+                      const indexedCol = idx.columns.find(c => c.columnName === col.name);
+                      const isIndexed = Boolean(indexedCol);
+                      return (
+                        <div key={col.id} className="flex items-center gap-1">
+                          <Badge
+                            variant={isIndexed ? "default" : "outline"}
+                            className="cursor-pointer text-[10px] px-1.5 py-0.5"
+                            onClick={() => {
+                              const newCols = isIndexed
+                                ? idx.columns.filter(c => c.columnName !== col.name)
+                                : [...idx.columns, { columnName: col.name, order: "ASC" as const }];
+                              updateIndex(selectedTable.id, idx.id, { columns: newCols });
+                            }}
+                          >
+                            {col.name} {isIndexed ? (indexedCol?.order || "ASC") : ""}
+                          </Badge>
+                          {isIndexed && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newCols = idx.columns.map(c => 
+                                  c.columnName === col.name 
+                                    ? { ...c, order: (c.order === "DESC" ? "ASC" : "DESC") as "ASC" | "DESC" }
+                                    : c
+                                );
+                                updateIndex(selectedTable.id, idx.id, { columns: newCols });
+                              }}
+                              className="text-[9px] font-mono text-muted-foreground hover:text-foreground cursor-pointer"
+                              title="Toggle ASC/DESC"
+                            >
+                              ⚙
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-1">
+                  <Label className="text-[11px] cursor-pointer">Unique Index</Label>
+                  <Switch 
+                    checked={idx.isUnique}
+                    onCheckedChange={(val) => updateIndex(selectedTable.id, idx.id, { isUnique: val })}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
+

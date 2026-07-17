@@ -22,7 +22,7 @@ export interface RelationInspectorProps {
 /**
  * SRP Component: Manages foreign key relationship configuration and constraint updates.
  */
-export function RelationInspector({ selectedRelation }: RelationInspectorProps) {
+export function RelationInspector({ selectedRelation }: RelationInspectorProps): React.JSX.Element {
   const tables = useStore(state => state.tables);
   const updateRelation = useStore(state => state.updateRelation);
   const deleteRelation = useStore(state => state.deleteRelation);

@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 /**
  * SRP Component: Renders live SQL DDL and TypeScript type code generation via Monaco Editor.
  */
-export function CodePreviewTab() {
+export function CodePreviewTab(): React.JSX.Element {
   const { theme } = useTheme();
   const projectId = useStore(state => state.projectId);
   const projectName = useStore(state => state.projectName);

@@ -29,6 +29,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { DatabaseDialect, ProjectMetadata, SchemaAST } from "@/packages/schema-core";
 
+import { saveProjectAction } from "@/app/actions/projects";
+
 interface WorkspaceClientProps {
   initialProjectsList: ProjectMetadata[];
   initialProject: SchemaAST | null;
@@ -37,6 +39,14 @@ interface WorkspaceClientProps {
 export function WorkspaceClient({ initialProjectsList, initialProject }: WorkspaceClientProps) {
   const loadProject = useStore(state => state.loadProject);
   const projectId = useStore(state => state.projectId);
+  const projectName = useStore(state => state.projectName);
+  const projectDescription = useStore(state => state.projectDescription);
+  const dialect = useStore(state => state.dialect);
+  const theme = useStore(state => state.theme);
+  const autoAddId = useStore(state => state.autoAddId);
+  const autoAddTimestamps = useStore(state => state.autoAddTimestamps);
+  const tables = useStore(state => state.tables);
+  const relations = useStore(state => state.relations);
   const selectedTableId = useStore(state => state.selectedTableId);
   const selectedRelationId = useStore(state => state.selectedRelationId);
 
@@ -64,6 +74,34 @@ export function WorkspaceClient({ initialProjectsList, initialProject }: Workspa
       setIsEmpty(true);
     }
   }, [initialProject, initialProjectsList, loadProject]);
+
+  // Debounced auto-save effect (saves changes to SQLite DB in background)
+  useEffect(() => {
+    if (!projectId) return;
+
+    const timer = setTimeout(async () => {
+      const ast: SchemaAST = {
+        project: {
+          id: projectId,
+          name: projectName,
+          description: projectDescription,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+        settings: {
+          dialect,
+          theme,
+          autoAddId,
+          autoAddTimestamps,
+        },
+        tables,
+        relations,
+      };
+      await saveProjectAction(projectId, ast);
+    }, 800);
+
+    return () => clearTimeout(timer);
+  }, [projectId, projectName, projectDescription, dialect, theme, autoAddId, autoAddTimestamps, tables, relations]);
 
   const handleCreateProject = async () => {
     if (!newName.trim()) return;

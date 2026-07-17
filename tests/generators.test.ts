@@ -148,6 +148,36 @@ describe("SQLiteGenerator", () => {
     const sql = sqliteGenerator.generate(ast);
     expect(sql).toContain("PRIMARY KEY (post_id, tag_id)");
   });
+
+  it("should generate CREATE INDEX statements for configured table indexes", () => {
+    const ast: SchemaAST = {
+      project: { id: "p1", name: "Test Project", createdAt: "", updatedAt: "" },
+      settings: { dialect: "sqlite", theme: "dark" },
+      tables: {
+        "users": {
+          id: "users",
+          name: "users",
+          position: { x: 0, y: 0 },
+          columns: [
+            { id: "id", name: "id", type: "INTEGER", constraints: { isPrimaryKey: true, isNullable: false, isUnique: false, isAutoIncrement: true } },
+            { id: "email", name: "email", type: "VARCHAR", constraints: { isPrimaryKey: false, isNullable: false, isUnique: false, isAutoIncrement: false } }
+          ],
+          indexes: [
+            {
+              id: "idx1",
+              name: "idx_users_email",
+              columns: [{ columnName: "email", order: "DESC" }],
+              isUnique: true
+            }
+          ]
+        }
+      },
+      relations: {}
+    };
+
+    const sql = sqliteGenerator.generate(ast);
+    expect(sql).toContain("CREATE UNIQUE INDEX idx_users_email ON users (email DESC);");
+  });
 });
 
 describe("TypeScriptGenerator", () => {

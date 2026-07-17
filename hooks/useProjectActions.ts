@@ -6,7 +6,16 @@ import { saveProjectAction, listProjectsAction, getProjectAction } from "@/app/a
 /**
  * Custom Hook: Provides decoupled business logic and Server Action calls for project operations.
  */
-export function useProjectActions() {
+export function useProjectActions(): {  
+  projectsList: ProjectMetadata[];
+  isSaving: boolean;
+  saveMessage: string;
+  fetchProjects: () => Promise<void>;
+  switchProject: (targetId: string) => Promise<void>;
+  saveProject: () => Promise<void>;
+  exportSchema: () => void;
+  importSchema: (event: React.ChangeEvent<HTMLInputElement>) => void;
+} {
   const projectId = useStore(state => state.projectId);
   const projectName = useStore(state => state.projectName);
   const projectDescription = useStore(state => state.projectDescription);

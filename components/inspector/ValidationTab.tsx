@@ -10,7 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 /**
  * SRP Component: Displays schema validation diagnostics, warnings, and error reports.
  */
-export function ValidationTab() {
+export function ValidationTab(): React.ReactNode {
   const projectId = useStore(state => state.projectId);
   const projectName = useStore(state => state.projectName);
   const projectDescription = useStore(state => state.projectDescription);

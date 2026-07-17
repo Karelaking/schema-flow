@@ -86,7 +86,21 @@ export class SQLiteGenerator extends BaseGenerator {
     }
 
     const tableComment = table.description ? `-- ${table.description}\n` : "";
-    const createTable = `${tableComment}CREATE TABLE ${table.name} (\n${lines.join(",\n")}\n);`;
+    let createTable = `${tableComment}CREATE TABLE ${table.name} (\n${lines.join(",\n")}\n);`;
+
+    if (table.indexes && table.indexes.length > 0) {
+      const idxLines: string[] = [];
+      for (const idx of table.indexes) {
+        if (!idx.columns || idx.columns.length === 0) continue;
+        const colList = idx.columns.map(c => `${c.columnName}${c.order ? ` ${c.order}` : ""}`).join(", ");
+        const uniqueKw = idx.isUnique ? "UNIQUE " : "";
+        idxLines.push(`CREATE ${uniqueKw}INDEX ${idx.name} ON ${table.name} (${colList});`);
+      }
+      if (idxLines.length > 0) {
+        createTable += "\n" + idxLines.join("\n");
+      }
+    }
+
     return createTable;
   }
 

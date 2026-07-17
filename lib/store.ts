@@ -1,68 +1,6 @@
 import { create } from "zustand";
-import { SchemaAST, Table, Relation, Column, DatabaseDialect } from "@/packages/schema-core";
-
-export interface CanvasHistoryState {
-  tables: Record<string, Table>;
-  relations: Record<string, Relation>;
-}
-
-export interface ProjectStore {
-  // Project details
-  projectId: string | null;
-  projectName: string;
-  projectDescription: string;
-  dialect: DatabaseDialect;
-  theme: "dark" | "light";
-  autoAddId: boolean;
-  autoAddTimestamps: boolean;
-
-  // Schema state
-  tables: Record<string, Table>;
-  relations: Record<string, Relation>;
-
-  // UI Selection context
-  selectedTableId: string | null;
-  selectedRelationId: string | null;
-
-  // Undo/Redo Stacks
-  past: CanvasHistoryState[];
-  future: CanvasHistoryState[];
-
-  // General actions
-  loadProject: (ast: SchemaAST) => void;
-  setProjectDetails: (name: string, description: string, dialect: DatabaseDialect) => void;
-  setTheme: (theme: "dark" | "light") => void;
-  setAutoAddId: (enabled: boolean) => void;
-  setAutoAddTimestamps: (enabled: boolean) => void;
-
-  // Table actions
-  addTable: (name: string, x: number, y: number) => string;
-  updateTable: (id: string, updates: Partial<Omit<Table, "id" | "columns">>) => void;
-  updateTablePosition: (id: string, x: number, y: number) => void;
-  deleteTable: (id: string) => void;
-  duplicateTable: (id: string) => void;
-
-  // Column actions
-  addColumn: (tableId: string, col: Omit<Column, "id">) => string;
-  updateColumn: (tableId: string, colId: string, updates: Partial<Omit<Column, "id">>) => void;
-  deleteColumn: (tableId: string, colId: string) => void;
-  reorderColumns: (tableId: string, columns: Column[]) => void;
-
-  // Relationship actions
-  addRelation: (rel: Omit<Relation, "id">) => string;
-  updateRelation: (id: string, updates: Partial<Omit<Relation, "id">>) => void;
-  deleteRelation: (id: string) => void;
-
-  // Selection actions
-  selectTable: (id: string | null) => void;
-  selectRelation: (id: string | null) => void;
-
-  // History control
-  pushHistory: () => void;
-  undo: () => void;
-  redo: () => void;
-  clearHistory: () => void;
-}
+import { Table, Relation, Column, Index, IndexColumn, DatabaseDialect, SchemaAST } from "@/packages/schema-core";
+import { CanvasHistoryState, ProjectStore } from "@/types/store.interface";
 
 export const useStore = create<ProjectStore>((set, get) => ({
   // Initial state
@@ -80,7 +18,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
   past: [],
   future: [],
 
-  loadProject: (ast) => {
+  loadProject: (ast): void => {
     set({
       projectId: ast.project.id,
       projectName: ast.project.name,
@@ -98,7 +36,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
     });
   },
 
-  setProjectDetails: (name, description, dialect) => {
+  setProjectDetails: (name, description, dialect): void => {
     get().pushHistory();
     set({
       projectName: name,
@@ -107,15 +45,15 @@ export const useStore = create<ProjectStore>((set, get) => ({
     });
   },
 
-  setTheme: (theme) => {
+  setTheme: (theme): void => {
     set({ theme });
   },
 
-  setAutoAddId: (autoAddId) => set({ autoAddId }),
-  setAutoAddTimestamps: (autoAddTimestamps) => set({ autoAddTimestamps }),
+  setAutoAddId: (autoAddId): void => set({ autoAddId }),
+  setAutoAddTimestamps: (autoAddTimestamps): void => set({ autoAddTimestamps }),
 
   // History helper
-  pushHistory: () => {
+  pushHistory: () : void => {
     const { tables, relations, past } = get();
     // Stringify deep copy to avoid object reference mutations
     const snap: CanvasHistoryState = JSON.parse(JSON.stringify({ tables, relations }));
@@ -129,7 +67,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
     });
   },
 
-  undo: () => {
+  undo: (): void => {
     const { past, future, tables, relations } = get();
     if (past.length === 0) return;
 
@@ -147,7 +85,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
     });
   },
 
-  redo: () => {
+  redo: (): void => {
     const { past, future, tables, relations } = get();
     if (future.length === 0) return;
 
@@ -165,12 +103,12 @@ export const useStore = create<ProjectStore>((set, get) => ({
     });
   },
 
-  clearHistory: () => {
+  clearHistory: (): void => {
     set({ past: [], future: [] });
   },
 
   // Table actions
-  addTable: (name, x, y) => {
+  addTable: (name: string, x: number, y: number):string => {
     get().pushHistory();
     const uniqueSuffix = Math.random().toString(36).substring(2, 7);
     const id = `table-${Date.now()}-${uniqueSuffix}`;
@@ -223,13 +161,19 @@ export const useStore = create<ProjectStore>((set, get) => ({
       );
     }
 
+    const existingTables = Object.values(get().tables);
+    const count = existingTables.length;
+    const finalX = (x === 0 && y === 0) ? 60 + (count % 3) * 340 : x;
+    const finalY = (x === 0 && y === 0) ? 60 + Math.floor(count / 3) * 260 : y;
+
     const newTable: Table = {
       id,
       name,
       description: "",
       color: "#3b82f6", // Default blue
-      position: { x, y },
-      columns
+      position: { x: finalX, y: finalY },
+      columns,
+      indexes: []
     };
 
     set(state => ({
@@ -241,7 +185,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
     return id;
   },
 
-  updateTable: (id, updates) => {
+  updateTable: (id, updates): void => {
     get().pushHistory();
     set(state => {
       const table = state.tables[id];
@@ -256,7 +200,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
     });
   },
 
-  updateTablePosition: (id, x, y) => {
+  updateTablePosition: (id, x, y): void => {
     // Note: Position updates do not push to history directly, 
     // instead pushHistory is called on drag start / end from the UI.
     set(state => {
@@ -275,7 +219,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
     });
   },
 
-  deleteTable: (id) => {
+  deleteTable: (id): void => {
     get().pushHistory();
     set(state => {
       const newTables = { ...state.tables };
@@ -298,7 +242,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
     });
   },
 
-  duplicateTable: (id) => {
+  duplicateTable: (id): void => {
     get().pushHistory();
     const sourceTable = get().tables[id];
     if (!sourceTable) return;
@@ -324,7 +268,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
   },
 
   // Column actions
-  addColumn: (tableId, col) => {
+  addColumn: (tableId, col): string => {
     get().pushHistory();
     const colId = `col-${Date.now()}`;
     const newCol: Column = {
@@ -350,7 +294,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
     return colId;
   },
 
-  updateColumn: (tableId, colId, updates) => {
+  updateColumn: (tableId, colId, updates): void => {
     get().pushHistory();
     set(state => {
       const table = state.tables[tableId];
@@ -382,7 +326,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
     });
   },
 
-  deleteColumn: (tableId, colId) => {
+  deleteColumn: (tableId, colId): void => {
     get().pushHistory();
     set(state => {
       const table = state.tables[tableId];
@@ -415,7 +359,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
     });
   },
 
-  reorderColumns: (tableId, columns) => {
+  reorderColumns: (tableId, columns): void => {
     get().pushHistory();
     set(state => {
       const table = state.tables[tableId];
@@ -424,17 +368,91 @@ export const useStore = create<ProjectStore>((set, get) => ({
       return {
         tables: {
           ...state.tables,
-          [tableId]: {
-            ...table,
-            columns
-          }
+          [tableId]: { ...table, columns }
         }
       };
     });
   },
 
+  addIndex: (tableId, name, columns, isUnique): string => {
+    get().pushHistory();
+    const indexId = `idx-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+    set(state => {
+      const table = state.tables[tableId];
+      if (!table) return state;
+      const indexes = table.indexes || [];
+      const newIndex: Index = { id: indexId, name, columns, isUnique };
+      return {
+        tables: {
+          ...state.tables,
+          [tableId]: { ...table, indexes: [...indexes, newIndex] }
+        }
+      };
+    });
+    return indexId;
+  },
+
+  updateIndex: (tableId, indexId, updates): void => {
+    get().pushHistory();
+    set(state => {
+      const table = state.tables[tableId];
+      if (!table || !table.indexes) return state;
+      const indexes = table.indexes.map(idx => idx.id === indexId ? { ...idx, ...updates } : idx);
+      return {
+        tables: {
+          ...state.tables,
+          [tableId]: { ...table, indexes }
+        }
+      };
+    });
+  },
+
+  deleteIndex: (tableId, indexId): void => {
+    get().pushHistory();
+    set(state => {
+      const table = state.tables[tableId];
+      if (!table || !table.indexes) return state;
+      const indexes = table.indexes.filter(idx => idx.id !== indexId);
+      return {
+        tables: {
+          ...state.tables,
+          [tableId]: { ...table, indexes }
+        }
+      };
+    });
+  },
+
+  autoLayoutTables: (): void => {
+    get().pushHistory();
+    set(state => {
+      const tableList = Object.values(state.tables);
+      if (tableList.length === 0) return state;
+
+      const cols = Math.max(2, Math.ceil(Math.sqrt(tableList.length)));
+      const colWidth = 340;
+      const rowHeight = 260;
+      const marginX = 60;
+      const marginY = 60;
+
+      const updatedTables = { ...state.tables };
+      tableList.forEach((tbl, idx) => {
+        const gridCol = idx % cols;
+        const gridRow = Math.floor(idx / cols);
+        updatedTables[tbl.id] = {
+          ...tbl,
+          position: {
+            x: marginX + gridCol * colWidth,
+            y: marginY + gridRow * rowHeight
+          }
+        };
+      });
+
+      return { tables: updatedTables };
+    });
+  },
+
   // Relationship actions
-  addRelation: (rel) => {
+  addRelation: (rel): string => {
     get().pushHistory();
     const id = `relation-${Date.now()}`;
     const newRelation: Relation = {
@@ -451,7 +469,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
     return id;
   },
 
-  updateRelation: (id, updates) => {
+  updateRelation: (id, updates): void => {
     get().pushHistory();
     set(state => {
       const rel = state.relations[id];
@@ -466,7 +484,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
     });
   },
 
-  deleteRelation: (id) => {
+  deleteRelation: (id): void => {
     get().pushHistory();
     set(state => {
       const newRelations = { ...state.relations };
@@ -480,14 +498,14 @@ export const useStore = create<ProjectStore>((set, get) => ({
   },
 
   // Selection actions
-  selectTable: (id) => {
+  selectTable: (id): void => {
     set({
       selectedTableId: id,
       selectedRelationId: null
     });
   },
 
-  selectRelation: (id) => {
+  selectRelation: (id): void => {
     set({
       selectedRelationId: id,
       selectedTableId: null

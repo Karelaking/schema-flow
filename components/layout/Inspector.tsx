@@ -5,6 +5,7 @@ import {
   Layers, 
   Code, 
   AlertTriangle, 
+  Terminal,
   Info
 } from "lucide-react";
 import { useStore } from "@/lib/store";
@@ -19,6 +20,7 @@ import { TableInspector } from "@/components/inspector/TableInspector";
 import { RelationInspector } from "@/components/inspector/RelationInspector";
 import { CodePreviewTab } from "@/components/inspector/CodePreviewTab";
 import { ValidationTab } from "@/components/inspector/ValidationTab";
+import { QueryBuilderTab } from "@/components/inspector/QueryBuilderTab";
 
 export interface InspectorProps {
   /** Optional custom CSS class name */
@@ -28,7 +30,7 @@ export interface InspectorProps {
 }
 
 /**
- * Inspector Coordinator Component: Delegates panel rendering to TableInspector, RelationInspector, CodePreviewTab, or ValidationTab based on active selections and tabs.
+ * Inspector Coordinator Component: Delegates panel rendering to TableInspector, RelationInspector, CodePreviewTab, ValidationTab, or QueryBuilderTab based on active selections and tabs.
  */
 export function Inspector({ className, style }: InspectorProps = {}) {
   const tables = useStore(state => state.tables);
@@ -47,16 +49,20 @@ export function Inspector({ className, style }: InspectorProps = {}) {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col h-full">
         {/* Inspector Header Tabs */}
         <div className="p-3 border-b flex items-center justify-between shrink-0">
-          <TabsList className="grid w-full grid-cols-3 h-8 text-xs">
-            <TabsTrigger value="inspector" className="gap-1 text-[11px] cursor-pointer">
+          <TabsList className="grid w-full grid-cols-4 h-8 text-xs">
+            <TabsTrigger value="inspector" className="gap-1 text-[10px] sm:text-[11px] cursor-pointer px-1">
               <Layers className="size-3.5" />
               Inspector
             </TabsTrigger>
-            <TabsTrigger value="code" className="gap-1 text-[11px] cursor-pointer">
+            <TabsTrigger value="code" className="gap-1 text-[10px] sm:text-[11px] cursor-pointer px-1">
               <Code className="size-3.5" />
               Code
             </TabsTrigger>
-            <TabsTrigger value="validation" className="gap-1 text-[11px] cursor-pointer">
+            <TabsTrigger value="query" className="gap-1 text-[10px] sm:text-[11px] cursor-pointer px-1">
+              <Terminal className="size-3.5" />
+              Queries
+            </TabsTrigger>
+            <TabsTrigger value="validation" className="gap-1 text-[10px] sm:text-[11px] cursor-pointer px-1">
               <AlertTriangle className="size-3.5" />
               Validation
             </TabsTrigger>
@@ -91,7 +97,12 @@ export function Inspector({ className, style }: InspectorProps = {}) {
           <CodePreviewTab />
         </TabsContent>
 
-        {/* Tab 3: Diagnostics & Validation */}
+        {/* Tab 3: Dynamic Query Builder */}
+        <TabsContent value="query" className="flex-1 overflow-y-auto p-4 m-0">
+          <QueryBuilderTab />
+        </TabsContent>
+
+        {/* Tab 4: Diagnostics & Validation */}
         <TabsContent value="validation" className="flex-1 overflow-y-auto p-4 m-0">
           <ValidationTab />
         </TabsContent>

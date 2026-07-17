@@ -13,13 +13,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { cn } from "@/lib/utils";
+import { ExplorerProps } from "@/types/Explorer.interface";
 
-interface ExplorerProps {
-  className?: string;
-  style?: React.CSSProperties;
-}
-
-export function Explorer({ className, style }: ExplorerProps = {}) {
+export function Explorer({ className, style }: ExplorerProps = {}): React.ReactNode {
   const tables = useStore(state => state.tables);
   const addTable = useStore(state => state.addTable);
   const selectTable = useStore(state => state.selectTable);
@@ -35,11 +31,11 @@ export function Explorer({ className, style }: ExplorerProps = {}) {
     table.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleAddTable = () => {
+  const handleAddTable = (): void => {
     // Generate position in central canvas
     const x = Math.floor(Math.random() * 200) + 150;
     const y = Math.floor(Math.random() * 200) + 150;
-    
+
     // Pick unique table name
     let count = Object.keys(tables).length + 1;
     let name = `new_table_${count}`;

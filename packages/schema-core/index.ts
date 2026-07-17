@@ -36,6 +36,18 @@ export interface Column {
   scale?: number;
 }
 
+export interface IndexColumn {
+  columnName: string;
+  order?: 'ASC' | 'DESC';
+}
+
+export interface Index {
+  id: string;
+  name: string;
+  columns: IndexColumn[];
+  isUnique: boolean;
+}
+
 export interface Table {
   id: string;
   name: string;
@@ -43,6 +55,7 @@ export interface Table {
   color?: string;
   position: { x: number; y: number };
   columns: Column[];
+  indexes?: Index[];
 }
 
 export interface Relation {

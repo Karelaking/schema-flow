@@ -86,6 +86,34 @@ describe("ProjectStore Edge Cases", () => {
     expect(useStore.getState().selectedTableId).toBeNull();
   });
 
+  it("should calculate non-overlapping grid coordinates for new tables and handle autoLayoutTables", () => {
+    const t1 = useStore.getState().addTable("users", 0, 0);
+    const t2 = useStore.getState().addTable("orders", 0, 0);
+
+    const tables = useStore.getState().tables;
+    expect(tables[t1].position.x).toBe(60);
+    expect(tables[t2].position.x).toBe(400); // 60 + 340
+
+    useStore.getState().autoLayoutTables();
+    const relayout = useStore.getState().tables;
+    expect(relayout[t1].position.x).toBe(60);
+    expect(relayout[t2].position.x).toBe(400);
+  });
+
+  it("should add and delete table indexes", () => {
+    const tId = useStore.getState().addTable("customers", 0, 0);
+    const idxId = useStore.getState().addIndex(tId, "idx_cust_email", [{ columnName: "email" }], true);
+
+    let table = useStore.getState().tables[tId];
+    expect(table.indexes?.length).toBe(1);
+    expect(table.indexes?.[0].name).toBe("idx_cust_email");
+    expect(table.indexes?.[0].isUnique).toBe(true);
+
+    useStore.getState().deleteIndex(tId, idxId);
+    table = useStore.getState().tables[tId];
+    expect(table.indexes?.length).toBe(0);
+  });
+
   it("should manage Undo and Redo history stack correctly", () => {
     expect(useStore.getState().past.length).toBe(0);
 

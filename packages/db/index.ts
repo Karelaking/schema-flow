@@ -52,6 +52,14 @@ interface RawRelationRow {
   on_update: Relation['onUpdate'];
 }
 
+interface RawIndexRow {
+  id: string;
+  table_id: string;
+  name: string;
+  columns_json: string;
+  is_unique: number;
+}
+
 export class DatabaseService {
   private db: Database.Database;
 
@@ -121,6 +129,15 @@ export class DatabaseService {
         FOREIGN KEY (source_table_id) REFERENCES db_tables(id) ON DELETE CASCADE,
         FOREIGN KEY (target_table_id) REFERENCES db_tables(id) ON DELETE CASCADE
       );
+
+      CREATE TABLE IF NOT EXISTS db_indexes (
+        id TEXT PRIMARY KEY,
+        table_id TEXT NOT NULL,
+        name TEXT NOT NULL,
+        columns_json TEXT NOT NULL,
+        is_unique INTEGER NOT NULL DEFAULT 0,
+        FOREIGN KEY (table_id) REFERENCES db_tables(id) ON DELETE CASCADE
+      );
     `);
   }
 
@@ -151,6 +168,8 @@ export class DatabaseService {
     const schemaTables: Record<string, Table> = {};
     for (const tbl of tables) {
       const columns = this.db.prepare("SELECT * FROM db_columns WHERE table_id = ? ORDER BY sort_order ASC").all(tbl.id) as RawColumnRow[];
+      const rawIndexes = this.db.prepare("SELECT * FROM db_indexes WHERE table_id = ?").all(tbl.id) as RawIndexRow[];
+
       schemaTables[tbl.id] = {
         id: tbl.id,
         name: tbl.name,
@@ -170,6 +189,12 @@ export class DatabaseService {
             checkConstraint: c.check_constraint || undefined
           },
           comment: c.comment || undefined
+        })),
+        indexes: rawIndexes.map(idx => ({
+          id: idx.id,
+          name: idx.name,
+          columns: JSON.parse(idx.columns_json),
+          isUnique: Boolean(idx.is_unique)
         }))
       };
     }
@@ -223,8 +248,9 @@ export class DatabaseService {
         `).run(id, ast.project.name, ast.project.description || null, ast.settings.dialect, ast.settings.theme, ast.project.createdAt || now, now);
       }
 
-      // 2. Delete existing tables, columns, relations to overwrite
-      // Note: Foreign keys will cascade delete db_columns, but we delete db_tables first
+      // 2. Delete existing tables, columns, indexes, and relations to overwrite
+      this.db.prepare("DELETE FROM db_indexes WHERE table_id IN (SELECT id FROM db_tables WHERE project_id = ?)").run(id);
+      this.db.prepare("DELETE FROM db_columns WHERE table_id IN (SELECT id FROM db_tables WHERE project_id = ?)").run(id);
       this.db.prepare("DELETE FROM db_tables WHERE project_id = ?").run(id);
       this.db.prepare("DELETE FROM db_relations WHERE project_id = ?").run(id);
 
@@ -236,6 +262,10 @@ export class DatabaseService {
       const insertColumn = this.db.prepare(`
         INSERT INTO db_columns (id, table_id, name, type, is_primary_key, is_nullable, is_unique, is_auto_increment, default_value, check_constraint, comment, sort_order) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+      const insertIndex = this.db.prepare(`
+        INSERT INTO db_indexes (id, table_id, name, columns_json, is_unique) 
+        VALUES (?, ?, ?, ?, ?)
       `);
 
       for (const table of Object.values(ast.tables)) {
@@ -257,6 +287,18 @@ export class DatabaseService {
             idx
           );
         });
+
+        if (table.indexes) {
+          table.indexes.forEach(idx => {
+            insertIndex.run(
+              idx.id,
+              table.id,
+              idx.name,
+              JSON.stringify(idx.columns),
+              idx.isUnique ? 1 : 0
+            );
+          });
+        }
       }
 
       // 4. Insert relations
