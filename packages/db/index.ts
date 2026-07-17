@@ -239,12 +239,14 @@ export class DatabaseService {
 }
 
 // Global instance resolver for Server Actions/API routes (SRP)
-let dbServiceInstance: DatabaseService | null = null;
+declare global {
+  var dbServiceInstance: DatabaseService | undefined;
+}
 
 export function getDbService(): DatabaseService {
-  if (!dbServiceInstance) {
+  if (!globalThis.dbServiceInstance) {
     const dbPath = process.env.DATABASE_PATH || process.env.DATABASE_FILE || process.env.DATABASE_URL || "./data/schema-flow.db";
-    dbServiceInstance = new DatabaseService(dbPath);
+    globalThis.dbServiceInstance = new DatabaseService(dbPath);
   }
-  return dbServiceInstance;
+  return globalThis.dbServiceInstance;
 }
