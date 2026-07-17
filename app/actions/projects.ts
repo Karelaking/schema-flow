@@ -11,7 +11,7 @@ import { createProjectSchema, CreateProjectInput } from "@/lib/schemas";
 export async function listProjectsAction(): Promise<{ success: boolean; projects: ProjectMetadata[]; error?: string }> {
   try {
     const db = getDbService();
-    const projects = db.listProjects();
+    const projects = await db.listProjects();
     return { success: true, projects };
   } catch (error: unknown) {
     return { success: false, projects: [], error: error instanceof Error ? error.message : String(error) };
@@ -25,7 +25,7 @@ export async function listProjectsAction(): Promise<{ success: boolean; projects
 export async function getProjectAction(id: string): Promise<{ success: boolean; project?: SchemaAST; error?: string }> {
   try {
     const db = getDbService();
-    const project = db.getProject(id);
+    const project = await db.getProject(id);
     if (!project) {
       return { success: false, error: "Project not found" };
     }
@@ -64,7 +64,7 @@ export async function createProjectAction(input: CreateProjectInput): Promise<{ 
       relations: {},
     };
 
-    db.saveProject(id, initialAST);
+    await db.saveProject(id, initialAST);
     return { success: true, project: initialAST };
   } catch (error: unknown) {
     return { success: false, error: error instanceof Error ? error.message : String(error) };
@@ -79,7 +79,7 @@ export async function createProjectAction(input: CreateProjectInput): Promise<{ 
 export async function saveProjectAction(id: string, ast: SchemaAST): Promise<{ success: boolean; error?: string }> {
   try {
     const db = getDbService();
-    db.saveProject(id, ast);
+    await db.saveProject(id, ast);
     return { success: true };
   } catch (error: unknown) {
     return { success: false, error: error instanceof Error ? error.message : String(error) };
@@ -93,7 +93,7 @@ export async function saveProjectAction(id: string, ast: SchemaAST): Promise<{ s
 export async function deleteProjectAction(id: string): Promise<{ success: boolean; error?: string }> {
   try {
     const db = getDbService();
-    db.deleteProject(id);
+    await db.deleteProject(id);
     return { success: true };
   } catch (error: unknown) {
     return { success: false, error: error instanceof Error ? error.message : String(error) };

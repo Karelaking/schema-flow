@@ -17,14 +17,14 @@ describe("Server Actions Edge Cases", () => {
     process.env.DATABASE_PATH = testDbPath;
     closeDbService();
     if (fs.existsSync(testDbPath)) {
-      fs.unlinkSync(testDbPath);
+      try { fs.unlinkSync(testDbPath); } catch {}
     }
   });
 
   afterEach(() => {
     closeDbService();
     if (fs.existsSync(testDbPath)) {
-      fs.unlinkSync(testDbPath);
+      try { fs.unlinkSync(testDbPath); } catch {}
     }
   });
 

@@ -5,12 +5,13 @@ export const dynamic = "force-dynamic";
 
 export default async function Page() {
   const db = getDbService();
-  const initialProjectsList = db.listProjects();
+  const initialProjectsList = await db.listProjects();
 
   let initialProject = null;
   if (initialProjectsList.length > 0) {
-    initialProject = db.getProject(initialProjectsList[0].id);
+    initialProject = await db.getProject(initialProjectsList[0].id);
   }
+
 
   return (
     <WorkspaceClient

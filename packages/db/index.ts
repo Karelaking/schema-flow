@@ -1,348 +1,382 @@
-import Database from "better-sqlite3";
+import { createClient, Client } from "@libsql/client";
+import { drizzle, LibSQLDatabase } from "drizzle-orm/libsql";
+import { eq, desc, inArray } from "drizzle-orm";
 import fs from "fs";
 import path from "path";
-import { SchemaAST, ProjectMetadata, Table, Relation, Column, DatabaseDialect } from "@/packages/schema-core";
+import { SchemaAST, ProjectMetadata, Table, Relation, DatabaseDialect } from "@/packages/schema-core";
+import * as schema from "./schema";
 
-interface RawProjectRow {
-  id: string;
-  name: string;
-  description: string | null;
-  dialect: DatabaseDialect;
-  theme: 'dark' | 'light';
-  created_at: string;
-  updated_at: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
+export * from "./schema";
 
-interface RawTableRow {
-  id: string;
-  project_id: string;
-  name: string;
-  description: string | null;
-  color: string | null;
-  position_x: number;
-  position_y: number;
-}
-
-interface RawColumnRow {
-  id: string;
-  table_id: string;
-  name: string;
-  type: string;
-  is_primary_key: number;
-  is_nullable: number;
-  is_unique: number;
-  is_auto_increment: number;
-  default_value: string | null;
-  check_constraint: string | null;
-  comment: string | null;
-  sort_order: number;
-}
-
-interface RawRelationRow {
-  id: string;
-  project_id: string;
-  source_table_id: string;
-  source_column_id: string;
-  target_table_id: string;
-  target_column_id: string;
-  type: Relation['type'];
-  on_delete: Relation['onDelete'];
-  on_update: Relation['onUpdate'];
-}
-
-interface RawIndexRow {
-  id: string;
-  table_id: string;
-  name: string;
-  columns_json: string;
-  is_unique: number;
-}
-
+/**
+ * Multi-Environment Unified Database Service using Drizzle ORM + @libsql/client (LibSQL / Turso).
+ * Supports 3 deployment modes seamlessly:
+ * 1. Local Machine: file:./data/schema-flow.db
+ * 2. Vercel Serverless / Edge Cloud: Turso URL (libsql://...) + TURSO_AUTH_TOKEN
+ * 3. Docker Container: file:/app/data/schema-flow.db
+ */
 export class DatabaseService {
-  private db: Database.Database;
+  private client: Client;
+  public db: LibSQLDatabase<typeof schema>;
+  private initialized: boolean = false;
 
-  constructor(dbPath: string = process.env.DATABASE_PATH || process.env.DATABASE_FILE || process.env.DATABASE_URL || "./data/schema-flow.db") {
-    const dir = path.dirname(dbPath);
-    if (dir && dir !== "." && !fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
+  constructor(customUrl?: string) {
+    const rawUrl = customUrl || process.env.TURSO_DATABASE_URL || process.env.DATABASE_URL || process.env.DATABASE_PATH;
+    const envToken = process.env.TURSO_AUTH_TOKEN || process.env.TURSO_TOKEN || process.env.DATABASE_AUTH_TOKEN;
+
+    let url = rawUrl && rawUrl.trim() !== "" ? rawUrl.trim() : "file:./data/schema-flow.db";
+    let authToken: string | undefined = envToken && envToken.trim() !== "" ? envToken.trim() : undefined;
+
+    const isRemote = url.startsWith("libsql:") || url.startsWith("http:") || url.startsWith("https:");
+
+    // If remote Turso URL is specified but no auth token is provided, fallback to local SQLite for local dev
+    if (isRemote && !authToken) {
+      console.warn("[DatabaseService] Remote database URL provided without TURSO_AUTH_TOKEN. Falling back to local SQLite database (file:./data/schema-flow.db).");
+      url = "file:./data/schema-flow.db";
     }
-    this.db = new Database(dbPath);
-    this.init();
+
+    if (!url.startsWith("file:") && !url.startsWith("libsql:") && !url.startsWith("http:") && !url.startsWith("https:")) {
+      url = `file:${url}`;
+    }
+
+    if (url.startsWith("file:")) {
+      const filePath = url.replace("file:", "");
+      const dir = path.dirname(filePath);
+      if (dir && dir !== "." && !fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      authToken = undefined;
+    }
+
+    if (process.env.NODE_ENV === "development") {
+      console.log(`[DatabaseService] Connecting to ${url} (Auth Token: ${authToken ? "Present" : "Missing"})`);
+    }
+
+    this.client = createClient({
+      url,
+      authToken,
+    });
+
+    this.db = drizzle(this.client, { schema });
   }
 
-  private init() {
-    // Enable foreign keys
-    this.db.pragma("foreign_keys = ON");
+  /**
+   * Lazily initializes database tables.
+   */
+  public async init(): Promise<void> {
+    if (this.initialized) return;
 
-    // Create tables
-    this.db.exec(`
-      CREATE TABLE IF NOT EXISTS projects (
-        id TEXT PRIMARY KEY,
-        name TEXT NOT NULL,
-        description TEXT,
-        dialect TEXT NOT NULL DEFAULT 'sqlite',
-        theme TEXT NOT NULL DEFAULT 'dark',
-        created_at TEXT NOT NULL,
-        updated_at TEXT NOT NULL
-      );
+    try {
+      await this.client.batch([
+        `CREATE TABLE IF NOT EXISTS projects (
+          id TEXT PRIMARY KEY,
+          name TEXT NOT NULL,
+          description TEXT,
+          dialect TEXT NOT NULL DEFAULT 'sqlite',
+          theme TEXT NOT NULL DEFAULT 'dark',
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL
+        );`,
+        `CREATE TABLE IF NOT EXISTS db_tables (
+          id TEXT PRIMARY KEY,
+          project_id TEXT NOT NULL,
+          name TEXT NOT NULL,
+          description TEXT,
+          color TEXT,
+          position_x REAL NOT NULL,
+          position_y REAL NOT NULL,
+          FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
+        );`,
+        `CREATE TABLE IF NOT EXISTS db_columns (
+          id TEXT PRIMARY KEY,
+          table_id TEXT NOT NULL,
+          name TEXT NOT NULL,
+          type TEXT NOT NULL,
+          is_primary_key INTEGER NOT NULL DEFAULT 0,
+          is_nullable INTEGER NOT NULL DEFAULT 1,
+          is_unique INTEGER NOT NULL DEFAULT 0,
+          is_auto_increment INTEGER NOT NULL DEFAULT 0,
+          default_value TEXT,
+          check_constraint TEXT,
+          comment TEXT,
+          sort_order INTEGER NOT NULL DEFAULT 0,
+          FOREIGN KEY (table_id) REFERENCES db_tables(id) ON DELETE CASCADE
+        );`,
+        `CREATE TABLE IF NOT EXISTS db_relations (
+          id TEXT PRIMARY KEY,
+          project_id TEXT NOT NULL,
+          source_table_id TEXT NOT NULL,
+          source_column_id TEXT NOT NULL,
+          target_table_id TEXT NOT NULL,
+          target_column_id TEXT NOT NULL,
+          type TEXT NOT NULL,
+          on_delete TEXT DEFAULT 'no-action',
+          on_update TEXT DEFAULT 'no-action',
+          FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+          FOREIGN KEY (source_table_id) REFERENCES db_tables(id) ON DELETE CASCADE,
+          FOREIGN KEY (target_table_id) REFERENCES db_tables(id) ON DELETE CASCADE
+        );`,
+        `CREATE TABLE IF NOT EXISTS db_indexes (
+          id TEXT PRIMARY KEY,
+          table_id TEXT NOT NULL,
+          name TEXT NOT NULL,
+          columns_json TEXT NOT NULL,
+          is_unique INTEGER NOT NULL DEFAULT 0,
+          FOREIGN KEY (table_id) REFERENCES db_tables(id) ON DELETE CASCADE
+        );`
+      ], "write");
 
-      CREATE TABLE IF NOT EXISTS db_tables (
-        id TEXT PRIMARY KEY,
-        project_id TEXT NOT NULL,
-        name TEXT NOT NULL,
-        description TEXT,
-        color TEXT,
-        position_x REAL NOT NULL,
-        position_y REAL NOT NULL,
-        FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
-      );
-
-      CREATE TABLE IF NOT EXISTS db_columns (
-        id TEXT PRIMARY KEY,
-        table_id TEXT NOT NULL,
-        name TEXT NOT NULL,
-        type TEXT NOT NULL,
-        is_primary_key INTEGER NOT NULL DEFAULT 0,
-        is_nullable INTEGER NOT NULL DEFAULT 1,
-        is_unique INTEGER NOT NULL DEFAULT 0,
-        is_auto_increment INTEGER NOT NULL DEFAULT 0,
-        default_value TEXT,
-        check_constraint TEXT,
-        comment TEXT,
-        sort_order INTEGER NOT NULL DEFAULT 0,
-        FOREIGN KEY (table_id) REFERENCES db_tables(id) ON DELETE CASCADE
-      );
-
-      CREATE TABLE IF NOT EXISTS db_relations (
-        id TEXT PRIMARY KEY,
-        project_id TEXT NOT NULL,
-        source_table_id TEXT NOT NULL,
-        source_column_id TEXT NOT NULL,
-        target_table_id TEXT NOT NULL,
-        target_column_id TEXT NOT NULL,
-        type TEXT NOT NULL,
-        on_delete TEXT DEFAULT 'no-action',
-        on_update TEXT DEFAULT 'no-action',
-        FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
-        FOREIGN KEY (source_table_id) REFERENCES db_tables(id) ON DELETE CASCADE,
-        FOREIGN KEY (target_table_id) REFERENCES db_tables(id) ON DELETE CASCADE
-      );
-
-      CREATE TABLE IF NOT EXISTS db_indexes (
-        id TEXT PRIMARY KEY,
-        table_id TEXT NOT NULL,
-        name TEXT NOT NULL,
-        columns_json TEXT NOT NULL,
-        is_unique INTEGER NOT NULL DEFAULT 0,
-        FOREIGN KEY (table_id) REFERENCES db_tables(id) ON DELETE CASCADE
-      );
-    `);
+      this.initialized = true;
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      if (errMsg.includes("401") || errMsg.includes("Unauthorized")) {
+        throw new Error(
+          `Database Connection Error (401 Unauthorized): Failed to authenticate with remote database. ` +
+          `Please check TURSO_AUTH_TOKEN in your .env.local file or set DATABASE_URL="file:./data/schema-flow.db" for local development.`
+        );
+      }
+      throw err;
+    }
   }
 
-  public listProjects(): ProjectMetadata[] {
-    const rows = this.db.prepare(`
-      SELECT id, name, description, dialect, created_at as createdAt, updated_at as updatedAt 
-      FROM projects 
-      ORDER BY updated_at DESC
-    `).all() as RawProjectRow[];
+  public async listProjects(): Promise<ProjectMetadata[]> {
+    await this.init();
 
-    return rows.map(r => ({
-      id: r.id,
-      name: r.name,
-      description: r.description || undefined,
-      dialect: r.dialect,
-      createdAt: r.createdAt || r.created_at,
-      updatedAt: r.updatedAt || r.updated_at
+    const rows = await this.db
+      .select({
+        id: schema.projects.id,
+        name: schema.projects.name,
+        description: schema.projects.description,
+        dialect: schema.projects.dialect,
+        createdAt: schema.projects.createdAt,
+        updatedAt: schema.projects.updatedAt,
+      })
+      .from(schema.projects)
+      .orderBy(desc(schema.projects.updatedAt));
+
+    return rows.map((row) => ({
+      id: row.id,
+      name: row.name,
+      description: row.description ?? undefined,
+      dialect: row.dialect as DatabaseDialect,
+      createdAt: row.createdAt,
+      updatedAt: row.updatedAt,
     }));
   }
 
-  public getProject(id: string): SchemaAST | null {
-    const project = this.db.prepare("SELECT * FROM projects WHERE id = ?").get(id) as RawProjectRow | undefined;
-    if (!project) return null;
+  public async getProject(id: string): Promise<SchemaAST | null> {
+    await this.init();
 
-    const tables = this.db.prepare("SELECT * FROM db_tables WHERE project_id = ?").all(id) as RawTableRow[];
-    const relations = this.db.prepare("SELECT * FROM db_relations WHERE project_id = ?").all(id) as RawRelationRow[];
+    const projectRow = await this.db.query.projects.findFirst({
+      where: eq(schema.projects.id, id),
+      with: {
+        tables: {
+          with: {
+            columns: {
+              orderBy: (cols, { asc }) => [asc(cols.sortOrder)],
+            },
+            indexes: true,
+          },
+        },
+        relations: true,
+      },
+    });
+
+    if (!projectRow) return null;
 
     const schemaTables: Record<string, Table> = {};
-    for (const tbl of tables) {
-      const columns = this.db.prepare("SELECT * FROM db_columns WHERE table_id = ? ORDER BY sort_order ASC").all(tbl.id) as RawColumnRow[];
-      const rawIndexes = this.db.prepare("SELECT * FROM db_indexes WHERE table_id = ?").all(tbl.id) as RawIndexRow[];
-
+    for (const tbl of projectRow.tables) {
       schemaTables[tbl.id] = {
         id: tbl.id,
         name: tbl.name,
-        description: tbl.description || undefined,
-        color: tbl.color || undefined,
-        position: { x: tbl.position_x, y: tbl.position_y },
-        columns: columns.map(c => ({
+        description: tbl.description ?? undefined,
+        color: tbl.color ?? undefined,
+        position: { x: tbl.positionX, y: tbl.positionY },
+        columns: tbl.columns.map((c) => ({
           id: c.id,
           name: c.name,
           type: c.type,
           constraints: {
-            isPrimaryKey: Boolean(c.is_primary_key),
-            isNullable: Boolean(c.is_nullable),
-            isUnique: Boolean(c.is_unique),
-            isAutoIncrement: Boolean(c.is_auto_increment),
-            defaultValue: c.default_value || undefined,
-            checkConstraint: c.check_constraint || undefined
+            isPrimaryKey: Boolean(c.isPrimaryKey),
+            isNullable: Boolean(c.isNullable),
+            isUnique: Boolean(c.isUnique),
+            isAutoIncrement: Boolean(c.isAutoIncrement),
+            defaultValue: c.defaultValue ?? undefined,
+            checkConstraint: c.checkConstraint ?? undefined,
           },
-          comment: c.comment || undefined
+          comment: c.comment ?? undefined,
         })),
-        indexes: rawIndexes.map(idx => ({
+        indexes: tbl.indexes.map((idx) => ({
           id: idx.id,
           name: idx.name,
-          columns: JSON.parse(idx.columns_json),
-          isUnique: Boolean(idx.is_unique)
-        }))
+          columns: JSON.parse(idx.columnsJson),
+          isUnique: Boolean(idx.isUnique),
+        })),
       };
     }
 
     const schemaRelations: Record<string, Relation> = {};
-    for (const rel of relations) {
+    for (const rel of projectRow.relations) {
       schemaRelations[rel.id] = {
         id: rel.id,
-        sourceTableId: rel.source_table_id,
-        sourceColumnId: rel.source_column_id,
-        targetTableId: rel.target_table_id,
-        targetColumnId: rel.target_column_id,
-        type: rel.type,
-        onDelete: rel.on_delete,
-        onUpdate: rel.on_update
+        sourceTableId: rel.sourceTableId,
+        sourceColumnId: rel.sourceColumnId,
+        targetTableId: rel.targetTableId,
+        targetColumnId: rel.targetColumnId,
+        type: rel.type as Relation["type"],
+        onDelete: (rel.onDelete ?? "no-action") as Relation["onDelete"],
+        onUpdate: (rel.onUpdate ?? "no-action") as Relation["onUpdate"],
       };
     }
 
     return {
       project: {
-        id: project.id,
-        name: project.name,
-        description: project.description || undefined,
-        createdAt: project.created_at,
-        updatedAt: project.updated_at
+        id: projectRow.id,
+        name: projectRow.name,
+        description: projectRow.description ?? undefined,
+        createdAt: projectRow.createdAt,
+        updatedAt: projectRow.updatedAt,
       },
       settings: {
-        dialect: project.dialect,
-        theme: project.theme
+        dialect: projectRow.dialect as DatabaseDialect,
+        theme: projectRow.theme as "dark" | "light",
       },
       tables: schemaTables,
-      relations: schemaRelations
+      relations: schemaRelations,
     };
   }
 
-  public saveProject(id: string, ast: SchemaAST): void {
-    const transaction = this.db.transaction(() => {
-      // 1. Upsert project
-      const projectExists = this.db.prepare("SELECT 1 FROM projects WHERE id = ?").get(id);
-      const now = new Date().toISOString();
-      if (projectExists) {
-        this.db.prepare(`
-          UPDATE projects 
-          SET name = ?, description = ?, dialect = ?, theme = ?, updated_at = ? 
-          WHERE id = ?
-        `).run(ast.project.name, ast.project.description || null, ast.settings.dialect, ast.settings.theme, now, id);
-      } else {
-        this.db.prepare(`
-          INSERT INTO projects (id, name, description, dialect, theme, created_at, updated_at) 
-          VALUES (?, ?, ?, ?, ?, ?, ?)
-        `).run(id, ast.project.name, ast.project.description || null, ast.settings.dialect, ast.settings.theme, ast.project.createdAt || now, now);
-      }
+  public async saveProject(id: string, ast: SchemaAST): Promise<void> {
+    await this.init();
+    const now = new Date().toISOString();
 
-      // 2. Delete existing tables, columns, indexes, and relations to overwrite
-      this.db.prepare("DELETE FROM db_indexes WHERE table_id IN (SELECT id FROM db_tables WHERE project_id = ?)").run(id);
-      this.db.prepare("DELETE FROM db_columns WHERE table_id IN (SELECT id FROM db_tables WHERE project_id = ?)").run(id);
-      this.db.prepare("DELETE FROM db_tables WHERE project_id = ?").run(id);
-      this.db.prepare("DELETE FROM db_relations WHERE project_id = ?").run(id);
+    const existing = await this.db
+      .select({ id: schema.projects.id })
+      .from(schema.projects)
+      .where(eq(schema.projects.id, id))
+      .limit(1);
 
-      // 3. Insert tables and columns
-      const insertTable = this.db.prepare(`
-        INSERT INTO db_tables (id, project_id, name, description, color, position_x, position_y) 
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-      `);
-      const insertColumn = this.db.prepare(`
-        INSERT INTO db_columns (id, table_id, name, type, is_primary_key, is_nullable, is_unique, is_auto_increment, default_value, check_constraint, comment, sort_order) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `);
-      const insertIndex = this.db.prepare(`
-        INSERT INTO db_indexes (id, table_id, name, columns_json, is_unique) 
-        VALUES (?, ?, ?, ?, ?)
-      `);
+    if (existing.length > 0) {
+      await this.db
+        .update(schema.projects)
+        .set({
+          name: ast.project.name,
+          description: ast.project.description ?? null,
+          dialect: ast.settings.dialect,
+          theme: ast.settings.theme,
+          updatedAt: now,
+        })
+        .where(eq(schema.projects.id, id));
+    } else {
+      await this.db.insert(schema.projects).values({
+        id,
+        name: ast.project.name,
+        description: ast.project.description ?? null,
+        dialect: ast.settings.dialect,
+        theme: ast.settings.theme,
+        createdAt: ast.project.createdAt || now,
+        updatedAt: now,
+      });
+    }
 
-      for (const table of Object.values(ast.tables)) {
-        insertTable.run(table.id, id, table.name, table.description || null, table.color || null, table.position.x, table.position.y);
-        
-        table.columns.forEach((col, idx) => {
-          insertColumn.run(
-            col.id,
-            table.id,
-            col.name,
-            col.type,
-            col.constraints.isPrimaryKey ? 1 : 0,
-            col.constraints.isNullable ? 1 : 0,
-            col.constraints.isUnique ? 1 : 0,
-            col.constraints.isAutoIncrement ? 1 : 0,
-            col.constraints.defaultValue || null,
-            col.constraints.checkConstraint || null,
-            col.comment || null,
-            idx
-          );
-        });
+    // Clean up existing tables, columns, indexes, and relations for this project ID
+    const existingTables = await this.db
+      .select({ id: schema.dbTables.id })
+      .from(schema.dbTables)
+      .where(eq(schema.dbTables.projectId, id));
 
-        if (table.indexes) {
-          table.indexes.forEach(idx => {
-            insertIndex.run(
-              idx.id,
-              table.id,
-              idx.name,
-              JSON.stringify(idx.columns),
-              idx.isUnique ? 1 : 0
-            );
-          });
-        }
-      }
+    const existingTableIds = existingTables.map((t) => t.id);
 
-      // 4. Insert relations
-      const insertRelation = this.db.prepare(`
-        INSERT INTO db_relations (id, project_id, source_table_id, source_column_id, target_table_id, target_column_id, type, on_delete, on_update) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `);
+    if (existingTableIds.length > 0) {
+      await this.db.delete(schema.dbIndexes).where(inArray(schema.dbIndexes.tableId, existingTableIds));
+      await this.db.delete(schema.dbColumns).where(inArray(schema.dbColumns.tableId, existingTableIds));
+    }
+    await this.db.delete(schema.dbTables).where(eq(schema.dbTables.projectId, id));
+    await this.db.delete(schema.dbRelations).where(eq(schema.dbRelations.projectId, id));
 
-      for (const rel of Object.values(ast.relations)) {
-        insertRelation.run(
-          rel.id,
-          id,
-          rel.sourceTableId,
-          rel.sourceColumnId,
-          rel.targetTableId,
-          rel.targetColumnId,
-          rel.type,
-          rel.onDelete || "no-action",
-          rel.onUpdate || "no-action"
+    // Re-insert tables, columns, and indexes
+    for (const table of Object.values(ast.tables)) {
+      await this.db.insert(schema.dbTables).values({
+        id: table.id,
+        projectId: id,
+        name: table.name,
+        description: table.description ?? null,
+        color: table.color ?? null,
+        positionX: table.position.x,
+        positionY: table.position.y,
+      });
+
+      if (table.columns.length > 0) {
+        await this.db.insert(schema.dbColumns).values(
+          table.columns.map((col, idx) => ({
+            id: col.id,
+            tableId: table.id,
+            name: col.name,
+            type: col.type,
+            isPrimaryKey: col.constraints.isPrimaryKey ? 1 : 0,
+            isNullable: col.constraints.isNullable ? 1 : 0,
+            isUnique: col.constraints.isUnique ? 1 : 0,
+            isAutoIncrement: col.constraints.isAutoIncrement ? 1 : 0,
+            defaultValue: col.constraints.defaultValue ?? null,
+            checkConstraint: col.constraints.checkConstraint ?? null,
+            comment: col.comment ?? null,
+            sortOrder: idx,
+          }))
         );
       }
-    });
 
-    transaction();
+      if (table.indexes && table.indexes.length > 0) {
+        await this.db.insert(schema.dbIndexes).values(
+          table.indexes.map((idx) => ({
+            id: idx.id,
+            tableId: table.id,
+            name: idx.name,
+            columnsJson: JSON.stringify(idx.columns),
+            isUnique: idx.isUnique ? 1 : 0,
+          }))
+        );
+      }
+    }
+
+    // Re-insert relations
+    const relationsToInsert = Object.values(ast.relations);
+    if (relationsToInsert.length > 0) {
+      await this.db.insert(schema.dbRelations).values(
+        relationsToInsert.map((rel) => ({
+          id: rel.id,
+          projectId: id,
+          sourceTableId: rel.sourceTableId,
+          sourceColumnId: rel.sourceColumnId,
+          targetTableId: rel.targetTableId,
+          targetColumnId: rel.targetColumnId,
+          type: rel.type,
+          onDelete: rel.onDelete || "no-action",
+          onUpdate: rel.onUpdate || "no-action",
+        }))
+      );
+    }
   }
 
-  public deleteProject(id: string): void {
-    this.db.prepare("DELETE FROM projects WHERE id = ?").run(id);
+  public async deleteProject(id: string): Promise<void> {
+    await this.init();
+    await this.db.delete(schema.projects).where(eq(schema.projects.id, id));
   }
 
   public close(): void {
-    this.db.close();
+    this.client.close();
   }
 }
 
-// Global instance resolver for Server Actions/API routes (SRP)
 declare global {
   var dbServiceInstance: DatabaseService | undefined;
 }
 
 export function getDbService(): DatabaseService {
+  if (process.env.NODE_ENV === "development") {
+    return new DatabaseService();
+  }
   if (!globalThis.dbServiceInstance) {
-    const dbPath = process.env.DATABASE_PATH || process.env.DATABASE_FILE || process.env.DATABASE_URL || "./data/schema-flow.db";
-    globalThis.dbServiceInstance = new DatabaseService(dbPath);
+    globalThis.dbServiceInstance = new DatabaseService();
   }
   return globalThis.dbServiceInstance;
 }

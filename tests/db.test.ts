@@ -5,36 +5,37 @@ import fs from "fs";
 import path from "path";
 
 describe("DatabaseService Edge Cases", () => {
-  const testDbPath = path.join(__dirname, "test_temp_db.db");
+  const testDbFile = path.join(__dirname, "test_temp_db.db");
+  const testDbUrl = `file:${testDbFile}`;
   let dbService: DatabaseService;
 
   beforeEach(() => {
-    if (fs.existsSync(testDbPath)) {
-      fs.unlinkSync(testDbPath);
+    if (fs.existsSync(testDbFile)) {
+      try { fs.unlinkSync(testDbFile); } catch {}
     }
-    dbService = new DatabaseService(testDbPath);
+    dbService = new DatabaseService(testDbUrl);
   });
 
   afterEach(() => {
     if (dbService) {
       dbService.close();
     }
-    if (fs.existsSync(testDbPath)) {
-      fs.unlinkSync(testDbPath);
+    if (fs.existsSync(testDbFile)) {
+      try { fs.unlinkSync(testDbFile); } catch {}
     }
   });
 
-  it("should return empty list when no projects exist", () => {
-    const projects = dbService.listProjects();
+  it("should return empty list when no projects exist", async () => {
+    const projects = await dbService.listProjects();
     expect(projects).toEqual([]);
   });
 
-  it("should return null when querying non-existent project ID", () => {
-    const project = dbService.getProject("non-existent-id");
+  it("should return null when querying non-existent project ID", async () => {
+    const project = await dbService.getProject("non-existent-id");
     expect(project).toBeNull();
   });
 
-  it("should save and retrieve a full project AST with tables and relations", () => {
+  it("should save and retrieve a full project AST with tables and relations", async () => {
     const ast: SchemaAST = {
       project: {
         id: "p-101",
@@ -75,13 +76,13 @@ describe("DatabaseService Edge Cases", () => {
       relations: {}
     };
 
-    dbService.saveProject("p-101", ast);
+    await dbService.saveProject("p-101", ast);
 
-    const projectsList = dbService.listProjects();
+    const projectsList = await dbService.listProjects();
     expect(projectsList.length).toBe(1);
     expect(projectsList[0].name).toBe("E-Commerce DB");
 
-    const loaded = dbService.getProject("p-101");
+    const loaded = await dbService.getProject("p-101");
     expect(loaded).toBeDefined();
     expect(loaded?.project.name).toBe("E-Commerce DB");
     expect(loaded?.tables["tbl-users"]).toBeDefined();
@@ -91,7 +92,7 @@ describe("DatabaseService Edge Cases", () => {
     expect(loaded?.tables["tbl-users"].indexes?.[0].isUnique).toBe(true);
   });
 
-  it("should overwrite project on save and handle project deletion", () => {
+  it("should overwrite project on save and handle project deletion", async () => {
     const initialAst: SchemaAST = {
       project: { id: "p-202", name: "Version 1", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
       settings: { dialect: "postgres", theme: "dark" },
@@ -99,22 +100,20 @@ describe("DatabaseService Edge Cases", () => {
       relations: {}
     };
 
-    dbService.saveProject("p-202", initialAst);
-    let loaded = dbService.getProject("p-202");
+    await dbService.saveProject("p-202", initialAst);
+    let loaded = await dbService.getProject("p-202");
     expect(loaded?.project.name).toBe("Version 1");
 
-    // Overwrite with Version 2
     const updatedAst: SchemaAST = {
       ...initialAst,
       project: { ...initialAst.project, name: "Version 2" }
     };
-    dbService.saveProject("p-202", updatedAst);
+    await dbService.saveProject("p-202", updatedAst);
 
-    loaded = dbService.getProject("p-202");
+    loaded = await dbService.getProject("p-202");
     expect(loaded?.project.name).toBe("Version 2");
 
-    // Delete
-    dbService.deleteProject("p-202");
-    expect(dbService.getProject("p-202")).toBeNull();
+    await dbService.deleteProject("p-202");
+    expect(await dbService.getProject("p-202")).toBeNull();
   });
 });

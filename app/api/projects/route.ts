@@ -5,7 +5,7 @@ import { SchemaAST } from "@/packages/schema-core";
 export async function GET() {
   try {
     const db = getDbService();
-    const projects = db.listProjects();
+    const projects = await db.listProjects();
     return NextResponse.json({ success: true, projects });
   } catch (error: unknown) {
     return NextResponse.json({ success: false, error: error instanceof Error ? error.message : String(error) }, { status: 500 });
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
       relations: {}
     };
 
-    db.saveProject(id, initialAST);
+    await db.saveProject(id, initialAST);
     return NextResponse.json({ success: true, project: initialAST.project });
   } catch (error: unknown) {
     return NextResponse.json({ success: false, error: error instanceof Error ? error.message : String(error) }, { status: 500 });
