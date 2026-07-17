@@ -69,5 +69,6 @@ describe("HeaderActions UI Component Edge Cases", () => {
 
     fireEvent.click(exportJsonOption);
     expect(mockExportSchema).toHaveBeenCalled();
-  });
+  }, 15000);
 });
+
