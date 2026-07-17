@@ -14,11 +14,17 @@ import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
+import { useDialectDataTypes } from "@/hooks/useDialectDataTypes";
+
+
 
 const PRESET_COLORS: { name: string, value: string }[] = [
   { name: "Blue", value: "#3b82f6" },
@@ -54,7 +60,11 @@ export function TableInspector({ selectedTable, selectedColId, setSelectedColId 
   const updateIndex = useStore(state => state.updateIndex);
   const deleteIndex = useStore(state => state.deleteIndex);
 
+  const { categories, dialect, getTypeDescription } = useDialectDataTypes();
+
+
   const [draggedColIndex, setDraggedColIndex] = useState<number | null>(null);
+
 
   const selectedCol = selectedTable.columns.find(c => c.id === selectedColId);
 
@@ -210,9 +220,23 @@ export function TableInspector({ selectedTable, selectedColId, setSelectedColId 
               <div className="flex items-center gap-2 min-w-0 flex-1">
                 <GripVertical className="size-3 text-muted-foreground shrink-0 cursor-grab active:cursor-grabbing" />
                 <span className="truncate">{col.name}</span>
-                <Badge variant="secondary" className="text-[9px] px-1 py-0 uppercase shrink-0 font-mono">
-                  {col.type}
-                </Badge>
+                <TooltipProvider delay={150}>
+                  <Tooltip>
+                    <TooltipTrigger render={
+                      <Badge variant="secondary" className="text-[9px] px-1 py-0 uppercase shrink-0 font-mono cursor-pointer">
+                        {col.type}
+                      </Badge>
+                    } />
+                    <TooltipContent side="right" className="bg-popover text-popover-foreground border shadow-md max-w-xs text-xs z-50">
+                      <div className="flex flex-col gap-0.5">
+                        <span className="font-semibold text-foreground">{col.type}</span>
+                        <span className="text-[11px] text-muted-foreground">{getTypeDescription(col.type)}</span>
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+
+
                 {col.constraints.isPrimaryKey && (
                   <Badge className="text-[8px] px-1 py-0 bg-amber-500/20 text-amber-500 border-amber-500/30 uppercase shrink-0">
                     PK
@@ -272,7 +296,12 @@ export function TableInspector({ selectedTable, selectedColId, setSelectedColId 
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label className="text-xs">Data Type</Label>
+              <div className="flex items-center justify-between">
+                <Label className="text-xs">Data Type</Label>
+                <span className="text-[10px] text-muted-foreground uppercase font-semibold tracking-wider">
+                  {dialect} Types
+                </span>
+              </div>
               <Select 
                 value={selectedCol.type} 
                 onValueChange={(val) => { if (val) updateColumn(selectedTable.id, selectedCol.id, { type: val }); }}
@@ -280,18 +309,50 @@ export function TableInspector({ selectedTable, selectedColId, setSelectedColId 
                 <SelectTrigger className="h-8 text-xs">
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="INTEGER">INTEGER</SelectItem>
-                  <SelectItem value="VARCHAR">VARCHAR</SelectItem>
-                  <SelectItem value="TEXT">TEXT</SelectItem>
-                  <SelectItem value="BOOLEAN">BOOLEAN</SelectItem>
-                  <SelectItem value="DATETIME">DATETIME</SelectItem>
-                  <SelectItem value="TIMESTAMP">TIMESTAMP</SelectItem>
-                  <SelectItem value="DECIMAL">DECIMAL</SelectItem>
-                  <SelectItem value="JSON">JSON</SelectItem>
+                <SelectContent className="max-h-72 w-[var(--radix-select-trigger-width)] min-w-[220px] max-w-[300px] overflow-y-auto z-50">
+                  {categories.map((group) => (
+                    <SelectGroup key={group.category}>
+                      <SelectLabel className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground px-1 py-0.5">
+                        {group.label}
+                      </SelectLabel>
+                      {group.types.map((t) => (
+                        <SelectItem 
+                          key={t.type} 
+                          value={t.type} 
+                          className="text-xs cursor-pointer py-1.5"
+                        >
+                          <TooltipProvider delay={150}>
+                            <Tooltip>
+                              <TooltipTrigger render={
+                                <div className="flex items-center justify-between w-full gap-2 min-w-0">
+                                  <span className="font-mono font-medium shrink-0">{t.type}</span>
+                                  {t.description && (
+                                    <span className="text-[10px] text-muted-foreground truncate max-w-[110px]">
+                                      {t.description}
+                                    </span>
+                                  )}
+                                </div>
+                              } />
+                              {t.description && (
+                                <TooltipContent side="left" className="bg-popover text-popover-foreground border shadow-md max-w-xs text-xs z-50">
+                                  <div className="flex flex-col gap-0.5">
+                                    <span className="font-semibold text-foreground">{t.type}</span>
+                                    <span className="text-[11px] text-muted-foreground">{t.description}</span>
+                                  </div>
+                                </TooltipContent>
+                              )}
+                            </Tooltip>
+                          </TooltipProvider>
+                        </SelectItem>
+                      ))}
+
+                    </SelectGroup>
+                  ))}
                 </SelectContent>
+
               </Select>
             </div>
+
 
             <div className="flex flex-col gap-2">
               <Label className="text-xs">Default Value</Label>

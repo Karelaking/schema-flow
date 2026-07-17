@@ -31,9 +31,11 @@ export function HeaderActions({ className = "" }: HeaderActionsProps): React.JSX
 
   const {
     isSaving,
+    saveMessage,
     exportSchema,
     importSchema,
     saveProject
+
   } = useProjectActions();
 
   const triggerImport = (): void => {
@@ -50,6 +52,26 @@ export function HeaderActions({ className = "" }: HeaderActionsProps): React.JSX
         onChange={importSchema} 
         className="hidden" 
       />
+
+      {/* Desktop Save Button */}
+      <Button 
+        variant="default" 
+        size="sm" 
+        className="hidden sm:flex gap-1.5 h-8 text-xs cursor-pointer font-medium" 
+        onClick={saveProject}
+        disabled={isSaving}
+      >
+        <Save className="size-3.5" />
+        {isSaving ? "Saving..." : "Save Database"}
+      </Button>
+
+      {saveMessage && (
+        <span className="hidden md:inline-block text-xs font-medium text-emerald-500 animate-fade-in">
+          {saveMessage}
+        </span>
+      )}
+
+      <Separator orientation="vertical" className="h-10 mx-1 hidden sm:block" />
 
       {/* Export Dropdown */}
       <DropdownMenu>
@@ -94,6 +116,7 @@ export function HeaderActions({ className = "" }: HeaderActionsProps): React.JSX
       </Button>
 
       <Separator orientation="vertical" className="h-10 mx-1 hidden lg:block" />
+
 
       <Button 
         variant="ghost" 
