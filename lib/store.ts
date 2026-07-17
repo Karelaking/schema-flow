@@ -172,7 +172,8 @@ export const useStore = create<ProjectStore>((set, get) => ({
   // Table actions
   addTable: (name, x, y) => {
     get().pushHistory();
-    const id = `table-${Date.now()}`;
+    const uniqueSuffix = Math.random().toString(36).substring(2, 7);
+    const id = `table-${Date.now()}-${uniqueSuffix}`;
     const autoAddId = get().autoAddId ?? true;
     const autoAddTimestamps = get().autoAddTimestamps ?? true;
 
@@ -181,7 +182,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
 
     if (autoAddId) {
       columns.push({
-        id: `col-${now}-id`,
+        id: `col-${now}-id-${uniqueSuffix}`,
         name: "id",
         type: "INTEGER",
         constraints: {

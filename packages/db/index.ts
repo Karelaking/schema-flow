@@ -237,6 +237,10 @@ export class DatabaseService {
   public deleteProject(id: string): void {
     this.db.prepare("DELETE FROM projects WHERE id = ?").run(id);
   }
+
+  public close(): void {
+    this.db.close();
+  }
 }
 
 // Global instance resolver for Server Actions/API routes (SRP)
@@ -250,4 +254,11 @@ export function getDbService(): DatabaseService {
     globalThis.dbServiceInstance = new DatabaseService(dbPath);
   }
   return globalThis.dbServiceInstance;
+}
+
+export function closeDbService(): void {
+  if (globalThis.dbServiceInstance) {
+    globalThis.dbServiceInstance.close();
+    globalThis.dbServiceInstance = undefined;
+  }
 }
