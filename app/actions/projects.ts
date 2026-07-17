@@ -13,8 +13,8 @@ export async function listProjectsAction(): Promise<{ success: boolean; projects
     const db = getDbService();
     const projects = db.listProjects();
     return { success: true, projects };
-  } catch (error: any) {
-    return { success: false, projects: [], error: error.message };
+  } catch (error: unknown) {
+    return { success: false, projects: [], error: error instanceof Error ? error.message : String(error) };
   }
 }
 
@@ -30,8 +30,8 @@ export async function getProjectAction(id: string): Promise<{ success: boolean; 
       return { success: false, error: "Project not found" };
     }
     return { success: true, project };
-  } catch (error: any) {
-    return { success: false, error: error.message };
+  } catch (error: unknown) {
+    return { success: false, error: error instanceof Error ? error.message : String(error) };
   }
 }
 
@@ -66,8 +66,8 @@ export async function createProjectAction(input: CreateProjectInput): Promise<{ 
 
     db.saveProject(id, initialAST);
     return { success: true, project: initialAST };
-  } catch (error: any) {
-    return { success: false, error: error.message };
+  } catch (error: unknown) {
+    return { success: false, error: error instanceof Error ? error.message : String(error) };
   }
 }
 
@@ -81,8 +81,8 @@ export async function saveProjectAction(id: string, ast: SchemaAST): Promise<{ s
     const db = getDbService();
     db.saveProject(id, ast);
     return { success: true };
-  } catch (error: any) {
-    return { success: false, error: error.message };
+  } catch (error: unknown) {
+    return { success: false, error: error instanceof Error ? error.message : String(error) };
   }
 }
 
@@ -95,7 +95,7 @@ export async function deleteProjectAction(id: string): Promise<{ success: boolea
     const db = getDbService();
     db.deleteProject(id);
     return { success: true };
-  } catch (error: any) {
-    return { success: false, error: error.message };
+  } catch (error: unknown) {
+    return { success: false, error: error instanceof Error ? error.message : String(error) };
   }
 }

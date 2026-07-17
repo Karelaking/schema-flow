@@ -120,7 +120,7 @@ export function CreateProjectDialog({ open, onOpenChange, onSuccess }: CreatePro
             <Label htmlFor="create-proj-dialect">Database Dialect</Label>
             <Select 
               value={selectedDialect} 
-              onValueChange={(val: any) => setValue("dialect", val)}
+              onValueChange={(val: CreateProjectInput["dialect"] | null) => { if (val) setValue("dialect", val); }}
             >
               <SelectTrigger id="create-proj-dialect">
                 <SelectValue placeholder="Select dialect" />

@@ -1,7 +1,56 @@
 import Database from "better-sqlite3";
 import fs from "fs";
 import path from "path";
-import { SchemaAST, ProjectMetadata } from "@/packages/schema-core";
+import { SchemaAST, ProjectMetadata, Table, Relation, Column, DatabaseDialect } from "@/packages/schema-core";
+
+interface RawProjectRow {
+  id: string;
+  name: string;
+  description: string | null;
+  dialect: DatabaseDialect;
+  theme: 'dark' | 'light';
+  created_at: string;
+  updated_at: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+interface RawTableRow {
+  id: string;
+  project_id: string;
+  name: string;
+  description: string | null;
+  color: string | null;
+  position_x: number;
+  position_y: number;
+}
+
+interface RawColumnRow {
+  id: string;
+  table_id: string;
+  name: string;
+  type: string;
+  is_primary_key: number;
+  is_nullable: number;
+  is_unique: number;
+  is_auto_increment: number;
+  default_value: string | null;
+  check_constraint: string | null;
+  comment: string | null;
+  sort_order: number;
+}
+
+interface RawRelationRow {
+  id: string;
+  project_id: string;
+  source_table_id: string;
+  source_column_id: string;
+  target_table_id: string;
+  target_column_id: string;
+  type: Relation['type'];
+  on_delete: Relation['onDelete'];
+  on_update: Relation['onUpdate'];
+}
 
 export class DatabaseService {
   private db: Database.Database;
@@ -80,28 +129,28 @@ export class DatabaseService {
       SELECT id, name, description, dialect, created_at as createdAt, updated_at as updatedAt 
       FROM projects 
       ORDER BY updated_at DESC
-    `).all() as any[];
+    `).all() as RawProjectRow[];
 
     return rows.map(r => ({
       id: r.id,
       name: r.name,
       description: r.description || undefined,
       dialect: r.dialect,
-      createdAt: r.createdAt,
-      updatedAt: r.updatedAt
+      createdAt: r.createdAt || r.created_at,
+      updatedAt: r.updatedAt || r.updated_at
     }));
   }
 
   public getProject(id: string): SchemaAST | null {
-    const project = this.db.prepare("SELECT * FROM projects WHERE id = ?").get(id) as any;
+    const project = this.db.prepare("SELECT * FROM projects WHERE id = ?").get(id) as RawProjectRow | undefined;
     if (!project) return null;
 
-    const tables = this.db.prepare("SELECT * FROM db_tables WHERE project_id = ?").all(id) as any[];
-    const relations = this.db.prepare("SELECT * FROM db_relations WHERE project_id = ?").all(id) as any[];
+    const tables = this.db.prepare("SELECT * FROM db_tables WHERE project_id = ?").all(id) as RawTableRow[];
+    const relations = this.db.prepare("SELECT * FROM db_relations WHERE project_id = ?").all(id) as RawRelationRow[];
 
-    const schemaTables: Record<string, any> = {};
+    const schemaTables: Record<string, Table> = {};
     for (const tbl of tables) {
-      const columns = this.db.prepare("SELECT * FROM db_columns WHERE table_id = ? ORDER BY sort_order ASC").all(tbl.id) as any[];
+      const columns = this.db.prepare("SELECT * FROM db_columns WHERE table_id = ? ORDER BY sort_order ASC").all(tbl.id) as RawColumnRow[];
       schemaTables[tbl.id] = {
         id: tbl.id,
         name: tbl.name,
@@ -125,7 +174,7 @@ export class DatabaseService {
       };
     }
 
-    const schemaRelations: Record<string, any> = {};
+    const schemaRelations: Record<string, Relation> = {};
     for (const rel of relations) {
       schemaRelations[rel.id] = {
         id: rel.id,

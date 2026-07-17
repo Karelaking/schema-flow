@@ -62,7 +62,7 @@ export function RelationInspector({ selectedRelation }: RelationInspectorProps) 
         <Label className="text-xs">Relationship Type</Label>
         <Select 
           value={selectedRelation.type} 
-          onValueChange={(val: any) => { if (val) updateRelation(selectedRelation.id, { type: val }); }}
+          onValueChange={(val: Relation["type"] | null) => { if (val) updateRelation(selectedRelation.id, { type: val }); }}
         >
           <SelectTrigger className="h-8 text-xs">
             <SelectValue placeholder="Select type" />
@@ -80,7 +80,7 @@ export function RelationInspector({ selectedRelation }: RelationInspectorProps) 
         <Label className="text-xs">On Delete Constraint</Label>
         <Select 
           value={selectedRelation.onDelete || "no-action"} 
-          onValueChange={(val: any) => { if (val) updateRelation(selectedRelation.id, { onDelete: val }); }}
+          onValueChange={(val: Relation["onDelete"] | null) => { if (val) updateRelation(selectedRelation.id, { onDelete: val }); }}
         >
           <SelectTrigger className="h-8 text-xs">
             <SelectValue placeholder="Select constraint" />
@@ -98,7 +98,7 @@ export function RelationInspector({ selectedRelation }: RelationInspectorProps) 
         <Label className="text-xs">On Update Constraint</Label>
         <Select 
           value={selectedRelation.onUpdate || "no-action"} 
-          onValueChange={(val: any) => { if (val) updateRelation(selectedRelation.id, { onUpdate: val }); }}
+          onValueChange={(val: Relation["onUpdate"] | null) => { if (val) updateRelation(selectedRelation.id, { onUpdate: val }); }}
         >
           <SelectTrigger className="h-8 text-xs">
             <SelectValue placeholder="Select constraint" />

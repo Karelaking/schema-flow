@@ -131,7 +131,7 @@ export function ProjectSettingsDialog({ open, onOpenChange, onDeleteRequest }: P
             <Label htmlFor="edit-proj-dialect">Database Dialect</Label>
             <Select 
               value={selectedDialect} 
-              onValueChange={(val: any) => setValue("dialect", val)}
+              onValueChange={(val: ProjectSettingsInput["dialect"] | null) => { if (val) setValue("dialect", val); }}
             >
               <SelectTrigger id="edit-proj-dialect">
                 <SelectValue placeholder="Select dialect" />

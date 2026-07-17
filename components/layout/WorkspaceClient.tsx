@@ -214,7 +214,7 @@ export function WorkspaceClient({ initialProjectsList, initialProject }: Workspa
                 <Label htmlFor="empty-proj-dialect">Database Dialect</Label>
                 <Select 
                   value={newDialect} 
-                  onValueChange={(val: any) => setNewDialect(val)}
+                  onValueChange={(val: DatabaseDialect | null) => { if (val) setNewDialect(val); }}
                 >
                   <SelectTrigger id="empty-proj-dialect">
                     <SelectValue placeholder="Select dialect" />

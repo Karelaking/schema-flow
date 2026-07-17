@@ -59,8 +59,8 @@ export function CodePreviewTab() {
         const generator = new TypeScriptGenerator();
         return generator.generate(currentAST);
       }
-    } catch (err: any) {
-      return `-- Code Generation Error: ${err.message}`;
+    } catch (err: unknown) {
+      return `-- Code Generation Error: ${err instanceof Error ? err.message : String(err)}`;
     }
   }, [currentAST, dialect, codeType]);
 

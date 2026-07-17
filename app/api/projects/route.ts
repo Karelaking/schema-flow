@@ -7,8 +7,8 @@ export async function GET() {
     const db = getDbService();
     const projects = db.listProjects();
     return NextResponse.json({ success: true, projects });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json({ success: false, error: error instanceof Error ? error.message : String(error) }, { status: 500 });
   }
 }
 
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
 
     db.saveProject(id, initialAST);
     return NextResponse.json({ success: true, project: initialAST.project });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json({ success: false, error: error instanceof Error ? error.message : String(error) }, { status: 500 });
   }
 }
