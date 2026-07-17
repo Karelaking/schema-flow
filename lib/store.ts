@@ -5,9 +5,10 @@ import { CanvasHistoryState, ProjectStore } from "@/types/store.interface";
 export const useStore = create<ProjectStore>((set, get) => ({
   // Initial state
   projectId: null,
-  projectName: "Untitled Schema",
+  projectName: "",
   projectDescription: "",
   dialect: "sqlite",
+
   theme: "dark",
   autoAddId: true,
   autoAddTimestamps: true,

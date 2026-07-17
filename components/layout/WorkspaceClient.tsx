@@ -136,9 +136,10 @@ export function WorkspaceClient({ initialProjectsList, initialProject }: Workspa
     };
   }, [resizingSide]);
 
-  if (isEmpty || (!projectId && !initialProject)) {
+  if (isEmpty || !projectId) {
     return <EmptyProjectView onProjectCreated={() => setIsEmpty(false)} />;
   }
+
 
   return (
     <div className="h-screen w-full flex flex-col overflow-hidden bg-background">
