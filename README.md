@@ -1,36 +1,104 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Schema Flow 🚀
 
-## Getting Started
+**Schema Flow** is an open-source, interactive, visual database schema design tool built with Next.js, React Flow, and SQLite. Design database architectures visually, create multiple schema projects, manage relationships, and export production-ready SQL and TypeScript DDL code.
 
-First, run the development server:
+---
+
+## 🌟 Key Features
+
+- **Visual Schema Canvas**: Drag, drop, and interconnect database tables with custom handles and dynamic relationship lines.
+- **Multi-Project Management**: Create, switch, and manage multiple database design projects seamlessly.
+- **Smart Column Defaults**: Automatic `id` (Primary Key) and `created_at` / `updated_at` (Timestamp) column generation with instant UI toggles.
+- **SQL & TypeScript Generator**: Generate clean SQL DDL (SQLite, PostgreSQL, MySQL) and TypeScript type declarations on the fly.
+- **Mobile Responsive**: Adaptive mobile drawer layout and bottom tab navigation for working on phones and tablets.
+- **Flexible Self-Hosting**: Run locally, on a server, or via Docker with zero vendor lock-in.
+
+---
+
+## 🛠️ Environment Configuration
+
+Environment variables can be set in a `.env` or `.env.local` file at the root of the project:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# SQLite Database File Path (Default: ./data/schema-flow.db)
+DATABASE_PATH=./data/schema-flow.db
+
+# Server Binding
+PORT=3000
+HOST=0.0.0.0
+NODE_ENV=production
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Copy `.env.example` to start:
+```bash
+cp .env.example .env
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🚀 Running Locally
 
-## Learn More
+### Prerequisites
+- Node.js 18+ or 20+
+- pnpm (recommended) or npm / yarn
 
-To learn more about Next.js, take a look at the following resources:
+### Steps
+```bash
+# 1. Clone the repository
+git clone https://github.com/your-username/schema-flow.git
+cd schema-flow
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# 2. Install dependencies
+pnpm install
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# 3. Start the development server
+pnpm dev
+```
 
-## Deploy on Vercel
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🐳 Docker Deployment
+
+### Using Docker Compose (Recommended)
+
+Run the containerized application with a persistent database volume in one command:
+
+```bash
+docker compose up -d
+```
+
+Access the app at `http://localhost:3000`. Database files will be persisted in `./data/`.
+
+### Using Docker CLI
+
+```bash
+# Build the image
+docker build -t schema-flow .
+
+# Run the container with volume mount
+docker run -d \
+  -p 3000:3000 \
+  -v $(pwd)/data:/app/data \
+  --name schema-flow \
+  schema-flow
+```
+
+---
+
+## 🧪 Running Tests & Building
+
+```bash
+# Run unit tests
+pnpm test
+
+# Production build
+pnpm build
+```
+
+---
+
+## 📄 License
+
+MIT License. Open source and free for personal and commercial self-hosting.

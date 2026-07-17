@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  schema-flow:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: schema-flow
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - HOST=0.0.0.0
+      - DATABASE_PATH=/app/data/schema-flow.db
+    volumes:
+      - schema_flow_data:/app/data
+
+volumes:
+  schema_flow_data:
+    driver: local

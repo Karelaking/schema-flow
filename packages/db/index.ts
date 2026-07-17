@@ -1,10 +1,16 @@
 import Database from "better-sqlite3";
+import fs from "fs";
+import path from "path";
 import { SchemaAST, ProjectMetadata } from "@/packages/schema-core";
 
 export class DatabaseService {
   private db: Database.Database;
 
-  constructor(dbPath: string = "schema-flow.db") {
+  constructor(dbPath: string = process.env.DATABASE_PATH || process.env.DATABASE_FILE || process.env.DATABASE_URL || "./data/schema-flow.db") {
+    const dir = path.dirname(dbPath);
+    if (dir && dir !== "." && !fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
     this.db = new Database(dbPath);
     this.init();
   }
@@ -237,7 +243,8 @@ let dbServiceInstance: DatabaseService | null = null;
 
 export function getDbService(): DatabaseService {
   if (!dbServiceInstance) {
-    dbServiceInstance = new DatabaseService();
+    const dbPath = process.env.DATABASE_PATH || process.env.DATABASE_FILE || process.env.DATABASE_URL || "./data/schema-flow.db";
+    dbServiceInstance = new DatabaseService(dbPath);
   }
   return dbServiceInstance;
 }
