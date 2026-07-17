@@ -13,6 +13,8 @@ export interface ProjectStore {
   projectDescription: string;
   dialect: DatabaseDialect;
   theme: "dark" | "light";
+  autoAddId: boolean;
+  autoAddTimestamps: boolean;
 
   // Schema state
   tables: Record<string, Table>;
@@ -30,6 +32,8 @@ export interface ProjectStore {
   loadProject: (ast: SchemaAST) => void;
   setProjectDetails: (name: string, description: string, dialect: DatabaseDialect) => void;
   setTheme: (theme: "dark" | "light") => void;
+  setAutoAddId: (enabled: boolean) => void;
+  setAutoAddTimestamps: (enabled: boolean) => void;
 
   // Table actions
   addTable: (name: string, x: number, y: number) => string;
@@ -67,6 +71,8 @@ export const useStore = create<ProjectStore>((set, get) => ({
   projectDescription: "",
   dialect: "sqlite",
   theme: "dark",
+  autoAddId: true,
+  autoAddTimestamps: true,
   tables: {},
   relations: {},
   selectedTableId: null,
@@ -81,6 +87,8 @@ export const useStore = create<ProjectStore>((set, get) => ({
       projectDescription: ast.project.description || "",
       dialect: ast.settings.dialect,
       theme: ast.settings.theme,
+      autoAddId: ast.settings.autoAddId ?? true,
+      autoAddTimestamps: ast.settings.autoAddTimestamps ?? true,
       tables: ast.tables || {},
       relations: ast.relations || {},
       selectedTableId: null,
@@ -102,6 +110,9 @@ export const useStore = create<ProjectStore>((set, get) => ({
   setTheme: (theme) => {
     set({ theme });
   },
+
+  setAutoAddId: (autoAddId) => set({ autoAddId }),
+  setAutoAddTimestamps: (autoAddTimestamps) => set({ autoAddTimestamps }),
 
   // History helper
   pushHistory: () => {
@@ -162,25 +173,62 @@ export const useStore = create<ProjectStore>((set, get) => ({
   addTable: (name, x, y) => {
     get().pushHistory();
     const id = `table-${Date.now()}`;
+    const autoAddId = get().autoAddId ?? true;
+    const autoAddTimestamps = get().autoAddTimestamps ?? true;
+
+    const columns: Column[] = [];
+    const now = Date.now();
+
+    if (autoAddId) {
+      columns.push({
+        id: `col-${now}-id`,
+        name: "id",
+        type: "INTEGER",
+        constraints: {
+          isPrimaryKey: true,
+          isNullable: false,
+          isUnique: false,
+          isAutoIncrement: true
+        }
+      });
+    }
+
+    if (autoAddTimestamps) {
+      columns.push(
+        {
+          id: `col-${now}-created_at`,
+          name: "created_at",
+          type: "TIMESTAMP",
+          constraints: {
+            isPrimaryKey: false,
+            isNullable: false,
+            isUnique: false,
+            isAutoIncrement: false,
+            defaultValue: "CURRENT_TIMESTAMP"
+          }
+        },
+        {
+          id: `col-${now}-updated_at`,
+          name: "updated_at",
+          type: "TIMESTAMP",
+          constraints: {
+            isPrimaryKey: false,
+            isNullable: false,
+            isUnique: false,
+            isAutoIncrement: false,
+            defaultValue: "CURRENT_TIMESTAMP"
+          }
+        }
+      );
+    }
+
     const newTable: Table = {
       id,
       name,
       description: "",
       color: "#3b82f6", // Default blue
       position: { x, y },
-      columns: [
-        {
-          id: `col-${Date.now()}-id`,
-          name: "id",
-          type: "INTEGER",
-          constraints: {
-            isPrimaryKey: true,
-            isNullable: false,
-            isUnique: false,
-            isAutoIncrement: true
-          }
-        }
-      ]
+      columns
     };
 
     set(state => ({

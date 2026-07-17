@@ -11,8 +11,6 @@ import {
   Moon, 
   Sun, 
   Settings,
-  Sparkles,
-  HelpCircle,
   MoreVertical,
   ChevronDown,
   Check,
@@ -24,6 +22,7 @@ import { DatabaseDialect } from "@/packages/schema-core";
 import { useTheme } from "@/providers/ThemeProvider";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -68,6 +67,10 @@ export function Header() {
   const redo = useStore(state => state.redo);
   const past = useStore(state => state.past);
   const future = useStore(state => state.future);
+  const autoAddId = useStore(state => state.autoAddId);
+  const autoAddTimestamps = useStore(state => state.autoAddTimestamps);
+  const setAutoAddId = useStore(state => state.setAutoAddId);
+  const setAutoAddTimestamps = useStore(state => state.setAutoAddTimestamps);
 
   // UI state
   const [isSaving, setIsSaving] = useState(false);
@@ -75,6 +78,8 @@ export function Header() {
   const [editName, setEditName] = useState(projectName);
   const [editDesc, setEditDesc] = useState(projectDescription);
   const [editDialect, setEditDialect] = useState(dialect);
+  const [editAutoAddId, setEditAutoAddId] = useState(autoAddId);
+  const [editAutoAddTimestamps, setEditAutoAddTimestamps] = useState(autoAddTimestamps);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   // Projects Switcher & Creator state
@@ -214,7 +219,9 @@ export function Header() {
         },
         settings: {
           dialect,
-          theme
+          theme,
+          autoAddId,
+          autoAddTimestamps
         },
         tables,
         relations
@@ -254,7 +261,9 @@ export function Header() {
       },
       settings: {
         dialect,
-        theme
+        theme,
+        autoAddId,
+        autoAddTimestamps
       },
       tables,
       relations
@@ -294,6 +303,8 @@ export function Header() {
 
   const handleApplySettings = () => {
     setProjectDetails(editName, editDesc, editDialect);
+    setAutoAddId(editAutoAddId);
+    setAutoAddTimestamps(editAutoAddTimestamps);
     setSettingsOpen(false);
   };
 
@@ -301,6 +312,8 @@ export function Header() {
     setEditName(projectName);
     setEditDesc(projectDescription);
     setEditDialect(dialect);
+    setEditAutoAddId(autoAddId);
+    setEditAutoAddTimestamps(autoAddTimestamps);
     setSettingsOpen(true);
   };
 
@@ -592,6 +605,36 @@ export function Header() {
                   <SelectItem value="mysql">MySQL</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="border-t pt-3 mt-1 flex flex-col gap-3">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                Default Node Columns
+              </span>
+              
+              <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-0.5">
+                  <Label htmlFor="auto-add-id" className="text-xs font-medium cursor-pointer">Auto-add Primary Key (id)</Label>
+                  <span className="text-[10px] text-muted-foreground">Add id INTEGER PRIMARY KEY to new tables</span>
+                </div>
+                <Switch 
+                  id="auto-add-id"
+                  checked={editAutoAddId}
+                  onCheckedChange={setEditAutoAddId}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-0.5">
+                  <Label htmlFor="auto-add-timestamps" className="text-xs font-medium cursor-pointer">Auto-add Timestamps</Label>
+                  <span className="text-[10px] text-muted-foreground">Add created_at & updated_at to new tables</span>
+                </div>
+                <Switch 
+                  id="auto-add-timestamps"
+                  checked={editAutoAddTimestamps}
+                  onCheckedChange={setEditAutoAddTimestamps}
+                />
+              </div>
             </div>
           </div>
           {/* Danger Zone */}

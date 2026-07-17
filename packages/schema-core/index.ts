@@ -3,6 +3,8 @@ export type DatabaseDialect = 'sqlite' | 'postgres' | 'mysql';
 export interface ProjectSettings {
   dialect: DatabaseDialect;
   theme: 'dark' | 'light';
+  autoAddId?: boolean;
+  autoAddTimestamps?: boolean;
 }
 
 export interface ProjectMetadata {

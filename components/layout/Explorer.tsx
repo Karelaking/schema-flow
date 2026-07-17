@@ -1,10 +1,16 @@
 "use client";
 
 import React, { useState } from "react";
-import { Plus, Search, TableProperties, Eye, RefreshCw } from "lucide-react";
+import { Plus, Search, TableProperties, SlidersHorizontal, Key, Clock, Check, Eye, RefreshCw } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 import { cn } from "@/lib/utils";
 
@@ -18,6 +24,10 @@ export function Explorer({ className, style }: ExplorerProps = {}) {
   const addTable = useStore(state => state.addTable);
   const selectTable = useStore(state => state.selectTable);
   const selectedTableId = useStore(state => state.selectedTableId);
+  const autoAddId = useStore(state => state.autoAddId);
+  const autoAddTimestamps = useStore(state => state.autoAddTimestamps);
+  const setAutoAddId = useStore(state => state.setAutoAddId);
+  const setAutoAddTimestamps = useStore(state => state.setAutoAddTimestamps);
 
   const [search, setSearch] = useState("");
 
@@ -49,15 +59,57 @@ export function Explorer({ className, style }: ExplorerProps = {}) {
           <span className="explorer-title font-semibold text-xs uppercase tracking-wider text-muted-foreground truncate">
             Explorer
           </span>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="size-7 text-primary hover:text-primary-foreground hover:bg-primary transition-colors"
-            onClick={handleAddTable}
-            title="Create Table"
-          >
-            <Plus className="size-4" />
-          </Button>
+          <div className="flex items-center gap-1">
+            <DropdownMenu>
+              <DropdownMenuTrigger render={
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="size-7 text-muted-foreground hover:text-foreground cursor-pointer"
+                  title="Node Defaults Settings"
+                >
+                  <SlidersHorizontal className="size-3.5" />
+                </Button>
+              } />
+              <DropdownMenuContent align="end" className="w-56 bg-card border shadow-md p-2 rounded-md text-foreground z-50">
+                <div className="px-1 py-1 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                  New Node Defaults
+                </div>
+                
+                <DropdownMenuItem
+                  onClick={() => setAutoAddId(!autoAddId)}
+                  className="flex items-center justify-between cursor-pointer p-2 hover:bg-muted text-xs rounded-sm"
+                >
+                  <div className="flex items-center gap-2">
+                    <Key className="size-3.5 text-amber-500" />
+                    <span>Auto Primary Key (id)</span>
+                  </div>
+                  {autoAddId && <Check className="size-3.5 text-primary" />}
+                </DropdownMenuItem>
+
+                <DropdownMenuItem
+                  onClick={() => setAutoAddTimestamps(!autoAddTimestamps)}
+                  className="flex items-center justify-between cursor-pointer p-2 hover:bg-muted text-xs rounded-sm"
+                >
+                  <div className="flex items-center gap-2">
+                    <Clock className="size-3.5 text-blue-500" />
+                    <span>Auto Timestamps</span>
+                  </div>
+                  {autoAddTimestamps && <Check className="size-3.5 text-primary" />}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="size-7 text-primary hover:text-primary-foreground hover:bg-primary transition-colors cursor-pointer"
+              onClick={handleAddTable}
+              title="Create Table"
+            >
+              <Plus className="size-4" />
+            </Button>
+          </div>
         </div>
 
         {/* Filter input */}
