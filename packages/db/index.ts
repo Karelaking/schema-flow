@@ -77,7 +77,7 @@ export class DatabaseService {
 
   public listProjects(): ProjectMetadata[] {
     const rows = this.db.prepare(`
-      SELECT id, name, description, created_at as createdAt, updated_at as updatedAt 
+      SELECT id, name, description, dialect, created_at as createdAt, updated_at as updatedAt 
       FROM projects 
       ORDER BY updated_at DESC
     `).all() as any[];
@@ -86,6 +86,7 @@ export class DatabaseService {
       id: r.id,
       name: r.name,
       description: r.description || undefined,
+      dialect: r.dialect,
       createdAt: r.createdAt,
       updatedAt: r.updatedAt
     }));

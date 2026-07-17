@@ -11,6 +11,7 @@ export interface ProjectMetadata {
   id: string;
   name: string;
   description?: string;
+  dialect?: DatabaseDialect;
   createdAt: string;
   updatedAt: string;
 }
