@@ -1,34 +1,15 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Menu, SlidersHorizontal, LayoutGrid, FolderTree, Plus, Database } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Explorer } from "@/components/layout/Explorer";
 import { Canvas } from "@/components/canvas/Canvas";
 import { Inspector } from "@/components/layout/Inspector";
+import { EmptyProjectView } from "@/components/layout/EmptyProjectView";
+import { MobileNavigation } from "@/components/layout/MobileNavigation";
 import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { DatabaseDialect, ProjectMetadata, SchemaAST } from "@/packages/schema-core";
-
+import { ProjectMetadata, SchemaAST } from "@/packages/schema-core";
 import { saveProjectAction } from "@/app/actions/projects";
 
 interface WorkspaceClientProps {
@@ -36,7 +17,7 @@ interface WorkspaceClientProps {
   initialProject: SchemaAST | null;
 }
 
-export function WorkspaceClient({ initialProjectsList, initialProject }: WorkspaceClientProps) {
+export function WorkspaceClient({ initialProjectsList, initialProject }: WorkspaceClientProps): React.JSX.Element {
   const loadProject = useStore(state => state.loadProject);
   const projectId = useStore(state => state.projectId);
   const projectName = useStore(state => state.projectName);
@@ -57,13 +38,6 @@ export function WorkspaceClient({ initialProjectsList, initialProject }: Workspa
 
   const [isMobile, setIsMobile] = useState(false);
   const [activeMobileTab, setActiveMobileTab] = useState<'explorer' | 'canvas' | 'inspector'>('canvas');
-
-  // Create project dialog state
-  const [createOpen, setCreateOpen] = useState(false);
-  const [newName, setNewName] = useState("");
-  const [newDesc, setNewDesc] = useState("");
-  const [newDialect, setNewDialect] = useState<DatabaseDialect>("sqlite");
-  const [isCreating, setIsCreating] = useState(false);
 
   // Initialize Zustand store with initial server payload
   useEffect(() => {
@@ -102,43 +76,6 @@ export function WorkspaceClient({ initialProjectsList, initialProject }: Workspa
 
     return () => clearTimeout(timer);
   }, [projectId, projectName, projectDescription, dialect, theme, autoAddId, autoAddTimestamps, tables, relations]);
-
-  const handleCreateProject = async () => {
-    if (!newName.trim()) return;
-    setIsCreating(true);
-    try {
-      const newProj = {
-        id: `proj-${Date.now()}`,
-        name: newName.trim(),
-        description: newDesc.trim(),
-        dialect: newDialect
-      };
-      
-      const response = await fetch("/api/projects", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newProj)
-      });
-      const data = await response.json();
-      
-      if (data.success) {
-        const projectResponse = await fetch(`/api/projects/${newProj.id}`);
-        const projectData = await projectResponse.json();
-        if (projectData.success) {
-          loadProject(projectData.project);
-          setCreateOpen(false);
-          setIsEmpty(false);
-          setNewName("");
-          setNewDesc("");
-          setNewDialect("sqlite");
-        }
-      }
-    } catch (err) {
-      console.error("Failed to create project:", err);
-    } finally {
-      setIsCreating(false);
-    }
-  };
 
   // Screen size tracking
   useEffect(() => {
@@ -200,81 +137,7 @@ export function WorkspaceClient({ initialProjectsList, initialProject }: Workspa
   }, [resizingSide]);
 
   if (isEmpty || (!projectId && !initialProject)) {
-    return (
-      <div className="h-screen w-full flex flex-col justify-center items-center gap-6 bg-background text-foreground p-6 text-center select-none">
-        <div className="flex size-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-          <Database className="size-8" />
-        </div>
-        <div className="flex flex-col gap-1.5 max-w-sm">
-          <h2 className="text-lg font-bold tracking-tight">No Projects Yet</h2>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            Create your first database schema project to get started designing tables, columns, and relationships visually.
-          </p>
-        </div>
-        <Button 
-          onClick={() => setCreateOpen(true)}
-          className="gap-2 px-6 cursor-pointer"
-        >
-          <Plus className="size-4" />
-          Create New Project
-        </Button>
-
-        {/* Create Project Dialog */}
-        <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Create New Project</DialogTitle>
-              <DialogDescription>
-                Start a new database schema design workspace.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="flex flex-col gap-4 py-4">
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="empty-proj-name">Project Name</Label>
-                <Input 
-                  id="empty-proj-name" 
-                  placeholder="my_database"
-                  value={newName} 
-                  onChange={(e) => setNewName(e.target.value)} 
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="empty-proj-desc">Description</Label>
-                <Textarea 
-                  id="empty-proj-desc" 
-                  placeholder="Optional database description..."
-                  value={newDesc} 
-                  onChange={(e) => setNewDesc(e.target.value)} 
-                  rows={3}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="empty-proj-dialect">Database Dialect</Label>
-                <Select 
-                  value={newDialect} 
-                  onValueChange={(val: DatabaseDialect | null) => { if (val) setNewDialect(val); }}
-                >
-                  <SelectTrigger id="empty-proj-dialect">
-                    <SelectValue placeholder="Select dialect" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="sqlite">SQLite</SelectItem>
-                    <SelectItem value="postgres">PostgreSQL</SelectItem>
-                    <SelectItem value="mysql">MySQL</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
-              <Button onClick={handleCreateProject} disabled={isCreating || !newName.trim()}>
-                {isCreating ? "Creating..." : "Create Project"}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      </div>
-    );
+    return <EmptyProjectView onProjectCreated={() => setIsEmpty(false)} />;
   }
 
   return (
@@ -325,40 +188,7 @@ export function WorkspaceClient({ initialProjectsList, initialProject }: Workspa
             </div>
 
             {/* Mobile Bottom Tab Bar */}
-            <div className="h-14 bg-card/90 border-t border-border backdrop-blur-xs flex items-center justify-around z-40 shrink-0 select-none w-full">
-              <button
-                onClick={() => setActiveMobileTab('explorer')}
-                className={cn(
-                  "flex flex-col items-center justify-center gap-0.5 w-20 h-full transition-colors cursor-pointer",
-                  activeMobileTab === 'explorer' ? "text-primary font-semibold" : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                <FolderTree className="size-4.5" />
-                <span className="text-[9px] tracking-wide mt-0.5">Explorer</span>
-              </button>
-
-              <button
-                onClick={() => setActiveMobileTab('canvas')}
-                className={cn(
-                  "flex flex-col items-center justify-center gap-0.5 w-20 h-full transition-colors cursor-pointer",
-                  activeMobileTab === 'canvas' ? "text-primary font-semibold" : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                <LayoutGrid className="size-4.5" />
-                <span className="text-[9px] tracking-wide mt-0.5">Canvas</span>
-              </button>
-
-              <button
-                onClick={() => setActiveMobileTab('inspector')}
-                className={cn(
-                  "flex flex-col items-center justify-center gap-0.5 w-20 h-full transition-colors cursor-pointer",
-                  activeMobileTab === 'inspector' ? "text-primary font-semibold" : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                <SlidersHorizontal className="size-4.5" />
-                <span className="text-[9px] tracking-wide mt-0.5">Inspect</span>
-              </button>
-            </div>
+            <MobileNavigation activeTab={activeMobileTab} onTabChange={setActiveMobileTab} />
           </div>
         )}
       </div>
