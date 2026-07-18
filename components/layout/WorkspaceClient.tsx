@@ -11,6 +11,8 @@ import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { ProjectMetadata, SchemaAST } from "@/packages/schema-core";
 import { saveProjectAction } from "@/app/actions/projects";
+import { AgentChatDrawer } from "@/components/agent/AgentChatDrawer";
+import { useAIStore } from "@/lib/ai-store";
 
 interface WorkspaceClientProps {
   initialProjectsList: ProjectMetadata[];
@@ -38,6 +40,9 @@ export function WorkspaceClient({ initialProjectsList, initialProject }: Workspa
 
   const [isMobile, setIsMobile] = useState(false);
   const [activeMobileTab, setActiveMobileTab] = useState<'explorer' | 'canvas' | 'inspector'>('canvas');
+
+  const isAIOpen = useAIStore(state => state.isOpen);
+  const [aiDrawerWidth, setAIDrawerWidth] = useState(380);
 
   // Initialize Zustand store with initial server payload
   useEffect(() => {
@@ -178,6 +183,18 @@ export function WorkspaceClient({ initialProjectsList, initialProject }: Workspa
 
             {/* Right Sidebar: Inspector */}
             <Inspector style={{ width: rightWidth }} />
+
+            {/* AI Agent Chat Drawer (desktop) */}
+            {isAIOpen && (
+              <>
+                <div
+                  className={cn(
+                    "w-[3px] hover:w-[5px] bg-border hover:bg-violet-500/50 active:bg-violet-500 transition-all cursor-col-resize h-full select-none z-50 shrink-0"
+                  )}
+                />
+                <AgentChatDrawer style={{ width: aiDrawerWidth }} />
+              </>
+            )}
           </>
         ) : (
           <div className="flex-1 flex flex-col min-h-0 h-full w-full relative">

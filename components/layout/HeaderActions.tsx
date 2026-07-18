@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { Download, Upload, Sun, Moon, MoreVertical, ChevronDown, Image, Save } from "lucide-react";
+import { Download, Upload, Sun, Moon, MoreVertical, ChevronDown, Image, Save, Sparkles } from "lucide-react";
+import { useAIStore } from "@/lib/ai-store";
 
 import { useStore } from "@/lib/store";
 import { exportCanvasToPng } from "@/lib/export-image";
@@ -28,6 +29,8 @@ export interface HeaderActionsProps {
 export function HeaderActions({ className = "" }: HeaderActionsProps): React.JSX.Element {
   const { theme, toggleTheme } = useTheme();
   const projectName = useStore(state => state.projectName);
+  const toggleAIDrawer = useAIStore(state => state.toggleDrawer);
+  const isAIOpen = useAIStore(state => state.isOpen);
 
   const {
     isSaving,
@@ -116,6 +119,18 @@ export function HeaderActions({ className = "" }: HeaderActionsProps): React.JSX
       </Button>
 
       <Separator orientation="vertical" className="h-10 mx-1 hidden lg:block" />
+
+      {/* AI Architect Toggle */}
+      <Button
+        variant={isAIOpen ? "default" : "outline"}
+        size="sm"
+        onClick={toggleAIDrawer}
+        title="Toggle AI Schema Architect"
+        className="gap-1.5 h-8 text-xs cursor-pointer hidden sm:flex"
+      >
+        <Sparkles className="size-3.5" />
+        <span className="hidden lg:inline">AI Architect</span>
+      </Button>
 
 
       <Button 
