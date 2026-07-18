@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Plus, Search, TableProperties, SlidersHorizontal, Key, Clock, Check, Eye, RefreshCw } from "lucide-react";
+import { Plus, Search, TableProperties, SlidersHorizontal, Key, Clock, Check, Eye, RefreshCw, PanelLeftClose } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,7 @@ import {
 
 import { cn } from "@/lib/utils";
 import { ExplorerProps } from "@/types/Explorer.interface";
+import { useAIStore } from "@/lib/ai-store";
 
 export function Explorer({ className, style }: ExplorerProps = {}): React.ReactNode {
   const tables = useStore(state => state.tables);
@@ -24,10 +25,13 @@ export function Explorer({ className, style }: ExplorerProps = {}): React.ReactN
   const autoAddTimestamps = useStore(state => state.autoAddTimestamps);
   const setAutoAddId = useStore(state => state.setAutoAddId);
   const setAutoAddTimestamps = useStore(state => state.setAutoAddTimestamps);
+  const pendingPatch = useAIStore(state => state.pendingPatch);
+
+  const activeTables = pendingPatch ? pendingPatch.proposedAST.tables : tables;
 
   const [search, setSearch] = useState("");
 
-  const filteredTables = Object.values(tables).filter(table =>
+  const filteredTables = Object.values(activeTables).filter(table =>
     table.name.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -56,6 +60,16 @@ export function Explorer({ className, style }: ExplorerProps = {}): React.ReactN
             Explorer
           </span>
           <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => useStore.getState().toggleLeftSidebar()}
+              className="size-7 text-muted-foreground hover:text-foreground cursor-pointer"
+              title="Hide Left Sidebar"
+            >
+              <PanelLeftClose className="size-3.5" />
+            </Button>
+
             <DropdownMenu>
               <DropdownMenuTrigger render={
                 <Button 

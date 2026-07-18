@@ -14,10 +14,17 @@ export const useStore = create<ProjectStore>((set, get) => ({
   autoAddTimestamps: true,
   tables: {},
   relations: {},
+  showLeftSidebar: true,
+  showRightSidebar: true,
   selectedTableId: null,
   selectedRelationId: null,
   past: [],
   future: [],
+
+  toggleLeftSidebar: (): void => set(state => ({ showLeftSidebar: !state.showLeftSidebar })),
+  toggleRightSidebar: (): void => set(state => ({ showRightSidebar: !state.showRightSidebar })),
+  setLeftSidebar: (showLeftSidebar): void => set({ showLeftSidebar }),
+  setRightSidebar: (showRightSidebar): void => set({ showRightSidebar }),
 
   loadProject: (ast): void => {
     set({

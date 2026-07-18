@@ -2,16 +2,17 @@
 "use client";
 
 import React from "react";
-import { Undo2, Redo2, LayoutGrid } from "lucide-react";
+import { Undo2, Redo2, LayoutGrid, PanelLeft, PanelRight } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 export interface CenterControlsProps {
   className?: string;
 }
 
 /**
- * Isolated Client Component: Provides Undo, Redo, and Auto-Layout actions.
+ * Isolated Client Component: Provides Sidebar Toggles, Undo, Redo, and Auto-Layout actions.
  */
 export function CenterControls({ className = "" }: CenterControlsProps): React.JSX.Element {
   const undo = useStore(state => state.undo);
@@ -19,15 +20,33 @@ export function CenterControls({ className = "" }: CenterControlsProps): React.J
   const past = useStore(state => state.past);
   const future = useStore(state => state.future);
   const autoLayoutTables = useStore(state => state.autoLayoutTables);
+  const showLeftSidebar = useStore(state => state.showLeftSidebar);
+  const showRightSidebar = useStore(state => state.showRightSidebar);
+  const toggleLeftSidebar = useStore(state => state.toggleLeftSidebar);
+  const toggleRightSidebar = useStore(state => state.toggleRightSidebar);
 
   return (
     <div className={`flex items-center gap-1 ${className}`}>
+      {/* Left Sidebar Toggle */}
+      <Button 
+        variant={showLeftSidebar ? "secondary" : "ghost"}
+        size="icon" 
+        onClick={toggleLeftSidebar}
+        title={showLeftSidebar ? "Hide Left Sidebar (Explorer)" : "Show Left Sidebar (Explorer)"}
+        className="size-8 cursor-pointer"
+      >
+        <PanelLeft className="size-4" />
+      </Button>
+
+      <Separator orientation="vertical" className="h-10 mx-0.5" />
+
+      {/* Undo / Redo / Auto-Layout */}
       <Button 
         variant="ghost" 
         size="icon" 
         disabled={past.length === 0} 
         onClick={undo}
-        title="Undo"
+        title="Undo (Ctrl+Z)"
         className="size-8 cursor-pointer"
       >
         <Undo2 className="size-4" />
@@ -38,7 +57,7 @@ export function CenterControls({ className = "" }: CenterControlsProps): React.J
         size="icon" 
         disabled={future.length === 0} 
         onClick={redo}
-        title="Redo"
+        title="Redo (Ctrl+Y)"
         className="size-8 cursor-pointer"
       >
         <Redo2 className="size-4" />
@@ -52,6 +71,19 @@ export function CenterControls({ className = "" }: CenterControlsProps): React.J
         className="size-8 cursor-pointer"
       >
         <LayoutGrid className="size-4" />
+      </Button>
+
+      <Separator orientation="vertical" className="h-10 mx-0.5" />
+
+      {/* Right Sidebar Toggle */}
+      <Button 
+        variant={showRightSidebar ? "secondary" : "ghost"}
+        size="icon" 
+        onClick={toggleRightSidebar}
+        title={showRightSidebar ? "Hide Right Sidebar (Inspector)" : "Show Right Sidebar (Inspector)"}
+        className="size-8 cursor-pointer"
+      >
+        <PanelRight className="size-4" />
       </Button>
     </div>
   );

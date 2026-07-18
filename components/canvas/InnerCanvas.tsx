@@ -12,6 +12,7 @@ import {
 import "@xyflow/react/dist/style.css";
 
 import { useStore } from "@/lib/store";
+import { useAIStore } from "@/lib/ai-store";
 import { convertTablesToNodes, convertRelationsToEdges } from "@/lib/react-flow-utils";
 import { TableNode } from "./TableNode";
 
@@ -26,6 +27,11 @@ export function CanvasInner(): React.JSX.Element {
   const selectedTableId = useStore(state => state.selectedTableId);
   const selectedRelationId = useStore(state => state.selectedRelationId);
   const theme = useStore(state => state.theme);
+  const pendingPatch = useAIStore(state => state.pendingPatch);
+
+  // Live proposed AST from AI sandbox or current live store
+  const activeTables = pendingPatch ? pendingPatch.proposedAST.tables : tables;
+  const activeRelations = pendingPatch ? pendingPatch.proposedAST.relations : relations;
 
   // Actions
   const updateTablePosition = useStore(state => state.updateTablePosition);
@@ -37,13 +43,13 @@ export function CanvasInner(): React.JSX.Element {
 
   // Memoize converted nodes and edges
   const nodes = useMemo(
-    () => convertTablesToNodes(tables, selectedTableId),
-    [tables, selectedTableId]
+    () => convertTablesToNodes(activeTables, selectedTableId),
+    [activeTables, selectedTableId]
   );
   
   const edges = useMemo(
-    () => convertRelationsToEdges(relations, selectedRelationId),
-    [relations, selectedRelationId]
+    () => convertRelationsToEdges(activeRelations, selectedRelationId),
+    [activeRelations, selectedRelationId]
   );
 
   // Synchronize node drag movements (SRP)

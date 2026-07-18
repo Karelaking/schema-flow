@@ -27,13 +27,21 @@ export interface ProjectStore {
   tables: Record<string, Table>;
   relations: Record<string, Relation>;
 
-  // UI Selection context
+  // UI Sidebar Visibility & Selection context
+  showLeftSidebar: boolean;
+  showRightSidebar: boolean;
   selectedTableId: string | null;
   selectedRelationId: string | null;
 
   // Undo/Redo Stacks
   past: CanvasHistoryState[];
   future: CanvasHistoryState[];
+
+  // Sidebar actions
+  toggleLeftSidebar: () => void;
+  toggleRightSidebar: () => void;
+  setLeftSidebar: (show: boolean) => void;
+  setRightSidebar: (show: boolean) => void;
 
   // General actions
   loadProject: (ast: SchemaAST) => void;

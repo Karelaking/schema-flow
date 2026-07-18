@@ -32,6 +32,10 @@ export function WorkspaceClient({ initialProjectsList, initialProject }: Workspa
   const relations = useStore(state => state.relations);
   const selectedTableId = useStore(state => state.selectedTableId);
   const selectedRelationId = useStore(state => state.selectedRelationId);
+  const showLeftSidebar = useStore(state => state.showLeftSidebar);
+  const showRightSidebar = useStore(state => state.showRightSidebar);
+  const toggleLeftSidebar = useStore(state => state.toggleLeftSidebar);
+  const toggleRightSidebar = useStore(state => state.toggleRightSidebar);
 
   const [isEmpty, setIsEmpty] = useState(!initialProject && initialProjectsList.length === 0);
   const [leftWidth, setLeftWidth] = useState(256);
@@ -156,33 +160,41 @@ export function WorkspaceClient({ initialProjectsList, initialProject }: Workspa
         {!isMobile ? (
           <>
             {/* Left Sidebar: Explorer */}
-            <Explorer style={{ width: leftWidth }} />
+            {showLeftSidebar && (
+              <>
+                <Explorer style={{ width: leftWidth }} />
 
-            {/* Left Resizer Handle */}
-            <div 
-              className={cn(
-                "w-[3px] hover:w-[5px] bg-border hover:bg-primary/50 active:bg-primary transition-all cursor-col-resize h-full select-none z-50 shrink-0",
-                resizingSide === 'left' && "bg-primary w-[5px]"
-              )}
-              onMouseDown={() => setResizingSide('left')}
-            />
+                {/* Left Resizer Handle */}
+                <div 
+                  className={cn(
+                    "w-[3px] hover:w-[5px] bg-border hover:bg-primary/50 active:bg-primary transition-all cursor-col-resize h-full select-none z-50 shrink-0",
+                    resizingSide === 'left' && "bg-primary w-[5px]"
+                  )}
+                  onMouseDown={() => setResizingSide('left')}
+                />
+              </>
+            )}
 
             {/* Center: React Flow Canvas */}
             <div className="flex-1 relative overflow-hidden h-full" style={{ pointerEvents: resizingSide ? "none" : "auto" }}>
               <Canvas />
             </div>
 
-            {/* Right Resizer Handle */}
-            <div 
-              className={cn(
-                "w-[3px] hover:w-[5px] bg-border hover:bg-primary/50 active:bg-primary transition-all cursor-col-resize h-full select-none z-50 shrink-0",
-                resizingSide === 'right' && "bg-primary w-[5px]"
-              )}
-              onMouseDown={() => setResizingSide('right')}
-            />
-
             {/* Right Sidebar: Inspector */}
-            <Inspector style={{ width: rightWidth }} />
+            {showRightSidebar && (
+              <>
+                {/* Right Resizer Handle */}
+                <div 
+                  className={cn(
+                    "w-[3px] hover:w-[5px] bg-border hover:bg-primary/50 active:bg-primary transition-all cursor-col-resize h-full select-none z-50 shrink-0",
+                    resizingSide === 'right' && "bg-primary w-[5px]"
+                  )}
+                  onMouseDown={() => setResizingSide('right')}
+                />
+
+                <Inspector style={{ width: rightWidth }} />
+              </>
+            )}
 
             {/* AI Agent Chat Drawer (desktop) */}
             {isAIOpen && (

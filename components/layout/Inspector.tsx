@@ -6,10 +6,12 @@ import {
   Code, 
   AlertTriangle, 
   Terminal,
-  Info
+  Info,
+  PanelRightClose
 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Tabs,
   TabsContent,
@@ -48,8 +50,8 @@ export function Inspector({ className, style }: InspectorProps = {}) {
     <aside style={style} className={cn("sidebar-panel bg-card text-card-foreground flex flex-col shrink-0 select-none border-l overflow-hidden", className)}>
       <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col h-full">
         {/* Inspector Header Tabs */}
-        <div className="p-3 border-b flex items-center justify-between shrink-0">
-          <TabsList className="grid w-full grid-cols-4 h-8 text-xs">
+        <div className="p-3 border-b flex items-center justify-between gap-2 shrink-0">
+          <TabsList className="grid w-full grid-cols-4 h-8 text-xs flex-1">
             <TabsTrigger value="inspector" className="gap-1 text-[10px] sm:text-[11px] cursor-pointer px-1">
               <Layers className="size-3.5" />
               Inspector
@@ -67,6 +69,16 @@ export function Inspector({ className, style }: InspectorProps = {}) {
               Validation
             </TabsTrigger>
           </TabsList>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => useStore.getState().toggleRightSidebar()}
+            className="size-7 text-muted-foreground hover:text-foreground cursor-pointer shrink-0"
+            title="Hide Right Sidebar"
+          >
+            <PanelRightClose className="size-3.5" />
+          </Button>
         </div>
 
         {/* Tab 1: Selection Inspector */}
