@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Table, Relation, Column, Index, IndexColumn, DatabaseDialect, SchemaAST } from "@/packages/schema-core";
+import { Table, Relation, Column, Index, IndexColumn, DatabaseDialect, SchemaAST, EnumDefinition } from "@/packages/schema-core";
 import { CanvasHistoryState, ProjectStore } from "@/types/store.interface";
 
 export const useStore = create<ProjectStore>((set, get) => ({
@@ -14,6 +14,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
   autoAddTimestamps: true,
   tables: {},
   relations: {},
+  enums: {},
   showLeftSidebar: true,
   showRightSidebar: true,
   selectedTableId: null,
@@ -37,6 +38,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
       autoAddTimestamps: ast.settings.autoAddTimestamps ?? true,
       tables: ast.tables || {},
       relations: ast.relations || {},
+      enums: ast.enums || {},
       selectedTableId: null,
       selectedRelationId: null,
       past: [],
@@ -62,9 +64,9 @@ export const useStore = create<ProjectStore>((set, get) => ({
 
   // History helper
   pushHistory: () : void => {
-    const { tables, relations, past } = get();
+    const { tables, relations, enums, past } = get();
     // Stringify deep copy to avoid object reference mutations
-    const snap: CanvasHistoryState = JSON.parse(JSON.stringify({ tables, relations }));
+    const snap: CanvasHistoryState = JSON.parse(JSON.stringify({ tables, relations, enums }));
     
     // Limit stack size to 50 items
     const newPast = past.length >= 50 ? past.slice(1) : past;
@@ -76,16 +78,17 @@ export const useStore = create<ProjectStore>((set, get) => ({
   },
 
   undo: (): void => {
-    const { past, future, tables, relations } = get();
+    const { past, future, tables, relations, enums } = get();
     if (past.length === 0) return;
 
     const previous = past[past.length - 1];
     const newPast = past.slice(0, past.length - 1);
-    const currentSnap: CanvasHistoryState = JSON.parse(JSON.stringify({ tables, relations }));
+    const currentSnap: CanvasHistoryState = JSON.parse(JSON.stringify({ tables, relations, enums }));
 
     set({
       tables: previous.tables,
       relations: previous.relations,
+      enums: previous.enums,
       past: newPast,
       future: [currentSnap, ...future],
       selectedTableId: null,
@@ -94,16 +97,17 @@ export const useStore = create<ProjectStore>((set, get) => ({
   },
 
   redo: (): void => {
-    const { past, future, tables, relations } = get();
+    const { past, future, tables, relations, enums } = get();
     if (future.length === 0) return;
 
     const next = future[0];
     const newFuture = future.slice(1);
-    const currentSnap: CanvasHistoryState = JSON.parse(JSON.stringify({ tables, relations }));
+    const currentSnap: CanvasHistoryState = JSON.parse(JSON.stringify({ tables, relations, enums }));
 
     set({
       tables: next.tables,
       relations: next.relations,
+      enums: next.enums,
       past: [...past, currentSnap],
       future: newFuture,
       selectedTableId: null,
@@ -522,6 +526,65 @@ export const useStore = create<ProjectStore>((set, get) => ({
         relations: newRelations,
         selectedRelationId: state.selectedRelationId === id ? null : state.selectedRelationId
       };
+    });
+  },
+
+  // Enum actions
+  addEnum: (name, values): string => {
+    get().pushHistory();
+    const id = `enum-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+    const newEnum: EnumDefinition = {
+      id,
+      name,
+      values,
+    };
+
+    set(state => ({
+      enums: { ...state.enums, [id]: newEnum }
+    }));
+
+    return id;
+  },
+
+  updateEnum: (id, updates): void => {
+    get().pushHistory();
+    set(state => {
+      const enumDef = state.enums[id];
+      if (!enumDef) return state;
+
+      return {
+        enums: {
+          ...state.enums,
+          [id]: { ...enumDef, ...updates }
+        }
+      };
+    });
+  },
+
+  deleteEnum: (id): void => {
+    get().pushHistory();
+    set(state => {
+      const newEnums = { ...state.enums };
+      delete newEnums[id];
+
+      // Clear enumId from any columns that reference this enum
+      const newTables = { ...state.tables };
+      for (const tableId in newTables) {
+        const table = newTables[tableId];
+        const hasEnumCol = table.columns.some(col => col.enumId === id);
+        if (hasEnumCol) {
+          newTables[tableId] = {
+            ...table,
+            columns: table.columns.map(col =>
+              col.enumId === id
+                ? { ...col, type: "VARCHAR", enumId: undefined }
+                : col
+            )
+          };
+        }
+      }
+
+      return { enums: newEnums, tables: newTables };
     });
   },
 

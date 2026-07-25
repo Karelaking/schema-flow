@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Handle, Position } from "@xyflow/react";
-import { Key, Link as LinkIcon, Fingerprint } from "lucide-react";
+import { Key, Link as LinkIcon, Fingerprint, List } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { Table } from "@/packages/schema-core";
@@ -19,6 +19,7 @@ export function TableNode({ id, data, selected }: TableNodeProps) {
   const table = data.table;
   const selectTable = useStore(state => state.selectTable);
   const relations = useStore(state => state.relations);
+  const enums = useStore(state => state.enums);
 
   // Check if a column is a Foreign Key
   const isForeignKey = (colId: string) => {
@@ -123,8 +124,18 @@ export function TableNode({ id, data, selected }: TableNodeProps) {
                 </div>
 
                 {/* Column Type (Right side) */}
-                <span className="text-[10px] font-mono text-muted-foreground uppercase shrink-0">
-                  {col.type}
+                <span className={cn(
+                  "text-[10px] font-mono uppercase shrink-0",
+                  col.enumId && enums[col.enumId] ? "text-violet-500" : "text-muted-foreground"
+                )}>
+                  {col.enumId && enums[col.enumId] ? (
+                    <span className="flex items-center gap-0.5">
+                      <List className="size-2.5" />
+                      {enums[col.enumId].name}
+                    </span>
+                  ) : (
+                    col.type
+                  )}
                 </span>
 
                 {/* Right Handle (Source) */}

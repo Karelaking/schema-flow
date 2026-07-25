@@ -13,6 +13,14 @@ export interface ProjectMetadata {
   updatedAt: string;
 }
 
+export interface EnumDefinition {
+  id: string;
+  name: string;
+  values: string[];
+  description?: string;
+  color?: string;
+}
+
 export interface ColumnConstraint {
   isPrimaryKey: boolean;
   isNullable: boolean;
@@ -31,6 +39,7 @@ export interface Column {
   length?: number;
   precision?: number;
   scale?: number;
+  enumId?: string; // References an EnumDefinition by ID
 }
 
 export interface Table {
@@ -59,4 +68,6 @@ export interface SchemaAST {
   settings: ProjectSettings;
   tables: Record<string, Table>;
   relations: Record<string, Relation>;
+  enums: Record<string, EnumDefinition>;
 }
+

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Plus, Trash2, ArrowUp, ArrowDown, Palette, GripVertical, BookmarkPlus } from "lucide-react";
+import { Plus, Trash2, ArrowUp, ArrowDown, Palette, GripVertical, BookmarkPlus, List } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { TableInspectorProps } from "@/types/TableInspector.interface";
 import { Button } from "@/components/ui/button";
@@ -59,14 +59,17 @@ export function TableInspector({ selectedTable, selectedColId, setSelectedColId 
   const addIndex = useStore(state => state.addIndex);
   const updateIndex = useStore(state => state.updateIndex);
   const deleteIndex = useStore(state => state.deleteIndex);
+  const enums = useStore(state => state.enums);
 
   const { categories, dialect, getTypeDescription } = useDialectDataTypes();
 
+  const enumList = Object.values(enums);
 
   const [draggedColIndex, setDraggedColIndex] = useState<number | null>(null);
 
 
   const selectedCol = selectedTable.columns.find(c => c.id === selectedColId);
+  const selectedColEnum = selectedCol?.enumId ? enums[selectedCol.enumId] : null;
 
   const handleAddColumn = (): void => {
     const colCount = selectedTable.columns.length + 1;
@@ -242,6 +245,12 @@ export function TableInspector({ selectedTable, selectedColId, setSelectedColId 
                     PK
                   </Badge>
                 )}
+                {col.enumId && enums[col.enumId] && (
+                  <Badge className="text-[8px] px-1 py-0 bg-violet-500/20 text-violet-500 border-violet-500/30 uppercase shrink-0 gap-0.5">
+                    <List className="size-2" />
+                    ENUM
+                  </Badge>
+                )}
               </div>
 
               <div className="flex items-center gap-1 shrink-0">
@@ -303,13 +312,48 @@ export function TableInspector({ selectedTable, selectedColId, setSelectedColId 
                 </span>
               </div>
               <Select 
-                value={selectedCol.type} 
-                onValueChange={(val) => { if (val) updateColumn(selectedTable.id, selectedCol.id, { type: val }); }}
+                value={selectedCol.enumId ? `enum:${selectedCol.enumId}` : selectedCol.type} 
+                onValueChange={(val) => {
+                  if (!val) return;
+                  if (val.startsWith('enum:')) {
+                    const enumId = val.slice(5);
+                    updateColumn(selectedTable.id, selectedCol.id, { type: 'ENUM', enumId, constraints: { ...selectedCol.constraints, defaultValue: '' } });
+                  } else {
+                    updateColumn(selectedTable.id, selectedCol.id, { type: val, enumId: undefined });
+                  }
+                }}
               >
                 <SelectTrigger className="h-8 text-xs">
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
                 <SelectContent className="max-h-72 w-[var(--radix-select-trigger-width)] min-w-[220px] max-w-[300px] overflow-y-auto z-50">
+                  {/* Enum Types Group */}
+                  {enumList.length > 0 && (
+                    <SelectGroup>
+                      <SelectLabel className="text-[10px] font-bold uppercase tracking-wider text-violet-500 px-1 py-0.5">
+                        Enum Types
+                      </SelectLabel>
+                      {enumList.map((e) => (
+                        <SelectItem
+                          key={`enum:${e.id}`}
+                          value={`enum:${e.id}`}
+                          className="text-xs cursor-pointer py-1.5"
+                        >
+                          <div className="flex items-center justify-between w-full gap-2 min-w-0">
+                            <div className="flex items-center gap-1.5">
+                              <List className="size-3 text-violet-500 shrink-0" />
+                              <span className="font-mono font-medium">{e.name}</span>
+                            </div>
+                            <span className="text-[10px] text-muted-foreground shrink-0">
+                              {e.values.length} vals
+                            </span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  )}
+
+                  {/* Standard Data Types */}
                   {categories.map((group) => (
                     <SelectGroup key={group.category}>
                       <SelectLabel className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground px-1 py-0.5">
@@ -351,19 +395,55 @@ export function TableInspector({ selectedTable, selectedColId, setSelectedColId 
                 </SelectContent>
 
               </Select>
+
+              {/* Show enum values preview when enum type is selected */}
+              {selectedColEnum && (
+                <div className="flex flex-wrap gap-1 pt-1">
+                  {selectedColEnum.values.map(v => (
+                    <Badge key={v} variant="secondary" className="text-[9px] px-1.5 py-0 font-mono bg-violet-500/10 text-violet-500 border-violet-500/20">
+                      {v}
+                    </Badge>
+                  ))}
+                </div>
+              )}
             </div>
 
 
             <div className="flex flex-col gap-2">
               <Label className="text-xs">Default Value</Label>
-              <Input 
-                value={selectedCol.constraints.defaultValue || ""}
-                onChange={(e) => updateColumn(selectedTable.id, selectedCol.id, {
-                  constraints: { ...selectedCol.constraints, defaultValue: e.target.value }
-                })}
-                className="h-8 text-xs font-mono"
-                placeholder="NULL, CURRENT_TIMESTAMP..."
-              />
+              {selectedColEnum ? (
+                /* Enum columns: restricted dropdown of enum values only */
+                <Select
+                  value={selectedCol.constraints.defaultValue || "__none__"}
+                  onValueChange={(val) => updateColumn(selectedTable.id, selectedCol.id, {
+                    constraints: { ...selectedCol.constraints, defaultValue: val === "__none__" ? "" : val }
+                  })}
+                >
+                  <SelectTrigger className="h-8 text-xs font-mono">
+                    <SelectValue placeholder="Select default..." />
+                  </SelectTrigger>
+                  <SelectContent className="z-50">
+                    <SelectItem value="__none__" className="text-xs cursor-pointer text-muted-foreground italic">
+                      No default
+                    </SelectItem>
+                    {selectedColEnum.values.map(v => (
+                      <SelectItem key={v} value={v} className="text-xs cursor-pointer font-mono">
+                        {v}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                /* Non-enum columns: free-text input */
+                <Input 
+                  value={selectedCol.constraints.defaultValue || ""}
+                  onChange={(e) => updateColumn(selectedTable.id, selectedCol.id, {
+                    constraints: { ...selectedCol.constraints, defaultValue: e.target.value }
+                  })}
+                  className="h-8 text-xs font-mono"
+                  placeholder="NULL, CURRENT_TIMESTAMP..."
+                />
+              )}
             </div>
 
             {/* Constraints Toggles */}

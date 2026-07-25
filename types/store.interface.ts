@@ -5,12 +5,14 @@ import {
   Index,
   IndexColumn,
   DatabaseDialect,
-  SchemaAST
+  SchemaAST,
+  EnumDefinition
 } from "@/packages/schema-core";
 
 export interface CanvasHistoryState {
   tables: Record<string, Table>;
   relations: Record<string, Relation>;
+  enums: Record<string, EnumDefinition>;
 }
 
 export interface ProjectStore {
@@ -26,6 +28,7 @@ export interface ProjectStore {
   // Schema state
   tables: Record<string, Table>;
   relations: Record<string, Relation>;
+  enums: Record<string, EnumDefinition>;
 
   // UI Sidebar Visibility & Selection context
   showLeftSidebar: boolean;
@@ -74,6 +77,11 @@ export interface ProjectStore {
   updateRelation: (id: string, updates: Partial<Omit<Relation, "id">>) => void;
   deleteRelation: (id: string) => void;
 
+  // Enum actions
+  addEnum: (name: string, values: string[]) => string;
+  updateEnum: (id: string, updates: Partial<Omit<EnumDefinition, "id">>) => void;
+  deleteEnum: (id: string) => void;
+
   // Selection actions
   selectTable: (id: string | null) => void;
   selectRelation: (id: string | null) => void;
@@ -83,4 +91,4 @@ export interface ProjectStore {
   undo: () => void;
   redo: () => void;
   clearHistory: () => void;
-}
+}

@@ -19,6 +19,7 @@ export function ValidationTab(): React.ReactNode {
   const autoAddTimestamps = useStore(state => state.autoAddTimestamps);
   const tables = useStore(state => state.tables);
   const relations = useStore(state => state.relations);
+  const enums = useStore(state => state.enums);
 
   const currentAST: SchemaAST = useMemo(() => ({
     project: {
@@ -36,7 +37,8 @@ export function ValidationTab(): React.ReactNode {
     },
     tables,
     relations,
-  }), [projectId, projectName, projectDescription, dialect, autoAddId, autoAddTimestamps, tables, relations]);
+    enums,
+  }), [projectId, projectName, projectDescription, dialect, autoAddId, autoAddTimestamps, tables, relations, enums]);
 
   const validationResult = useMemo(() => {
     const validator = new SchemaValidator();

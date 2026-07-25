@@ -24,6 +24,7 @@ export function CodePreviewTab(): React.JSX.Element {
   const autoAddTimestamps = useStore(state => state.autoAddTimestamps);
   const tables = useStore(state => state.tables);
   const relations = useStore(state => state.relations);
+  const enums = useStore(state => state.enums);
 
   const [codeType, setCodeType] = useState<"sql" | "typescript">("sql");
   const [copied, setCopied] = useState(false);
@@ -44,7 +45,8 @@ export function CodePreviewTab(): React.JSX.Element {
     },
     tables,
     relations,
-  }), [projectId, projectName, projectDescription, dialect, theme, autoAddId, autoAddTimestamps, tables, relations]);
+    enums,
+  }), [projectId, projectName, projectDescription, dialect, theme, autoAddId, autoAddTimestamps, tables, relations, enums]);
 
   const generatedCode = useMemo(() => {
     try {

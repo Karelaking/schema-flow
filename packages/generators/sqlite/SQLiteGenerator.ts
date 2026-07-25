@@ -23,7 +23,18 @@ export class SQLiteGenerator extends BaseGenerator {
 
     // 1. Columns definitions
     for (const col of table.columns) {
-      let colDef = `  ${col.name} ${col.type}`;
+      let colType = col.type;
+      let enumCheckConstraint = '';
+
+      // Resolve enum type to TEXT + CHECK constraint for SQLite
+      if (col.enumId && ast.enums && ast.enums[col.enumId]) {
+        const enumDef = ast.enums[col.enumId];
+        colType = 'TEXT';
+        const values = enumDef.values.map(v => `'${v}'`).join(", ");
+        enumCheckConstraint = `${col.name} IN (${values})`;
+      }
+
+      let colDef = `  ${col.name} ${colType}`;
 
       // Single column primary key
       if (col.constraints.isPrimaryKey && !isCompositePk) {
@@ -42,11 +53,17 @@ export class SQLiteGenerator extends BaseGenerator {
       }
 
       if (col.constraints.defaultValue !== undefined && col.constraints.defaultValue !== null && col.constraints.defaultValue !== "") {
-        colDef += ` DEFAULT ${col.constraints.defaultValue}`;
+        if (col.enumId && ast.enums && ast.enums[col.enumId]) {
+          colDef += ` DEFAULT '${col.constraints.defaultValue}'`;
+        } else {
+          colDef += ` DEFAULT ${col.constraints.defaultValue}`;
+        }
       }
 
       if (col.constraints.checkConstraint) {
         colDef += ` CHECK (${col.constraints.checkConstraint})`;
+      } else if (enumCheckConstraint) {
+        colDef += ` CHECK (${enumCheckConstraint})`;
       }
 
       // Add column comment if present

@@ -237,4 +237,36 @@ describe("TypeScriptGenerator", () => {
     expect(tsCode).toContain("email?: string;");
     expect(tsCode).toContain("created_at?: string | null;");
   });
+
+  it("should generate union types for enums", () => {
+    const ast: SchemaAST = {
+      project: { id: "p1", name: "Test Project", createdAt: "", updatedAt: "" },
+      settings: { dialect: "postgres", theme: "dark" },
+      enums: {
+        "enum-gender": { id: "enum-gender", name: "gender", values: ["male", "female", "other"] }
+      },
+      tables: {
+        "users": {
+          id: "users",
+          name: "users",
+          position: { x: 0, y: 0 },
+          columns: [
+            {
+              id: "gender",
+              name: "gender",
+              type: "ENUM",
+              enumId: "enum-gender",
+              constraints: { isPrimaryKey: false, isNullable: true, isUnique: false, isAutoIncrement: false }
+            }
+          ]
+        }
+      },
+      relations: {}
+    };
+
+    const tsCode = tsGenerator.generate(ast);
+    expect(tsCode).toContain("export type GenderEnum = 'male' | 'female' | 'other';");
+    expect(tsCode).toContain("gender: GenderEnum | null;");
+  });
 });
+

@@ -19,7 +19,16 @@ export class MySQLGenerator extends BaseGenerator {
     const isCompositePk = pkColumns.length > 1;
 
     for (const col of table.columns) {
-      let colDef = `  \`${col.name}\` ${col.type}`;
+      let colDef = `  \`${col.name}\` `;
+
+      // Resolve enum type to inline ENUM(...)
+      if (col.enumId && ast.enums && ast.enums[col.enumId]) {
+        const enumDef = ast.enums[col.enumId];
+        const values = enumDef.values.map(v => `'${v}'`).join(", ");
+        colDef += `ENUM(${values})`;
+      } else {
+        colDef += col.type;
+      }
 
       if (col.constraints.isPrimaryKey && !isCompositePk) {
         colDef += " PRIMARY KEY";
@@ -38,7 +47,11 @@ export class MySQLGenerator extends BaseGenerator {
       }
 
       if (col.constraints.defaultValue) {
-        colDef += ` DEFAULT ${col.constraints.defaultValue}`;
+        if (col.enumId && ast.enums && ast.enums[col.enumId]) {
+          colDef += ` DEFAULT '${col.constraints.defaultValue}'`;
+        } else {
+          colDef += ` DEFAULT ${col.constraints.defaultValue}`;
+        }
       }
 
       if (col.comment) {

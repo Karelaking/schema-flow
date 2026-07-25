@@ -5,12 +5,27 @@ export class TypeScriptGenerator implements CodeGenerator {
   public generate(ast: SchemaAST): string {
     const outputs: string[] = [];
 
+    // Generate enum type aliases first
+    if (ast.enums) {
+      for (const enumDef of Object.values(ast.enums)) {
+        if (enumDef.values.length > 0) {
+          const unionType = enumDef.values.map(v => `'${v}'`).join(' | ');
+          const typeName = this.toPascalCaseSingular(enumDef.name) + 'Enum';
+          if (enumDef.description) {
+            outputs.push(`/** ${enumDef.description} */\nexport type ${typeName} = ${unionType};`);
+          } else {
+            outputs.push(`export type ${typeName} = ${unionType};`);
+          }
+        }
+      }
+    }
+
     for (const table of Object.values(ast.tables)) {
       const typeName = this.toPascalCaseSingular(table.name);
       
-      const entityInterface = this.generateEntityInterface(typeName, table);
-      const insertInterface = this.generateInsertInterface(typeName, table);
-      const updateInterface = this.generateUpdateInterface(typeName, table);
+      const entityInterface = this.generateEntityInterface(typeName, table, ast);
+      const insertInterface = this.generateInsertInterface(typeName, table, ast);
+      const updateInterface = this.generateUpdateInterface(typeName, table, ast);
 
       outputs.push(`${entityInterface}\n\n${insertInterface}\n\n${updateInterface}`);
     }
@@ -18,7 +33,7 @@ export class TypeScriptGenerator implements CodeGenerator {
     return outputs.join("\n\n// ==========================================\n\n");
   }
 
-  private generateEntityInterface(typeName: string, table: Table): string {
+  private generateEntityInterface(typeName: string, table: Table, ast: SchemaAST): string {
     const lines: string[] = [];
 
     if (table.description) {
@@ -28,7 +43,7 @@ export class TypeScriptGenerator implements CodeGenerator {
     lines.push(`export interface ${typeName} {`);
 
     for (const col of table.columns) {
-      const tsType = this.mapType(col.type);
+      const tsType = this.mapType(col.type, col.enumId, ast);
       const isNullable = col.constraints.isNullable;
       const comment = col.comment ? ` // ${col.comment}` : "";
       
@@ -39,12 +54,12 @@ export class TypeScriptGenerator implements CodeGenerator {
     return lines.join("\n");
   }
 
-  private generateInsertInterface(typeName: string, table: Table): string {
+  private generateInsertInterface(typeName: string, table: Table, ast: SchemaAST): string {
     const lines: string[] = [];
     lines.push(`export interface ${typeName}Insert {`);
 
     for (const col of table.columns) {
-      const tsType = this.mapType(col.type);
+      const tsType = this.mapType(col.type, col.enumId, ast);
       const isNullable = col.constraints.isNullable;
       const hasDefault = col.constraints.defaultValue !== undefined && col.constraints.defaultValue !== null && col.constraints.defaultValue !== "";
       const isAutoInc = col.constraints.isAutoIncrement;
@@ -60,12 +75,12 @@ export class TypeScriptGenerator implements CodeGenerator {
     return lines.join("\n");
   }
 
-  private generateUpdateInterface(typeName: string, table: Table): string {
+  private generateUpdateInterface(typeName: string, table: Table, ast: SchemaAST): string {
     const lines: string[] = [];
     lines.push(`export interface ${typeName}Update {`);
 
     for (const col of table.columns) {
-      const tsType = this.mapType(col.type);
+      const tsType = this.mapType(col.type, col.enumId, ast);
       const isNullable = col.constraints.isNullable;
       const comment = col.comment ? ` // ${col.comment}` : "";
 
@@ -77,7 +92,12 @@ export class TypeScriptGenerator implements CodeGenerator {
     return lines.join("\n");
   }
 
-  private mapType(dbType: string): string {
+  private mapType(dbType: string, enumId?: string, ast?: SchemaAST): string {
+    // Resolve enum types to their union type alias
+    if (enumId && ast?.enums && ast.enums[enumId]) {
+      return this.toPascalCaseSingular(ast.enums[enumId].name) + 'Enum';
+    }
+
     const upper = dbType.toUpperCase();
     if (["INTEGER", "REAL", "NUMERIC", "DOUBLE", "FLOAT", "DECIMAL"].includes(upper)) {
       return "number";

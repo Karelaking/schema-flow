@@ -5,6 +5,16 @@ export class PostgreSQLGenerator extends BaseGenerator {
   public generate(ast: SchemaAST): string {
     const statements: string[] = [];
 
+    // Generate enum type definitions first
+    if (ast.enums) {
+      for (const enumDef of Object.values(ast.enums)) {
+        if (enumDef.values.length > 0) {
+          const values = enumDef.values.map(v => `'${v}'`).join(", ");
+          statements.push(`CREATE TYPE "${enumDef.name}" AS ENUM (${values});`);
+        }
+      }
+    }
+
     const tables = Object.values(ast.tables);
     for (const table of tables) {
       statements.push(this.generateTable(table, ast));
@@ -20,7 +30,11 @@ export class PostgreSQLGenerator extends BaseGenerator {
 
     for (const col of table.columns) {
       let pgType = col.type;
-      if (col.constraints.isAutoIncrement) {
+
+      // Resolve enum type
+      if (col.enumId && ast.enums && ast.enums[col.enumId]) {
+        pgType = `"${ast.enums[col.enumId].name}"`;
+      } else if (col.constraints.isAutoIncrement) {
         pgType = col.type.toUpperCase() === "INTEGER" ? "SERIAL" : "BIGSERIAL";
       }
 
@@ -39,7 +53,12 @@ export class PostgreSQLGenerator extends BaseGenerator {
       }
 
       if (col.constraints.defaultValue) {
-        colDef += ` DEFAULT ${col.constraints.defaultValue}`;
+        // For enum columns, wrap default value in quotes
+        if (col.enumId && ast.enums && ast.enums[col.enumId]) {
+          colDef += ` DEFAULT '${col.constraints.defaultValue}'`;
+        } else {
+          colDef += ` DEFAULT ${col.constraints.defaultValue}`;
+        }
       }
 
       lines.push(colDef);
@@ -69,3 +88,4 @@ export class PostgreSQLGenerator extends BaseGenerator {
     return createTable;
   }
 }
+
