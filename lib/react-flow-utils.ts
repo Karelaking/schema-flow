@@ -2,6 +2,51 @@ import { Table, Relation } from "@/packages/schema-core";
 import { TableNode, RelationEdge } from "@/types";
 import { MarkerType } from "@xyflow/react";
 
+export interface ResolvedRelationFK {
+  fkTableId: string;
+  fkColumnId: string;
+  pkTableId: string;
+  pkColumnId: string;
+}
+
+/**
+ * Resolves which table and column hold the Foreign Key constraint
+ * versus the referenced Primary Key.
+ *
+ * Rules:
+ * - If source column is PK and target is NOT PK -> Target holds the FK constraint.
+ * - Otherwise (source is NOT PK, or both/neither are PK) -> Source holds the FK constraint.
+ */
+export function resolveRelationFK(
+  rel: Relation,
+  tables: Record<string, Table>
+): ResolvedRelationFK {
+  const sourceTable = tables[rel.sourceTableId];
+  const targetTable = tables[rel.targetTableId];
+
+  const sourceCol = sourceTable?.columns.find(c => c.id === rel.sourceColumnId);
+  const targetCol = targetTable?.columns.find(c => c.id === rel.targetColumnId);
+
+  const sourceIsPk = Boolean(sourceCol?.constraints?.isPrimaryKey);
+  const targetIsPk = Boolean(targetCol?.constraints?.isPrimaryKey);
+
+  if (sourceIsPk && !targetIsPk) {
+    return {
+      fkTableId: rel.targetTableId,
+      fkColumnId: rel.targetColumnId,
+      pkTableId: rel.sourceTableId,
+      pkColumnId: rel.sourceColumnId,
+    };
+  }
+
+  return {
+    fkTableId: rel.sourceTableId,
+    fkColumnId: rel.sourceColumnId,
+    pkTableId: rel.targetTableId,
+    pkColumnId: rel.targetColumnId,
+  };
+}
+
 /**
  * Converts Schema AST Table records into React Flow Nodes.
  */
@@ -53,3 +98,4 @@ export function convertRelationsToEdges(
     };
   });
 }
+

@@ -3,7 +3,7 @@ import { drizzle, LibSQLDatabase } from "drizzle-orm/libsql";
 import { eq, desc, inArray } from "drizzle-orm";
 import fs from "fs";
 import path from "path";
-import { SchemaAST, ProjectMetadata, Table, Relation, DatabaseDialect } from "@/packages/schema-core";
+import { SchemaAST, ProjectMetadata, Table, Relation, DatabaseDialect, EnumDefinition } from "@/packages/schema-core";
 import * as schema from "./schema";
 
 export * from "./schema";
@@ -123,8 +123,24 @@ export class DatabaseService {
           columns_json TEXT NOT NULL,
           is_unique INTEGER NOT NULL DEFAULT 0,
           FOREIGN KEY (table_id) REFERENCES db_tables(id) ON DELETE CASCADE
+        );`,
+        `CREATE TABLE IF NOT EXISTS db_enums (
+          id TEXT PRIMARY KEY,
+          project_id TEXT NOT NULL,
+          name TEXT NOT NULL,
+          values_json TEXT NOT NULL,
+          description TEXT,
+          color TEXT,
+          FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
         );`
       ], "write");
+
+      // Soft migration for column enum_id if upgrading an existing db
+      try {
+        await this.client.execute("ALTER TABLE db_columns ADD COLUMN enum_id TEXT;");
+      } catch {
+        // Ignored if column already exists
+      }
 
       this.initialized = true;
     } catch (err: unknown) {
@@ -179,6 +195,7 @@ export class DatabaseService {
           },
         },
         relations: true,
+        enums: true,
       },
     });
 
@@ -205,6 +222,7 @@ export class DatabaseService {
             checkConstraint: c.checkConstraint ?? undefined,
           },
           comment: c.comment ?? undefined,
+          enumId: c.enumId ?? undefined,
         })),
         indexes: tbl.indexes.map((idx) => ({
           id: idx.id,
@@ -229,6 +247,25 @@ export class DatabaseService {
       };
     }
 
+    const schemaEnums: Record<string, EnumDefinition> = {};
+    if (projectRow.enums) {
+      for (const e of projectRow.enums) {
+        let values: string[] = [];
+        try {
+          values = JSON.parse(e.valuesJson);
+        } catch {
+          values = [];
+        }
+        schemaEnums[e.id] = {
+          id: e.id,
+          name: e.name,
+          values,
+          description: e.description ?? undefined,
+          color: e.color ?? undefined,
+        };
+      }
+    }
+
     return {
       project: {
         id: projectRow.id,
@@ -243,6 +280,7 @@ export class DatabaseService {
       },
       tables: schemaTables,
       relations: schemaRelations,
+      enums: schemaEnums,
     };
   }
 
@@ -287,12 +325,20 @@ export class DatabaseService {
 
     const existingTableIds = existingTables.map((t) => t.id);
 
+    // Safeguard: If payload tables is empty but DB has existing tables, prevent accidental wiping from uninitialized hydration
+    const payloadTableCount = Object.keys(ast.tables || {}).length;
+    if (payloadTableCount === 0 && existingTableIds.length > 0) {
+      console.warn(`[DatabaseService] Safeguard triggered: Skipping overwrite for project ${id} because incoming AST has 0 tables while DB has ${existingTableIds.length} tables.`);
+      return;
+    }
+
     if (existingTableIds.length > 0) {
       await this.db.delete(schema.dbIndexes).where(inArray(schema.dbIndexes.tableId, existingTableIds));
       await this.db.delete(schema.dbColumns).where(inArray(schema.dbColumns.tableId, existingTableIds));
     }
     await this.db.delete(schema.dbTables).where(eq(schema.dbTables.projectId, id));
     await this.db.delete(schema.dbRelations).where(eq(schema.dbRelations.projectId, id));
+    await this.db.delete(schema.dbEnums).where(eq(schema.dbEnums.projectId, id));
 
     // Re-insert tables, columns, and indexes
     for (const table of Object.values(ast.tables)) {
@@ -307,8 +353,8 @@ export class DatabaseService {
       });
 
       if (table.columns.length > 0) {
-        await this.db.insert(schema.dbColumns).values(
-          table.columns.map((col, idx) => ({
+        for (const [index, col] of table.columns.entries()) {
+          await this.db.insert(schema.dbColumns).values({
             id: col.id,
             tableId: table.id,
             name: col.name,
@@ -320,9 +366,10 @@ export class DatabaseService {
             defaultValue: col.constraints.defaultValue ?? null,
             checkConstraint: col.constraints.checkConstraint ?? null,
             comment: col.comment ?? null,
-            sortOrder: idx,
-          }))
-        );
+            enumId: col.enumId ?? null,
+            sortOrder: index,
+          });
+        }
       }
 
       if (table.indexes && table.indexes.length > 0) {
@@ -354,6 +401,20 @@ export class DatabaseService {
           onUpdate: rel.onUpdate || "no-action",
         }))
       );
+    }
+
+    // Re-insert enums
+    if (ast.enums) {
+      for (const enumDef of Object.values(ast.enums)) {
+        await this.db.insert(schema.dbEnums).values({
+          id: enumDef.id,
+          projectId: id,
+          name: enumDef.name,
+          valuesJson: JSON.stringify(enumDef.values || []),
+          description: enumDef.description ?? null,
+          color: enumDef.color ?? null,
+        });
+      }
     }
   }
 

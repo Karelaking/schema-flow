@@ -62,6 +62,7 @@ export async function createProjectAction(input: CreateProjectInput): Promise<{ 
       },
       tables: {},
       relations: {},
+      enums: {},
     };
 
     await db.saveProject(id, initialAST);

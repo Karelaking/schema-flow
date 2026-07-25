@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Header } from "@/components/layout/Header";
 import { Explorer } from "@/components/layout/Explorer";
 import { Canvas } from "@/components/canvas/Canvas";
@@ -36,6 +36,7 @@ export function WorkspaceClient({ initialProjectsList, initialProject }: Workspa
   const showRightSidebar = useStore(state => state.showRightSidebar);
   const toggleLeftSidebar = useStore(state => state.toggleLeftSidebar);
   const toggleRightSidebar = useStore(state => state.toggleRightSidebar);
+  const enums = useStore(state => state.enums);
 
   const [isEmpty, setIsEmpty] = useState(!initialProject && initialProjectsList.length === 0);
   const [leftWidth, setLeftWidth] = useState(256);
@@ -48,19 +49,27 @@ export function WorkspaceClient({ initialProjectsList, initialProject }: Workspa
   const isAIOpen = useAIStore(state => state.isOpen);
   const [aiDrawerWidth, setAIDrawerWidth] = useState(380);
 
+  const isLoadedRef = useRef(false);
+
   // Initialize Zustand store with initial server payload
   useEffect(() => {
     if (initialProject) {
       loadProject(initialProject);
       setIsEmpty(false);
+      setTimeout(() => {
+        isLoadedRef.current = true;
+      }, 100);
     } else if (initialProjectsList.length === 0) {
       setIsEmpty(true);
+      isLoadedRef.current = true;
+    } else {
+      isLoadedRef.current = true;
     }
   }, [initialProject, initialProjectsList, loadProject]);
 
   // Debounced auto-save effect (saves changes to SQLite DB in background)
   useEffect(() => {
-    if (!projectId) return;
+    if (!isLoadedRef.current || !projectId) return;
 
     const timer = setTimeout(async () => {
       const ast: SchemaAST = {
@@ -79,12 +88,13 @@ export function WorkspaceClient({ initialProjectsList, initialProject }: Workspa
         },
         tables,
         relations,
+        enums,
       };
       await saveProjectAction(projectId, ast);
     }, 800);
 
     return () => clearTimeout(timer);
-  }, [projectId, projectName, projectDescription, dialect, theme, autoAddId, autoAddTimestamps, tables, relations]);
+  }, [projectId, projectName, projectDescription, dialect, theme, autoAddId, autoAddTimestamps, tables, relations, enums]);
 
   // Screen size tracking
   useEffect(() => {

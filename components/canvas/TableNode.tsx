@@ -7,6 +7,8 @@ import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { Table } from "@/packages/schema-core";
 
+import { resolveRelationFK } from "@/lib/react-flow-utils";
+
 interface TableNodeProps {
   id: string;
   data: {
@@ -19,15 +21,15 @@ export function TableNode({ id, data, selected }: TableNodeProps) {
   const table = data.table;
   const selectTable = useStore(state => state.selectTable);
   const relations = useStore(state => state.relations);
+  const tables = useStore(state => state.tables);
   const enums = useStore(state => state.enums);
 
   // Check if a column is a Foreign Key
   const isForeignKey = (colId: string) => {
-    return Object.values(relations).some(
-      rel =>
-        (rel.sourceTableId === id && rel.sourceColumnId === colId) ||
-        (rel.targetTableId === id && rel.targetColumnId === colId)
-    );
+    return Object.values(relations).some(rel => {
+      const resolved = resolveRelationFK(rel, tables);
+      return resolved.fkTableId === id && resolved.fkColumnId === colId;
+    });
   };
 
   const handleNodeClick = (e: React.MouseEvent) => {
@@ -123,20 +125,33 @@ export function TableNode({ id, data, selected }: TableNodeProps) {
                   </span>
                 </div>
 
-                {/* Column Type (Right side) */}
-                <span className={cn(
-                  "text-[10px] font-mono uppercase shrink-0",
-                  col.enumId && enums[col.enumId] ? "text-violet-500" : "text-muted-foreground"
-                )}>
-                  {col.enumId && enums[col.enumId] ? (
-                    <span className="flex items-center gap-0.5">
-                      <List className="size-2.5" />
-                      {enums[col.enumId].name}
+                {/* Column Type & Default Value (Right side) */}
+                <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                  <span className={cn(
+                    "text-[10px] font-mono uppercase",
+                    col.enumId && enums[col.enumId] ? "text-violet-500 font-semibold" : "text-muted-foreground"
+                  )}>
+                    {col.enumId && enums[col.enumId] ? (
+                      <span className="flex items-center gap-0.5">
+                        <List className="size-2.5" />
+                        {enums[col.enumId].name}
+                      </span>
+                    ) : (
+                      col.type
+                    )}
+                  </span>
+
+                  {col.constraints.defaultValue !== undefined &&
+                   col.constraints.defaultValue !== null &&
+                   col.constraints.defaultValue.trim() !== "" && (
+                    <span
+                      className="text-[9px] font-mono text-amber-500/90 bg-amber-500/10 px-1 py-0.2 rounded border border-amber-500/20 truncate max-w-[100px]"
+                      title={`Default: ${col.constraints.defaultValue}`}
+                    >
+                      = {col.constraints.defaultValue}
                     </span>
-                  ) : (
-                    col.type
                   )}
-                </span>
+                </div>
 
                 {/* Right Handle (Source) */}
                 <Handle

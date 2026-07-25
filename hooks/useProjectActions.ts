@@ -51,6 +51,8 @@ export function useProjectActions(): {
     }
   }, [loadProject]);
 
+  const enums = useStore(state => state.enums);
+
   /**
    * Saves the current project AST to the SQLite database via Server Action.
    */
@@ -75,6 +77,7 @@ export function useProjectActions(): {
       },
       tables,
       relations,
+      enums,
     };
 
     const result = await saveProjectAction(projectId, ast);
@@ -86,7 +89,7 @@ export function useProjectActions(): {
       setSaveMessage(`Error: ${result.error}`);
     }
     setIsSaving(false);
-  }, [projectId, projectName, projectDescription, dialect, theme, autoAddId, autoAddTimestamps, tables, relations, fetchProjects]);
+  }, [projectId, projectName, projectDescription, dialect, theme, autoAddId, autoAddTimestamps, tables, relations, enums, fetchProjects]);
 
   /**
    * Exports the current schema AST to a downloadable JSON file.

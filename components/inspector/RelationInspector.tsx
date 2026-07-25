@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Trash2 } from "lucide-react";
+import { Trash2, ArrowLeftRight } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { Relation } from "@/packages/schema-core";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { resolveRelationFK } from "@/lib/react-flow-utils";
 
 export interface RelationInspectorProps {
   /** Selected relation instance */
@@ -30,6 +31,21 @@ export function RelationInspector({ selectedRelation }: RelationInspectorProps):
   const sourceTable = tables[selectedRelation.sourceTableId];
   const targetTable = tables[selectedRelation.targetTableId];
 
+  const resolved = resolveRelationFK(selectedRelation, tables);
+  const fkTable = tables[resolved.fkTableId];
+  const fkCol = fkTable?.columns.find(c => c.id === resolved.fkColumnId);
+  const pkTable = tables[resolved.pkTableId];
+  const pkCol = pkTable?.columns.find(c => c.id === resolved.pkColumnId);
+
+  const handleSwapDirection = () => {
+    updateRelation(selectedRelation.id, {
+      sourceTableId: selectedRelation.targetTableId,
+      sourceColumnId: selectedRelation.targetColumnId,
+      targetTableId: selectedRelation.sourceTableId,
+      targetColumnId: selectedRelation.sourceColumnId,
+    });
+  };
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
@@ -44,6 +60,28 @@ export function RelationInspector({ selectedRelation }: RelationInspectorProps):
           title="Delete Relationship"
         >
           <Trash2 className="size-3.5" />
+        </Button>
+      </div>
+
+      {/* FK Summary Card */}
+      <div className="flex flex-col gap-2 p-3 bg-primary/5 rounded-md border border-primary/20 text-xs">
+        <div className="flex items-center justify-between font-semibold text-primary">
+          <span>FK Constraint Location:</span>
+          <span>{fkTable?.name}.{fkCol?.name}</span>
+        </div>
+        <div className="flex items-center justify-between text-muted-foreground text-[11px]">
+          <span>References:</span>
+          <span className="font-mono text-foreground">{pkTable?.name}.{pkCol?.name}</span>
+        </div>
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleSwapDirection}
+          className="h-7 text-xs gap-1.5 mt-1 cursor-pointer w-full"
+        >
+          <ArrowLeftRight className="size-3.5" />
+          Swap Relationship Direction
         </Button>
       </div>
 

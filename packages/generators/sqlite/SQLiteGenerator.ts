@@ -1,5 +1,6 @@
 import { SchemaAST, Table, Relation } from "@/packages/schema-core";
 import { BaseGenerator } from "../base/Generator";
+import { resolveRelationFK } from "@/lib/react-flow-utils";
 
 export class SQLiteGenerator extends BaseGenerator {
   public generate(ast: SchemaAST): string {
@@ -7,7 +8,7 @@ export class SQLiteGenerator extends BaseGenerator {
 
     // Filter and sort tables to try to create dependencies first
     const tables = Object.values(ast.tables);
-    const sortedTables = this.sortTablesByDependency(tables, Object.values(ast.relations));
+    const sortedTables = this.sortTablesByDependency(tables, Object.values(ast.relations || {}));
 
     for (const table of sortedTables) {
       statements.push(this.generateTable(table, ast));
@@ -53,10 +54,12 @@ export class SQLiteGenerator extends BaseGenerator {
       }
 
       if (col.constraints.defaultValue !== undefined && col.constraints.defaultValue !== null && col.constraints.defaultValue !== "") {
+        const defVal = col.constraints.defaultValue;
         if (col.enumId && ast.enums && ast.enums[col.enumId]) {
-          colDef += ` DEFAULT '${col.constraints.defaultValue}'`;
+          const formatted = defVal.startsWith("'") ? defVal : `'${defVal}'`;
+          colDef += ` DEFAULT ${formatted}`;
         } else {
-          colDef += ` DEFAULT ${col.constraints.defaultValue}`;
+          colDef += ` DEFAULT ${defVal}`;
         }
       }
 
@@ -80,15 +83,17 @@ export class SQLiteGenerator extends BaseGenerator {
       lines.push(`  PRIMARY KEY (${pkNames})`);
     }
 
-    // 3. Table-level Foreign Keys
-    const tableRelations = Object.values(ast.relations).filter(
-      rel => rel.sourceTableId === table.id
-    );
+    // 3. Table-level Foreign Keys based on relation resolution
+    const tableRelations = Object.values(ast.relations || {}).filter(rel => {
+      const resolved = resolveRelationFK(rel, ast.tables);
+      return resolved.fkTableId === table.id;
+    });
 
     for (const rel of tableRelations) {
-      const sourceCol = table.columns.find(c => c.id === rel.sourceColumnId);
-      const targetTable = ast.tables[rel.targetTableId];
-      const targetCol = targetTable?.columns.find(c => c.id === rel.targetColumnId);
+      const resolved = resolveRelationFK(rel, ast.tables);
+      const sourceCol = table.columns.find(c => c.id === resolved.fkColumnId);
+      const targetTable = ast.tables[resolved.pkTableId];
+      const targetCol = targetTable?.columns.find(c => c.id === resolved.pkColumnId);
 
       if (sourceCol && targetTable && targetCol) {
         let fkDef = `  FOREIGN KEY (${sourceCol.name}) REFERENCES ${targetTable.name} (${targetCol.name})`;
@@ -121,35 +126,39 @@ export class SQLiteGenerator extends BaseGenerator {
     return createTable;
   }
 
-  // A simple dependency sorting helper to generate target tables before source tables
   private sortTablesByDependency(tables: Table[], relations: Relation[]): Table[] {
     const visited = new Set<string>();
     const temp = new Set<string>();
     const result: Table[] = [];
+    const tableMap = new Map(tables.map(t => [t.id, t]));
 
     const visit = (tableId: string) => {
       if (visited.has(tableId)) return;
-      if (temp.has(tableId)) {
-        return;
-      }
+      if (temp.has(tableId)) return;
 
       temp.add(tableId);
 
-      // Find tables that this table references (dependencies)
+      // Find all tables that this table DEPENDS ON (the PK tables referenced by this table's FKs)
       const dependencies = relations
-        .filter(rel => rel.sourceTableId === tableId)
-        .map(rel => rel.targetTableId);
+        .filter(rel => {
+          const resolved = resolveRelationFK(rel, tableMap as unknown as Record<string, Table>);
+          return resolved.fkTableId === tableId;
+        })
+        .map(rel => {
+          const resolved = resolveRelationFK(rel, tableMap as unknown as Record<string, Table>);
+          return resolved.pkTableId;
+        });
 
       for (const depId of dependencies) {
-        if (depId !== tableId && tables.some(t => t.id === depId)) {
+        if (depId !== tableId && tableMap.has(depId)) {
           visit(depId);
         }
       }
 
       temp.delete(tableId);
       visited.add(tableId);
-      
-      const tbl = tables.find(t => t.id === tableId);
+
+      const tbl = tableMap.get(tableId);
       if (tbl) result.push(tbl);
     };
 

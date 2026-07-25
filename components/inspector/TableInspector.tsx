@@ -23,6 +23,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
 import { useDialectDataTypes } from "@/hooks/useDialectDataTypes";
+import { cn } from "@/lib/utils";
 
 
 
@@ -226,14 +227,26 @@ export function TableInspector({ selectedTable, selectedColId, setSelectedColId 
                 <TooltipProvider delay={150}>
                   <Tooltip>
                     <TooltipTrigger render={
-                      <Badge variant="secondary" className="text-[9px] px-1 py-0 uppercase shrink-0 font-mono cursor-pointer">
-                        {col.type}
+                      <Badge
+                        variant="secondary"
+                        className={cn(
+                          "text-[9px] px-1 py-0 uppercase shrink-0 font-mono cursor-pointer",
+                          col.enumId && enums[col.enumId] && "bg-violet-500/15 text-violet-500 border-violet-500/30 font-semibold"
+                        )}
+                      >
+                        {col.enumId && enums[col.enumId] ? enums[col.enumId].name : col.type}
                       </Badge>
                     } />
                     <TooltipContent side="right" className="bg-popover text-popover-foreground border shadow-md max-w-xs text-xs z-50">
                       <div className="flex flex-col gap-0.5">
-                        <span className="font-semibold text-foreground">{col.type}</span>
-                        <span className="text-[11px] text-muted-foreground">{getTypeDescription(col.type)}</span>
+                        <span className="font-semibold text-foreground">
+                          {col.enumId && enums[col.enumId] ? `Enum: ${enums[col.enumId].name}` : col.type}
+                        </span>
+                        <span className="text-[11px] text-muted-foreground">
+                          {col.enumId && enums[col.enumId]
+                            ? `Values: ${enums[col.enumId].values.join(", ")}`
+                            : getTypeDescription(col.type)}
+                        </span>
                       </div>
                     </TooltipContent>
                   </Tooltip>
@@ -323,8 +336,17 @@ export function TableInspector({ selectedTable, selectedColId, setSelectedColId 
                   }
                 }}
               >
-                <SelectTrigger className="h-8 text-xs">
-                  <SelectValue placeholder="Select type" />
+                <SelectTrigger className="h-8 text-xs font-mono">
+                  <SelectValue placeholder="Select type">
+                    {selectedColEnum ? (
+                      <span className="flex items-center gap-1.5 text-violet-500 font-semibold">
+                        <List className="size-3 shrink-0" />
+                        {selectedColEnum.name}
+                      </span>
+                    ) : (
+                      selectedCol.type
+                    )}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent className="max-h-72 w-[var(--radix-select-trigger-width)] min-w-[220px] max-w-[300px] overflow-y-auto z-50">
                   {/* Enum Types Group */}
@@ -337,6 +359,7 @@ export function TableInspector({ selectedTable, selectedColId, setSelectedColId 
                         <SelectItem
                           key={`enum:${e.id}`}
                           value={`enum:${e.id}`}
+                          textValue={e.name}
                           className="text-xs cursor-pointer py-1.5"
                         >
                           <div className="flex items-center justify-between w-full gap-2 min-w-0">
@@ -409,85 +432,128 @@ export function TableInspector({ selectedTable, selectedColId, setSelectedColId 
             </div>
 
 
-            <div className="flex flex-col gap-2">
-              <Label className="text-xs">Default Value</Label>
-              {selectedColEnum ? (
-                /* Enum columns: restricted dropdown of enum values only */
-                <Select
-                  value={selectedCol.constraints.defaultValue || "__none__"}
-                  onValueChange={(val) => updateColumn(selectedTable.id, selectedCol.id, {
-                    constraints: { ...selectedCol.constraints, defaultValue: val === "__none__" ? "" : val }
-                  })}
-                >
-                  <SelectTrigger className="h-8 text-xs font-mono">
-                    <SelectValue placeholder="Select default..." />
-                  </SelectTrigger>
-                  <SelectContent className="z-50">
-                    <SelectItem value="__none__" className="text-xs cursor-pointer text-muted-foreground italic">
-                      No default
-                    </SelectItem>
-                    {selectedColEnum.values.map(v => (
-                      <SelectItem key={v} value={v} className="text-xs cursor-pointer font-mono">
-                        {v}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              ) : (
-                /* Non-enum columns: free-text input */
-                <Input 
-                  value={selectedCol.constraints.defaultValue || ""}
-                  onChange={(e) => updateColumn(selectedTable.id, selectedCol.id, {
-                    constraints: { ...selectedCol.constraints, defaultValue: e.target.value }
-                  })}
-                  className="h-8 text-xs font-mono"
-                  placeholder="NULL, CURRENT_TIMESTAMP..."
-                />
-              )}
-            </div>
+            {(() => {
+              const isBooleanType = ["BOOLEAN", "BOOL", "TINYINT(1)"].includes(selectedCol.type.toUpperCase());
+              const hasDefaultValue = Boolean(
+                selectedCol.constraints.defaultValue !== undefined &&
+                selectedCol.constraints.defaultValue !== null &&
+                selectedCol.constraints.defaultValue.trim() !== ""
+              );
 
-            {/* Constraints Toggles */}
-            <div className="flex flex-col gap-2.5 pt-2">
-              <div className="flex items-center justify-between">
-                <Label className="text-xs cursor-pointer">Primary Key</Label>
-                <Switch 
-                  checked={selectedCol.constraints.isPrimaryKey}
-                  onCheckedChange={(val) => updateColumn(selectedTable.id, selectedCol.id, {
-                    constraints: { ...selectedCol.constraints, isPrimaryKey: val }
-                  })}
-                />
-              </div>
+              return (
+                <>
+                  <div className="flex flex-col gap-2">
+                    <Label className="text-xs">Default Value</Label>
+                    {selectedColEnum ? (
+                      /* Enum columns: restricted dropdown of enum values only */
+                      <Select
+                        value={selectedCol.constraints.defaultValue || "__none__"}
+                        onValueChange={(val) => updateColumn(selectedTable.id, selectedCol.id, {
+                          constraints: { ...selectedCol.constraints, defaultValue: val === "__none__" ? "" : val }
+                        })}
+                      >
+                        <SelectTrigger className="h-8 text-xs font-mono">
+                          <SelectValue placeholder="Select default..." />
+                        </SelectTrigger>
+                        <SelectContent className="z-50">
+                          <SelectItem value="__none__" className="text-xs cursor-pointer text-muted-foreground italic">
+                            No default
+                          </SelectItem>
+                          {selectedColEnum.values.map(v => (
+                            <SelectItem key={v} value={v} className="text-xs cursor-pointer font-mono">
+                              {v}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    ) : isBooleanType ? (
+                      /* Boolean columns: restricted dropdown of TRUE or FALSE */
+                      <Select
+                        value={selectedCol.constraints.defaultValue ? selectedCol.constraints.defaultValue.toUpperCase() : "__none__"}
+                        onValueChange={(val) => updateColumn(selectedTable.id, selectedCol.id, {
+                          constraints: { ...selectedCol.constraints, defaultValue: val === "__none__" ? "" : val }
+                        })}
+                      >
+                        <SelectTrigger className="h-8 text-xs font-mono">
+                          <SelectValue placeholder="Select boolean default..." />
+                        </SelectTrigger>
+                        <SelectContent className="z-50">
+                          <SelectItem value="__none__" className="text-xs cursor-pointer text-muted-foreground italic">
+                            No default
+                          </SelectItem>
+                          <SelectItem value="TRUE" className="text-xs cursor-pointer font-mono">
+                            TRUE
+                          </SelectItem>
+                          <SelectItem value="FALSE" className="text-xs cursor-pointer font-mono">
+                            FALSE
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      /* Non-enum, non-boolean columns: free-text input */
+                      <Input 
+                        value={selectedCol.constraints.defaultValue || ""}
+                        onChange={(e) => updateColumn(selectedTable.id, selectedCol.id, {
+                          constraints: { ...selectedCol.constraints, defaultValue: e.target.value }
+                        })}
+                        className="h-8 text-xs font-mono"
+                        placeholder="NULL, CURRENT_TIMESTAMP..."
+                      />
+                    )}
+                  </div>
 
-              <div className="flex items-center justify-between">
-                <Label className="text-xs cursor-pointer">Nullable</Label>
-                <Switch 
-                  checked={selectedCol.constraints.isNullable}
-                  onCheckedChange={(val) => updateColumn(selectedTable.id, selectedCol.id, {
-                    constraints: { ...selectedCol.constraints, isNullable: val }
-                  })}
-                />
-              </div>
+                  {/* Constraints Toggles */}
+                  <div className="flex flex-col gap-2.5 pt-2">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs cursor-pointer">Primary Key</Label>
+                      <Switch 
+                        checked={selectedCol.constraints.isPrimaryKey}
+                        onCheckedChange={(val) => updateColumn(selectedTable.id, selectedCol.id, {
+                          constraints: { ...selectedCol.constraints, isPrimaryKey: val }
+                        })}
+                      />
+                    </div>
 
-              <div className="flex items-center justify-between">
-                <Label className="text-xs cursor-pointer">Unique</Label>
-                <Switch 
-                  checked={selectedCol.constraints.isUnique}
-                  onCheckedChange={(val) => updateColumn(selectedTable.id, selectedCol.id, {
-                    constraints: { ...selectedCol.constraints, isUnique: val }
-                  })}
-                />
-              </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex flex-col">
+                        <Label className="text-xs cursor-pointer">Nullable</Label>
+                        {hasDefaultValue && (
+                          <span className="text-[9px] text-amber-500 font-medium">
+                            Not Null (Default set)
+                          </span>
+                        )}
+                      </div>
+                      <Switch 
+                        checked={selectedCol.constraints.isNullable && !hasDefaultValue}
+                        disabled={hasDefaultValue}
+                        onCheckedChange={(val) => updateColumn(selectedTable.id, selectedCol.id, {
+                          constraints: { ...selectedCol.constraints, isNullable: val }
+                        })}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs cursor-pointer">Unique</Label>
+                      <Switch 
+                        checked={selectedCol.constraints.isUnique}
+                        onCheckedChange={(val) => updateColumn(selectedTable.id, selectedCol.id, {
+                          constraints: { ...selectedCol.constraints, isUnique: val }
+                        })}
+                      />
+                    </div>
 
-              <div className="flex items-center justify-between">
-                <Label className="text-xs cursor-pointer">Auto Increment</Label>
-                <Switch 
-                  checked={selectedCol.constraints.isAutoIncrement}
-                  onCheckedChange={(val) => updateColumn(selectedTable.id, selectedCol.id, {
-                    constraints: { ...selectedCol.constraints, isAutoIncrement: val }
-                  })}
-                />
-              </div>
-            </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs cursor-pointer">Auto Increment</Label>
+                      <Switch 
+                        checked={selectedCol.constraints.isAutoIncrement}
+                        onCheckedChange={(val) => updateColumn(selectedTable.id, selectedCol.id, {
+                          constraints: { ...selectedCol.constraints, isAutoIncrement: val }
+                        })}
+                      />
+                    </div>
+                  </div>
+                </>
+              );
+            })()}
           </CardContent>
         </Card>
       )}

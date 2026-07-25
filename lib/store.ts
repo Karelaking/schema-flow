@@ -334,13 +334,24 @@ export const useStore = create<ProjectStore>((set, get) => ({
 
       const newCols = table.columns.map(col => {
         if (col.id === colId) {
+          const mergedConstraints = {
+            ...col.constraints,
+            ...(updates.constraints || {})
+          };
+
+          // If defaultValue is provided and non-empty, automatically set isNullable to false
+          const hasDefault = mergedConstraints.defaultValue !== undefined &&
+            mergedConstraints.defaultValue !== null &&
+            mergedConstraints.defaultValue.trim() !== "";
+
+          if (hasDefault) {
+            mergedConstraints.isNullable = false;
+          }
+
           return {
             ...col,
             ...updates,
-            constraints: {
-              ...col.constraints,
-              ...(updates.constraints || {})
-            }
+            constraints: mergedConstraints
           };
         }
         return col;

@@ -23,6 +23,17 @@ export const dbTables = sqliteTable("db_tables", {
   positionY: real("position_y").notNull(),
 });
 
+export const dbEnums = sqliteTable("db_enums", {
+  id: text("id").primaryKey(),
+  projectId: text("project_id")
+    .notNull()
+    .references(() => projects.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  valuesJson: text("values_json").notNull(),
+  description: text("description"),
+  color: text("color"),
+});
+
 export const dbColumns = sqliteTable("db_columns", {
   id: text("id").primaryKey(),
   tableId: text("table_id")
@@ -38,6 +49,7 @@ export const dbColumns = sqliteTable("db_columns", {
   checkConstraint: text("check_constraint"),
   comment: text("comment"),
   sortOrder: integer("sort_order").notNull().default(0),
+  enumId: text("enum_id"),
 });
 
 export const dbRelations = sqliteTable("db_relations", {
@@ -72,6 +84,14 @@ export const dbIndexes = sqliteTable("db_indexes", {
 export const projectsRelations = relations(projects, ({ many }) => ({
   tables: many(dbTables),
   relations: many(dbRelations),
+  enums: many(dbEnums),
+}));
+
+export const dbEnumsRelations = relations(dbEnums, ({ one }) => ({
+  project: one(projects, {
+    fields: [dbEnums.projectId],
+    references: [projects.id],
+  }),
 }));
 
 export const dbTablesRelations = relations(dbTables, ({ one, many }) => ({
@@ -111,3 +131,4 @@ export const dbIndexesRelations = relations(dbIndexes, ({ one }) => ({
     references: [dbTables.id],
   }),
 }));
+
