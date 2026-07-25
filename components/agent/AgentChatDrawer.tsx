@@ -13,6 +13,8 @@ import {
   Zap,
   AlertCircle,
   Wrench,
+  Target,
+  Brain,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAIStore } from "@/lib/ai-store";
@@ -23,6 +25,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { ProviderSettingsModal } from "./ProviderSettingsModal";
 import { CustomRulesModal } from "./CustomRulesModal";
 import { DiffPreviewCard } from "./DiffPreviewCard";
+import { OrchestrationProgress } from "./OrchestrationProgress";
 
 // ---------------------------------------------------------------------------
 // Quick Action Chips
@@ -167,10 +170,15 @@ export function AgentChatDrawer({ className, style }: AgentChatDrawerProps) {
   const apiKeys = useAIStore((s) => s.apiKeys);
   const availableModels = useAIStore((s) => s.availableModels);
   const pendingPatch = useAIStore((s) => s.pendingPatch);
+  const isGoalMode = useAIStore((s) => s.isGoalMode);
+  const toggleGoalMode = useAIStore((s) => s.toggleGoalMode);
+  const currentPhase = useAIStore((s) => s.currentPhase);
+  const auditReport = useAIStore((s) => s.auditReport);
   const sendMessage = useAIStore((s) => s.sendMessage);
   const clearChat = useAIStore((s) => s.clearChat);
   const clearError = useAIStore((s) => s.clearError);
   const hydrate = useAIStore((s) => s.hydrate);
+  const loadProjectMemoryForCurrentProject = useAIStore((s) => s.loadProjectMemoryForCurrentProject);
 
   // Get current schema from live store
   const projectId = useStore((s) => s.projectId);
@@ -194,10 +202,17 @@ export function AgentChatDrawer({ className, style }: AgentChatDrawerProps) {
     hydrate();
   }, [hydrate]);
 
+  // Load project memory automatically when active project changes
+  useEffect(() => {
+    if (projectId) {
+      loadProjectMemoryForCurrentProject(projectId);
+    }
+  }, [projectId, loadProjectMemoryForCurrentProject]);
+
   // Auto-scroll to bottom on new messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, pendingPatch]);
+  }, [messages, pendingPatch, currentPhase]);
 
   // Auto-resize textarea
   useEffect(() => {
@@ -283,6 +298,26 @@ export function AgentChatDrawer({ className, style }: AgentChatDrawerProps) {
               <Tooltip>
                 <TooltipTrigger render={
                   <button
+                    onClick={toggleGoalMode}
+                    className={`p-1.5 rounded-md transition-colors cursor-pointer ${
+                      isGoalMode
+                        ? "bg-emerald-500/15 text-emerald-600 hover:bg-emerald-500/25"
+                        : "hover:bg-muted text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    <Target className="size-3.5" />
+                  </button>
+                } />
+                <TooltipContent side="bottom">
+                  <p className="text-xs">
+                    {isGoalMode ? "Autonomous Goal Mode (ON)" : "Standard Mode (OFF)"}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger render={
+                  <button
                     onClick={() => setRulesOpen(true)}
                     className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                   >
@@ -314,7 +349,7 @@ export function AgentChatDrawer({ className, style }: AgentChatDrawerProps) {
                     <Trash2 className="size-3.5" />
                   </button>
                 } />
-                <TooltipContent side="bottom"><p className="text-xs">Clear Chat</p></TooltipContent>
+                <TooltipContent side="bottom"><p className="text-xs">Clear Project Memory</p></TooltipContent>
               </Tooltip>
 
               <Tooltip>
@@ -334,6 +369,13 @@ export function AgentChatDrawer({ className, style }: AgentChatDrawerProps) {
 
         {/* ---- Messages ---- */}
         <div className="flex-1 overflow-y-auto min-h-0">
+          {/* Real-time Orchestration Progress & Audit Report */}
+          <OrchestrationProgress
+            phase={currentPhase}
+            auditReport={auditReport}
+            isGoalMode={isGoalMode}
+          />
+
           {messages.length === 0 ? (
             /* Empty State */
             <div className="flex flex-col items-center justify-center h-full px-4 py-8">

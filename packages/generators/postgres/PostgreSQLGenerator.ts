@@ -1,4 +1,4 @@
-import { SchemaAST, Table, Relation } from "@/packages/schema-core";
+import { SchemaAST, Table } from "@/packages/schema-core";
 import { BaseGenerator } from "../base/Generator";
 
 export class PostgreSQLGenerator extends BaseGenerator {

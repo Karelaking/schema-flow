@@ -22,6 +22,9 @@ import {
 } from "./ai/types";
 import { parseOpenAIStream } from "./ai/provider-client";
 import { runInSandbox, getToolResultMessages } from "./ai/sandbox";
+import { loadProjectMemory, saveProjectMemory, clearProjectMemory } from "./ai/agent-memory";
+import { runAutonomousOrchestration, type OrchestratorPhase } from "./ai/orchestrator";
+import type { SchemaAuditReport } from "./ai/evaluator";
 import type { SchemaAST } from "@/packages/schema-core";
 import { useStore } from "./store";
 
@@ -35,6 +38,7 @@ const LS_KEYS = {
   provider: "schema-flow:ai-provider",
   model: "schema-flow:ai-model",
   customEndpoint: "schema-flow:ai-custom-endpoint",
+  goalMode: "schema-flow:ai-goal-mode",
 } as const;
 
 // ---------------------------------------------------------------------------
@@ -54,6 +58,11 @@ export interface AIStore {
   apiKeys: Record<string, string>;
   customEndpoint: string;
 
+  // Autonomous Goal Mode & Orchestrator State
+  isGoalMode: boolean;
+  currentPhase: OrchestratorPhase | null;
+  auditReport: SchemaAuditReport | null;
+
   // Live models from OpenRouter
   availableModels: LiveModel[];
   isLoadingModels: boolean;
@@ -64,11 +73,19 @@ export interface AIStore {
   // Sandbox preview
   pendingPatch: SandboxResult | null;
 
+  // Active Project Memory Context
+  activeProjectId: string | null;
+
   // Actions — UI
   toggleDrawer: () => void;
   setOpen: (open: boolean) => void;
   clearChat: () => void;
   clearError: () => void;
+  toggleGoalMode: () => void;
+
+  // Actions — Memory
+  loadProjectMemoryForCurrentProject: (projectId: string) => void;
+  clearProjectMemoryForCurrentProject: () => void;
 
   // Actions — Provider
   setProvider: (provider: AIProvider) => void;
@@ -142,20 +159,58 @@ export const useAIStore = create<AIStore>((set, get) => ({
   apiKeys: {},
   customEndpoint: "",
 
+  isGoalMode: false,
+  currentPhase: null,
+  auditReport: null,
+
   availableModels: [],
   isLoadingModels: false,
 
   customRules: [],
   pendingPatch: null,
+  activeProjectId: null,
 
   // ---- UI Actions ----
 
   toggleDrawer: () => set((s) => ({ isOpen: !s.isOpen })),
   setOpen: (open) => set({ isOpen: open }),
 
-  clearChat: () => set({ messages: [], pendingPatch: null, error: null }),
+  toggleGoalMode: () => {
+    const next = !get().isGoalMode;
+    set({ isGoalMode: next });
+    saveToLS(LS_KEYS.goalMode, next);
+  },
+
+  clearChat: () => {
+    const { activeProjectId } = get();
+    if (activeProjectId) {
+      clearProjectMemory(activeProjectId);
+    }
+    set({ messages: [], pendingPatch: null, error: null, currentPhase: null, auditReport: null });
+  },
 
   clearError: () => set({ error: null }),
+
+  // ---- Memory Actions ----
+
+  loadProjectMemoryForCurrentProject: (projectId: string) => {
+    if (!projectId) return;
+    const memory = loadProjectMemory(projectId);
+    set({
+      activeProjectId: projectId,
+      messages: memory.messages,
+      pendingPatch: null,
+      error: null,
+    });
+  },
+
+  clearProjectMemoryForCurrentProject: () => {
+    const { activeProjectId } = get();
+    if (activeProjectId) {
+      clearProjectMemory(activeProjectId);
+      set({ messages: [], pendingPatch: null, error: null, auditReport: null });
+    }
+  },
 
   // ---- Provider Actions ----
 
@@ -251,7 +306,7 @@ export const useAIStore = create<AIStore>((set, get) => ({
   // ---- Chat Action ----
 
   sendMessage: async (content, schemaAST) => {
-    const { provider, model, apiKeys, customEndpoint, customRules, messages } = get();
+    const { provider, model, apiKeys, customEndpoint, customRules, messages, isGoalMode } = get();
 
     // Create user message
     const userMessage: ChatMessage = {
@@ -261,121 +316,99 @@ export const useAIStore = create<AIStore>((set, get) => ({
       timestamp: Date.now(),
     };
 
-    const updatedMessages = [...messages, userMessage];
-    set({ messages: updatedMessages, isGenerating: true, error: null, pendingPatch: null });
+    // Create assistant placeholder message for live token streaming
+    const assistantPlaceholderId = uid();
+    const assistantPlaceholder: ChatMessage = {
+      id: assistantPlaceholderId,
+      role: "assistant",
+      content: "",
+      timestamp: Date.now(),
+    };
+
+    const updatedMessages = [...messages, userMessage, assistantPlaceholder];
+    set({
+      messages: updatedMessages,
+      isGenerating: true,
+      error: null,
+      pendingPatch: null,
+      currentPhase: null,
+      auditReport: null,
+    });
+
+    let liveText = "";
 
     try {
       const apiKey = apiKeys[provider] ?? "";
+      const isFreeModel = model.endsWith(":free");
+      if (!apiKey && !isFreeModel) {
+        throw new Error("API key required. Please configure your key in AI Settings (⚙️ icon).");
+      }
 
-      // Call our API route
-      const response = await fetch("/api/agent/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": apiKey,
+      // Run Autonomous Multi-Step Orchestration Engine
+      const result = await runAutonomousOrchestration({
+        prompt: content,
+        schemaAST,
+        messages: updatedMessages.slice(0, -1),
+        customRules,
+        provider,
+        model,
+        apiKey,
+        customEndpoint,
+        isGoalMode,
+        onPhaseUpdate: (phase) => {
+          set({ currentPhase: phase });
         },
-        body: JSON.stringify({
-          messages: updatedMessages,
-          schemaAST,
-          customRules,
-          provider,
-          model,
-          customEndpoint,
-        }),
+        onTextChunk: (chunk) => {
+          liveText += chunk;
+          set((s) => ({
+            messages: s.messages.map((m) =>
+              m.id === assistantPlaceholderId ? { ...m, content: liveText } : m
+            ),
+          }));
+        },
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error ?? `Request failed with status ${response.status}`);
-      }
-
-      if (!response.body) {
-        throw new Error("No response body received");
-      }
-
-      // Parse the SSE stream
-      const reader = response.body.getReader();
-      let assistantContent = "";
-      const collectedToolCalls: ToolCall[] = [];
-
-      // Create a placeholder assistant message
-      const assistantMessage: ChatMessage = {
-        id: uid(),
-        role: "assistant",
-        content: "",
-        timestamp: Date.now(),
-      };
-
-      const messagesWithAssistant = [...updatedMessages, assistantMessage];
-      set({ messages: messagesWithAssistant });
-
-      for await (const chunk of parseOpenAIStream(reader)) {
-        switch (chunk.type) {
-          case "text":
-            assistantContent += chunk.content ?? "";
-            // Update the assistant message in place
-            set((s) => ({
-              messages: s.messages.map((m) =>
-                m.id === assistantMessage.id
-                  ? { ...m, content: assistantContent }
-                  : m
-              ),
-            }));
-            break;
-
-          case "tool_call":
-            if (chunk.toolCall) {
-              collectedToolCalls.push(chunk.toolCall);
+      // Update the assistant placeholder message in place with full response text and tool call badges
+      const finalMessages = get().messages.map((m) =>
+        m.id === assistantPlaceholderId
+          ? {
+              ...m,
+              content: result.assistantResponse,
+              toolCalls: result.sandboxResult ? result.sandboxResult.diffs.map((d, i) => ({
+                id: `tc-${i}`,
+                type: "function" as const,
+                function: { name: d.type, arguments: "{}" },
+              })) : undefined,
             }
-            break;
+          : m
+      );
 
-          case "error":
-            throw new Error(chunk.error ?? "Stream error");
-
-          case "done":
-            break;
-        }
+      // If tool calls produced a sandbox result, attach patch and audit report
+      if (result.sandboxResult) {
+        set({
+          messages: finalMessages,
+          pendingPatch: result.sandboxResult,
+          auditReport: result.auditReport,
+          isGenerating: false,
+        });
+      } else {
+        set({
+          messages: finalMessages,
+          auditReport: result.auditReport,
+          isGenerating: false,
+        });
       }
 
-      // If there are tool calls, run them in the sandbox
-      if (collectedToolCalls.length > 0) {
-        // Update assistant message with tool calls
-        set((s) => ({
-          messages: s.messages.map((m) =>
-            m.id === assistantMessage.id
-              ? { ...m, content: assistantContent, toolCalls: collectedToolCalls }
-              : m
-          ),
-        }));
-
-        // Execute tool calls in the isolated sandbox
-        const sandboxResult = runInSandbox(schemaAST, collectedToolCalls);
-
-        // Generate tool result messages for context
-        const toolResults = getToolResultMessages(schemaAST, collectedToolCalls);
-
-        // Add tool result messages to chat
-        const toolResultMessages: ChatMessage[] = toolResults.map((tr) => ({
-          id: uid(),
-          role: "tool" as const,
-          content: tr.result,
-          toolCallId: tr.toolCallId,
-          timestamp: Date.now(),
-        }));
-
-        set((s) => ({
-          messages: [...s.messages, ...toolResultMessages],
-          pendingPatch: sandboxResult,
-          isGenerating: false,
-        }));
-      } else {
-        set({ isGenerating: false });
+      // Save project memory
+      if (schemaAST.project?.id) {
+        saveProjectMemory(schemaAST.project.id, finalMessages, result.sandboxResult?.proposedAST);
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
       set({
         error: errorMessage,
         isGenerating: false,
+        currentPhase: null,
       });
     }
   },
@@ -406,10 +439,16 @@ export const useAIStore = create<AIStore>((set, get) => ({
       timestamp: Date.now(),
     };
 
-    set((s) => ({
-      messages: [...s.messages, approvalMsg],
+    const finalMessages = [...get().messages, approvalMsg];
+    set({
+      messages: finalMessages,
       pendingPatch: null,
-    }));
+    });
+
+    // Save project memory
+    if (proposed.project?.id) {
+      saveProjectMemory(proposed.project.id, finalMessages, proposed);
+    }
   },
 
   rejectPatch: () => {
@@ -420,10 +459,16 @@ export const useAIStore = create<AIStore>((set, get) => ({
       timestamp: Date.now(),
     };
 
-    set((s) => ({
-      messages: [...s.messages, rejectionMsg],
+    const finalMessages = [...get().messages, rejectionMsg];
+    set({
+      messages: finalMessages,
       pendingPatch: null,
-    }));
+    });
+
+    const { activeProjectId } = get();
+    if (activeProjectId) {
+      saveProjectMemory(activeProjectId, finalMessages);
+    }
   },
 
   // ---- Hydrate from localStorage ----
@@ -435,6 +480,7 @@ export const useAIStore = create<AIStore>((set, get) => ({
       provider: loadFromLS(LS_KEYS.provider, DEFAULT_PROVIDER),
       model: loadFromLS(LS_KEYS.model, DEFAULT_MODEL_ID),
       customEndpoint: loadFromLS(LS_KEYS.customEndpoint, ""),
+      isGoalMode: loadFromLS(LS_KEYS.goalMode, true),
     });
 
     // Auto-fetch models if API key is available

@@ -11,6 +11,8 @@ import { NextRequest } from "next/server";
 import { buildSystemPrompt } from "@/lib/ai/prompts";
 import { SCHEMA_TOOLS } from "@/lib/ai/tools";
 import { buildRequest } from "@/lib/ai/provider-client";
+import { queryKnowledgeBase, buildRAGPromptContext } from "@/lib/rag/rag-engine";
+import { loadProjectMemory, buildMemoryPromptContext } from "@/lib/ai/agent-memory";
 import type { AIProvider, ChatMessage, CustomRule } from "@/lib/ai/types";
 import type { SchemaAST } from "@/packages/schema-core";
 import type { ProviderMessage } from "@/lib/ai/provider-client";
@@ -47,9 +49,19 @@ export async function POST(request: NextRequest): Promise<Response> {
       );
     }
 
-    // Build the system prompt with schema context and user rules
+    // 1. Fetch RAG Context for latest user message
+    const lastUserMessage = [...messages].reverse().find((m) => m.role === "user")?.content ?? "";
     const dialect = schemaAST.settings?.dialect ?? "sqlite";
-    const systemPrompt = buildSystemPrompt(schemaAST, customRules, dialect);
+    const ragResults = queryKnowledgeBase({ query: lastUserMessage, dialect, topK: 3 });
+    const ragContext = buildRAGPromptContext(ragResults);
+
+    // 2. Fetch Project Memory Context
+    const memory = loadProjectMemory(schemaAST.project.id);
+    const memoryContext = buildMemoryPromptContext(memory);
+
+    // 3. Build the combined system prompt (Base + Memory + RAG + Custom Rules)
+    const basePrompt = buildSystemPrompt(schemaAST, customRules, dialect);
+    const systemPrompt = [basePrompt, memoryContext, ragContext].filter(Boolean).join("\n\n");
 
     // Convert ChatMessages to provider-compatible format
     const providerMessages: ProviderMessage[] = [

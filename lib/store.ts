@@ -288,12 +288,32 @@ export const useStore = create<ProjectStore>((set, get) => ({
       const table = state.tables[tableId];
       if (!table) return state;
 
+      // Find the insertion index: after the auto-id column but before
+      // the auto-generated timestamp columns (created_at / updated_at).
+      // This keeps the order: [id, ...user fields..., created_at, updated_at]
+      const columns = [...table.columns];
+      const timestampNames = new Set(["created_at", "updated_at"]);
+
+      // Find where the trailing timestamp block starts
+      let insertIndex = columns.length;
+      for (let i = columns.length - 1; i >= 0; i--) {
+        if (timestampNames.has(columns[i].name)) {
+          insertIndex = i;
+        } else {
+          break;
+        }
+      }
+
+      // If insertIndex is 0 (no id column found either), just insert at the end
+      // Otherwise insert right before the timestamps
+      columns.splice(insertIndex, 0, newCol);
+
       return {
         tables: {
           ...state.tables,
           [tableId]: {
             ...table,
-            columns: [...table.columns, newCol]
+            columns
           }
         }
       };
