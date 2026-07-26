@@ -24,6 +24,7 @@ import {
     Edit3,
     Eye,
     Wrench,
+    Table,
 } from "lucide-react";
 
 import { useStore } from "@/lib/store";
@@ -61,6 +62,8 @@ export interface HeaderMenuBarProps {
 export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }): React.ReactElement => {
     const projectId = useStore(state => state.projectId);
     const projectName = useStore(state => state.projectName);
+    const tables = useStore(state => state.tables);
+    const addTable = useStore(state => state.addTable);
     const loadProject = useStore(state => state.loadProject);
     const undo = useStore(state => state.undo);
     const redo = useStore(state => state.redo);
@@ -116,6 +119,20 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
 
     const triggerImport = (): void => {
         document.getElementById("header-menubar-import-file-input")?.click();
+    };
+
+    const handleAddTable = (): void => {
+        const x = Math.floor(Math.random() * 200) + 150;
+        const y = Math.floor(Math.random() * 200) + 150;
+
+        let count = Object.keys(tables).length + 1;
+        let name = `new_table_${count}`;
+        while (Object.values(tables).some(t => t.name === name)) {
+            count++;
+            name = `new_table_${count}`;
+        }
+
+        addTable(name, x, y);
     };
 
     return (
@@ -181,6 +198,14 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                         </DropdownMenuItem>
 
                         <DropdownMenuItem
+                            onClick={handleAddTable}
+                            className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs font-medium text-primary"
+                        >
+                            <Table className="size-3.5 text-primary" />
+                            <span>Create New Table</span>
+                        </DropdownMenuItem>
+
+                        <DropdownMenuItem
                             onClick={() => setSettingsOpen(true)}
                             className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
                         >
@@ -237,6 +262,16 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                     } />
                     <DropdownMenuContent align="start" className="w-52 bg-card border shadow-md p-1 rounded-md text-foreground z-50">
                         <DropdownMenuItem
+                            onClick={handleAddTable}
+                            className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs font-medium text-primary"
+                        >
+                            <Table className="size-3.5 text-primary" />
+                            <span>Create New Table</span>
+                        </DropdownMenuItem>
+
+                        <DropdownMenuSeparator />
+
+                        <DropdownMenuItem
                             onClick={undo}
                             disabled={past.length === 0}
                             className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
@@ -258,13 +293,28 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
 
                         <DropdownMenuSeparator />
 
-                        <DropdownMenuItem
-                            onClick={autoLayoutTables}
-                            className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
-                        >
-                            <LayoutGrid className="size-3.5 text-muted-foreground" />
-                            <span>Auto-Layout Diagram</span>
-                        </DropdownMenuItem>
+                        <DropdownMenuSub>
+                            <DropdownMenuSubTrigger className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs">
+                                <LayoutGrid className="size-3.5 text-muted-foreground" />
+                                <span>Auto-Layout Diagram</span>
+                            </DropdownMenuSubTrigger>
+                            <DropdownMenuSubContent className="w-52 bg-card border shadow-md p-1 rounded-md text-foreground z-50">
+                                <DropdownMenuItem
+                                    onClick={() => autoLayoutTables("LR")}
+                                    className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
+                                >
+                                    <LayoutGrid className="size-3.5 text-muted-foreground" />
+                                    <span>Left to Right</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onClick={() => autoLayoutTables("TB")}
+                                    className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
+                                >
+                                    <LayoutGrid className="size-3.5 text-muted-foreground" />
+                                    <span>Top to Bottom</span>
+                                </DropdownMenuItem>
+                            </DropdownMenuSubContent>
+                        </DropdownMenuSub>
                     </DropdownMenuContent>
                 </DropdownMenu>
 
@@ -391,6 +441,14 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                                 </DropdownMenuItem>
 
                                 <DropdownMenuItem
+                                    onClick={handleAddTable}
+                                    className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs font-medium text-primary"
+                                >
+                                    <Table className="size-3.5 text-primary" />
+                                    <span>Create New Table</span>
+                                </DropdownMenuItem>
+
+                                <DropdownMenuItem
                                     onClick={() => setSettingsOpen(true)}
                                     className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
                                 >
@@ -445,6 +503,16 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                             </DropdownMenuSubTrigger>
                             <DropdownMenuSubContent className="w-52 bg-card border shadow-md p-1 rounded-md text-foreground z-50">
                                 <DropdownMenuItem
+                                    onClick={handleAddTable}
+                                    className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs font-medium text-primary"
+                                >
+                                    <Table className="size-3.5 text-primary" />
+                                    <span>Create New Table</span>
+                                </DropdownMenuItem>
+
+                                <DropdownMenuSeparator />
+
+                                <DropdownMenuItem
                                     onClick={undo}
                                     disabled={past.length === 0}
                                     className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
@@ -464,13 +532,28 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
 
                                 <DropdownMenuSeparator />
 
-                                <DropdownMenuItem
-                                    onClick={autoLayoutTables}
-                                    className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
-                                >
-                                    <LayoutGrid className="size-3.5 text-muted-foreground" />
-                                    <span>Auto-Layout Diagram</span>
-                                </DropdownMenuItem>
+                                <DropdownMenuSub>
+                                    <DropdownMenuSubTrigger className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs">
+                                        <LayoutGrid className="size-3.5 text-muted-foreground" />
+                                        <span>Auto-Layout Diagram</span>
+                                    </DropdownMenuSubTrigger>
+                                    <DropdownMenuSubContent className="w-52 bg-card border shadow-md p-1 rounded-md text-foreground z-50">
+                                        <DropdownMenuItem
+                                            onClick={() => autoLayoutTables("LR")}
+                                            className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
+                                        >
+                                            <LayoutGrid className="size-3.5 text-muted-foreground" />
+                                            <span>Left to Right</span>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            onClick={() => autoLayoutTables("TB")}
+                                            className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
+                                        >
+                                            <LayoutGrid className="size-3.5 text-muted-foreground" />
+                                            <span>Top to Bottom</span>
+                                        </DropdownMenuItem>
+                                    </DropdownMenuSubContent>
+                                </DropdownMenuSub>
                             </DropdownMenuSubContent>
                         </DropdownMenuSub>
 

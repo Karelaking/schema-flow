@@ -48,8 +48,8 @@ export const CanvasInner: React.FC = (): React.ReactElement => {
     );
 
     const edges = useMemo(
-        () => convertRelationsToEdges(activeRelations, selectedRelationId),
-        [activeRelations, selectedRelationId]
+        () => convertRelationsToEdges(activeRelations, activeTables, selectedRelationId),
+        [activeRelations, activeTables, selectedRelationId]
     );
 
     const onNodesChange = useCallback(

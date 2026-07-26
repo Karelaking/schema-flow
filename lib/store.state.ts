@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { Table, Relation, Column, Index, IndexColumn, DatabaseDialect, SchemaAST, EnumDefinition } from "@/packages/schema-core";
 import { CanvasHistoryState, ProjectStore } from "@/types/store.type";
+import { getLayoutedElements, LayoutDirection } from "@/lib/auto-layout";
 
 /**
  * Zustand hook for global project state management.
@@ -281,32 +282,14 @@ export const useStore = create<ProjectStore>((set, get) => ({
         }));
     },
 
-    autoLayoutTables: (): void => {
+    autoLayoutTables: (direction: LayoutDirection = "LR"): void => {
         get().pushHistory();
-        const { tables } = get();
-        const tableList = Object.values(tables);
-        if (tableList.length === 0) {
+        const { tables, relations } = get();
+        if (Object.keys(tables).length === 0) {
             return;
         }
 
-        const columnsCount = Math.ceil(Math.sqrt(tableList.length));
-        const spacingX = 350;
-        const spacingY = 300;
-
-        const updatedTables: Record<string, Table> = {};
-
-        tableList.forEach((table, index) => {
-            const col = index % columnsCount;
-            const row = Math.floor(index / columnsCount);
-            updatedTables[table.id] = {
-                ...table,
-                position: {
-                    x: 100 + col * spacingX,
-                    y: 100 + row * spacingY,
-                },
-            };
-        });
-
+        const updatedTables = getLayoutedElements(tables, relations, direction);
         set({ tables: updatedTables });
     },
 

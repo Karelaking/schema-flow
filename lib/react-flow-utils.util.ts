@@ -73,23 +73,50 @@ export function convertTablesToNodes(
 
 /**
  * Converts Schema AST Relation records into React Flow Edges with cardinality styles.
+ * Automatically resolves table and column references by ID or name to prevent missing handle edge failures.
  * @param relations Record of relations.
+ * @param tables Record of tables.
  * @param selectedRelationId Currently selected relation ID.
  * @returns Array of React Flow RelationEdges.
  */
 export function convertRelationsToEdges(
     relations: Record<string, Relation>,
+    tables: Record<string, Table> = {},
     selectedRelationId?: string
 ): RelationEdge[] {
-    return Object.values(relations).map(rel => {
+    if (!relations) {
+        return [];
+    }
+
+    const edges: RelationEdge[] = [];
+
+    for (const rel of Object.values(relations)) {
+        if (!rel || !rel.sourceTableId || !rel.targetTableId) {
+            continue;
+        }
+
         const isSelected = rel.id === selectedRelationId;
 
-        return {
+        // Resolve source and target table objects (by ID or name)
+        const sourceTable = tables[rel.sourceTableId] || Object.values(tables).find(t => t.name === rel.sourceTableId);
+        const targetTable = tables[rel.targetTableId] || Object.values(tables).find(t => t.name === rel.targetTableId);
+
+        const sourceTableId = sourceTable ? sourceTable.id : rel.sourceTableId;
+        const targetTableId = targetTable ? targetTable.id : rel.targetTableId;
+
+        // Resolve source and target columns (by ID or name)
+        const sourceCol = sourceTable?.columns.find(c => c.id === rel.sourceColumnId || c.name === rel.sourceColumnId);
+        const targetCol = targetTable?.columns.find(c => c.id === rel.targetColumnId || c.name === rel.targetColumnId);
+
+        const sourceColId = sourceCol ? sourceCol.id : rel.sourceColumnId;
+        const targetColId = targetCol ? targetCol.id : rel.targetColumnId;
+
+        edges.push({
             id: rel.id,
-            source: rel.sourceTableId,
-            target: rel.targetTableId,
-            sourceHandle: `col-right-${rel.sourceColumnId}`,
-            targetHandle: `col-left-${rel.targetColumnId}`,
+            source: sourceTableId,
+            target: targetTableId,
+            sourceHandle: `col-right-${sourceColId}`,
+            targetHandle: `col-left-${targetColId}`,
             type: "smoothstep",
             selected: isSelected,
             animated: isSelected,
@@ -103,6 +130,8 @@ export function convertRelationsToEdges(
                 height: 15,
                 color: isSelected ? "#3b82f6" : "#64748b"
             }
-        };
-    });
+        });
+    }
+
+    return edges;
 }

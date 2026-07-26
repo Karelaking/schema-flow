@@ -95,14 +95,15 @@ export async function saveProjectAction(id: string, ast: SchemaAST): Promise<{ s
 }
 
 /**
- * Server Action: Permanently delete a project by ID.
+ * Server Action: Permanently delete a project by ID with 2-step verification.
  * @param id Unique project identifier.
+ * @param confirmationName Typed project name for two-step server verification.
  * @returns Success flag or error details.
  */
-export async function deleteProjectAction(id: string): Promise<{ success: boolean; error?: string }> {
+export async function deleteProjectAction(id: string, confirmationName?: string): Promise<{ success: boolean; error?: string }> {
     try {
         const db = getDbService();
-        await db.deleteProject(id);
+        await db.deleteProject(id, confirmationName);
         return { success: true };
     }
     catch (error: unknown) {

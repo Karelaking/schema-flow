@@ -255,12 +255,26 @@ export class DatabaseService {
         if (projectRow.enums) {
             for (const enumItem of projectRow.enums) {
                 let values: string[] = [];
-                try {
-                    values = JSON.parse(enumItem.valuesJson);
+                if (enumItem.valuesJson) {
+                    try {
+                        const parsed = JSON.parse(enumItem.valuesJson);
+                        if (Array.isArray(parsed)) {
+                            values = parsed.map(v => String(v));
+                        }
+                        else if (typeof parsed === "string") {
+                            values = parsed.split(",").map(v => v.trim().replace(/^['"]|['"]$/g, "")).filter(Boolean);
+                        }
+                    }
+                    catch {
+                        const cleaned = enumItem.valuesJson
+                            .replace(/^\[|\]$/g, "")
+                            .split(",")
+                            .map(v => v.trim().replace(/^['"]|['"]$/g, ""))
+                            .filter(Boolean);
+                        values = cleaned;
+                    }
                 }
-                catch {
-                    values = [];
-                }
+
                 schemaEnums[enumItem.id] = {
                     id: enumItem.id,
                     name: enumItem.name,
@@ -329,20 +343,41 @@ export class DatabaseService {
             .where(eq(schema.dbTables.projectId, id));
 
         const existingTableIds = existingTables.map(t => t.id);
-
         const payloadTableCount = Object.keys(ast.tables || {}).length;
+
         if (payloadTableCount === 0 && existingTableIds.length > 0) {
             console.warn(`[DatabaseService] Safeguard triggered: Skipping overwrite for project ${id} because incoming AST has 0 tables while DB has ${existingTableIds.length} tables.`);
             return;
         }
 
+        const existingRelationsCount = (await this.db
+            .select({ id: schema.dbRelations.id })
+            .from(schema.dbRelations)
+            .where(eq(schema.dbRelations.projectId, id))).length;
+
+        const existingEnumsCount = (await this.db
+            .select({ id: schema.dbEnums.id })
+            .from(schema.dbEnums)
+            .where(eq(schema.dbEnums.projectId, id))).length;
+
+        const payloadRelationCount = Object.keys(ast.relations || {}).length;
+        const payloadEnumCount = Object.keys(ast.enums || {}).length;
+
         if (existingTableIds.length > 0) {
             await this.db.delete(schema.dbIndexes).where(inArray(schema.dbIndexes.tableId, existingTableIds));
             await this.db.delete(schema.dbColumns).where(inArray(schema.dbColumns.tableId, existingTableIds));
         }
+
         await this.db.delete(schema.dbTables).where(eq(schema.dbTables.projectId, id));
-        await this.db.delete(schema.dbRelations).where(eq(schema.dbRelations.projectId, id));
-        await this.db.delete(schema.dbEnums).where(eq(schema.dbEnums.projectId, id));
+
+        // Delete relations and enums only if payload provides update or project is truly empty
+        if (payloadRelationCount > 0 || existingRelationsCount === 0) {
+            await this.db.delete(schema.dbRelations).where(eq(schema.dbRelations.projectId, id));
+        }
+
+        if (payloadEnumCount > 0 || existingEnumsCount === 0) {
+            await this.db.delete(schema.dbEnums).where(eq(schema.dbEnums.projectId, id));
+        }
 
         for (const table of Object.values(ast.tables)) {
             await this.db.insert(schema.dbTables).values({
@@ -419,8 +454,32 @@ export class DatabaseService {
         }
     }
 
-    public async deleteProject(id: string): Promise<void> {
+    public async deleteProject(id: string, confirmationName?: string): Promise<void> {
         await this.init();
+
+        // Step 1 Server Verification: Retrieve authoritative project record from DB
+        const existing = await this.getProject(id);
+        if (!existing) {
+            throw new Error("Project not found");
+        }
+
+        // Step 2 Server Verification: Validate exact project name confirmation match
+        if (!confirmationName || confirmationName.trim() !== existing.project.name.trim()) {
+            throw new Error(`Server Verification Error: Two-step verification failed. Confirmation name '${confirmationName}' does not match target project name '${existing.project.name}'.`);
+        }
+
+        // Execution: Perform verified deletion
+        const tables = await this.db.select({ id: schema.dbTables.id }).from(schema.dbTables).where(eq(schema.dbTables.projectId, id));
+        const tableIds = tables.map(t => t.id);
+
+        if (tableIds.length > 0) {
+            await this.db.delete(schema.dbIndexes).where(inArray(schema.dbIndexes.tableId, tableIds));
+            await this.db.delete(schema.dbColumns).where(inArray(schema.dbColumns.tableId, tableIds));
+        }
+
+        await this.db.delete(schema.dbTables).where(eq(schema.dbTables.projectId, id));
+        await this.db.delete(schema.dbRelations).where(eq(schema.dbRelations.projectId, id));
+        await this.db.delete(schema.dbEnums).where(eq(schema.dbEnums.projectId, id));
         await this.db.delete(schema.projects).where(eq(schema.projects.id, id));
     }
 

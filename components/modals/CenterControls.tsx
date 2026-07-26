@@ -77,7 +77,7 @@ export const CenterControls: React.FC<CenterControlsProps> = ({ className = "" }
             <Button
                 variant="ghost"
                 size="icon"
-                onClick={autoLayoutTables}
+                onClick={() => autoLayoutTables()}
                 title="Auto Layout Diagram"
                 className="size-8 cursor-pointer"
             >

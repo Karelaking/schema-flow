@@ -65,7 +65,7 @@ export interface ProjectStore {
     updateTablePosition: (id: string, x: number, y: number) => void;
     deleteTable: (id: string) => void;
     duplicateTable: (id: string) => void;
-    autoLayoutTables: () => void;
+    autoLayoutTables: (direction?: "LR" | "TB") => void;
 
     // Column actions
     addColumn: (tableId: string, col: Omit<Column, "id">) => string;

@@ -56,12 +56,13 @@ export const WorkspaceClient: React.FC<WorkspaceClientProps> = ({ initialProject
     const isLoadedRef = useRef(false);
 
     useEffect(() => {
+        isLoadedRef.current = false;
         if (initialProject) {
             loadProject(initialProject);
             setIsEmpty(false);
             setTimeout(() => {
                 isLoadedRef.current = true;
-            }, 100);
+            }, 300);
         }
         else if (initialProjectsList.length === 0) {
             setIsEmpty(true);
@@ -97,7 +98,7 @@ export const WorkspaceClient: React.FC<WorkspaceClientProps> = ({ initialProject
                 enums,
             };
             await saveProjectAction(projectId, ast);
-        }, 800);
+        }, 3000);
 
         return () => clearTimeout(timer);
     }, [projectId, projectName, projectDescription, dialect, theme, autoAddId, autoAddTimestamps, tables, relations, enums]);

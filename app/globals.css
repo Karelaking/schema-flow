@@ -165,3 +165,17 @@
     display: none;
   }
 }
+
+/* React Flow Node Position Transition Animation */
+.react-flow__node {
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.react-flow__node.dragging,
+.react-flow__node:active {
+  transition: none !important;
+}
+
+.react-flow__edge-path {
+  transition: stroke 0.3s ease;
+}
