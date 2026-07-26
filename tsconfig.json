@@ -20,6 +20,9 @@
     ],
     "paths": {
       "@/*": ["./*"],
+      "@schema-flow/schema-core": ["./packages/schema-core/index.ts"],
+      "@schema-flow/generators": ["./packages/generators/index.ts"],
+      "@schema-flow/validation": ["./packages/validation/index.ts"],
       "@/packages/schema-core": ["./packages/schema-core/index.ts"],
       "@/packages/generators": ["./packages/generators/index.ts"],
       "@/packages/validation": ["./packages/validation/index.ts"],

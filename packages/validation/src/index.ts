@@ -1,4 +1,4 @@
-import { SchemaAST, Table, Relation } from "@schema-flow/schema-core";
+import { SchemaAST } from "@/packages/schema-core";
 
 export interface ValidationError {
   type: 'error' | 'warning';

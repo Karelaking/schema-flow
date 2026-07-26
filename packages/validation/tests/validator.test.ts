@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { SchemaValidator } from "../src/index";
-import { SchemaAST } from "@schema-flow/schema-core";
+import { SchemaAST } from "@/packages/schema-core";
 
 describe("SchemaValidator", () => {
   const validator = new SchemaValidator();

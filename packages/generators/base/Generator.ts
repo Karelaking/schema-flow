@@ -1,13 +1,15 @@
+export * from "./base.generator";
+
 import { SchemaAST } from "@/packages/schema-core";
+import { CodeGenerator, formatSqlComment } from "./base.generator";
 
-export interface CodeGenerator {
-  generate(ast: SchemaAST): string;
-}
-
+/**
+ * BaseGenerator adapter maintaining class compatibility where required.
+ */
 export abstract class BaseGenerator implements CodeGenerator {
-  protected formatComment(text: string): string {
-    return `-- ${text}`;
-  }
+    protected formatComment(text: string): string {
+        return formatSqlComment(text);
+    }
 
-  public abstract generate(ast: SchemaAST): string;
+    public abstract generate(ast: SchemaAST): string;
 }

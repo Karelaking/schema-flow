@@ -1,21 +1,14 @@
+export * from "./generator.factory";
+
 import { DatabaseDialect } from "@/packages/schema-core";
 import { CodeGenerator } from "../base/Generator";
-import { SQLiteGenerator } from "../sqlite/SQLiteGenerator";
-import { PostgreSQLGenerator } from "../postgres/PostgreSQLGenerator";
-import { MySQLGenerator } from "../mysql/MySQLGenerator";
+import { getGeneratorForDialect } from "./generator.factory";
 
+/**
+ * Class wrapper for getGeneratorForDialect for backward compatibility.
+ */
 export class GeneratorFactory {
-  private static generators: Record<DatabaseDialect, CodeGenerator> = {
-    sqlite: new SQLiteGenerator(),
-    postgres: new PostgreSQLGenerator(),
-    mysql: new MySQLGenerator()
-  };
-
-  public static getGenerator(dialect: DatabaseDialect): CodeGenerator {
-    const generator = this.generators[dialect];
-    if (!generator) {
-      throw new Error(`Unsupported database dialect: ${dialect}`);
+    public static getGenerator(dialect: DatabaseDialect): CodeGenerator {
+        return getGeneratorForDialect(dialect);
     }
-    return generator;
-  }
 }
