@@ -13,6 +13,7 @@ import "@xyflow/react/dist/style.css";
 
 import { useStore } from "@/lib/store";
 import { useAIStore } from "@/lib/ai-store";
+import { useTheme } from "@/providers/ThemeProvider";
 import { convertTablesToNodes, convertRelationsToEdges } from "@/lib/react-flow-utils";
 import { TableNode } from "./TableNode";
 
@@ -24,11 +25,11 @@ const nodeTypes = {
  * Inner React Flow canvas rendering nodes, edges, background, and controls.
  */
 export const CanvasInner: React.FC = (): React.ReactElement => {
+    const { theme } = useTheme();
     const tables = useStore(state => state.tables);
     const relations = useStore(state => state.relations);
     const selectedTableId = useStore(state => state.selectedTableId);
     const selectedRelationId = useStore(state => state.selectedRelationId);
-    const theme = useStore(state => state.theme);
     const pendingPatch = useAIStore(state => state.pendingPatch);
 
     const activeTables = pendingPatch ? pendingPatch.proposedAST.tables : tables;
@@ -136,8 +137,6 @@ export const CanvasInner: React.FC = (): React.ReactElement => {
                 />
                 <Controls className="bg-card border-border fill-foreground text-foreground shadow-md rounded-md" />
                 <MiniMap
-                    width={120}
-                    height={80}
                     style={{ width: 120, height: 80 }}
                     zoomable
                     pannable
