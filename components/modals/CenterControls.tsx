@@ -38,6 +38,16 @@ export const CenterControls: React.FC<CenterControlsProps> = ({ className = "" }
             >
                 <PanelLeft className="size-4" />
             </Button>
+            
+            <Button
+                variant={showRightSidebar ? "secondary" : "ghost"}
+                size="icon"
+                onClick={toggleRightSidebar}
+                title={showRightSidebar ? "Hide Right Sidebar (Inspector)" : "Show Right Sidebar (Inspector)"}
+                className="size-8 cursor-pointer"
+            >
+                <PanelRight className="size-4" />
+            </Button>
 
             <Separator orientation="vertical" className="h-10 mx-0.5" />
 
@@ -63,6 +73,7 @@ export const CenterControls: React.FC<CenterControlsProps> = ({ className = "" }
                 <Redo2 className="size-4" />
             </Button>
 
+            <Separator orientation="vertical" className="h-10 mx-0.5" />
             <Button
                 variant="ghost"
                 size="icon"
@@ -71,18 +82,6 @@ export const CenterControls: React.FC<CenterControlsProps> = ({ className = "" }
                 className="size-8 cursor-pointer"
             >
                 <LayoutGrid className="size-4" />
-            </Button>
-
-            <Separator orientation="vertical" className="h-10 mx-0.5" />
-
-            <Button
-                variant={showRightSidebar ? "secondary" : "ghost"}
-                size="icon"
-                onClick={toggleRightSidebar}
-                title={showRightSidebar ? "Hide Right Sidebar (Inspector)" : "Show Right Sidebar (Inspector)"}
-                className="size-8 cursor-pointer"
-            >
-                <PanelRight className="size-4" />
             </Button>
         </div>
     );

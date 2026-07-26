@@ -121,6 +121,8 @@ export const CanvasInner: React.FC = (): React.ReactElement => {
                 fitView
                 snapToGrid
                 snapGrid={[15, 15]}
+                minZoom={0.05}
+                maxZoom={2.5}
                 defaultEdgeOptions={{
                     type: "smoothstep",
                     animated: true
@@ -134,6 +136,11 @@ export const CanvasInner: React.FC = (): React.ReactElement => {
                 />
                 <Controls className="bg-card border-border fill-foreground text-foreground shadow-md rounded-md" />
                 <MiniMap
+                    width={120}
+                    height={80}
+                    style={{ width: 120, height: 80 }}
+                    zoomable
+                    pannable
                     className="bg-card border border-border shadow-lg rounded-md overflow-hidden"
                     nodeColor={theme === "dark" ? "#3b82f6" : "#2563eb"}
                     maskColor={theme === "dark" ? "rgba(15, 23, 42, 0.7)" : "rgba(241, 245, 249, 0.7)"}
