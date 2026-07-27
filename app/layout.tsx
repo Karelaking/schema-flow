@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/providers/ThemeProvider";
+import { ShortcutProvider } from "@/providers/ShortcutProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { CommandMenu } from "@/components/layout/CommandMenu";
 
@@ -58,10 +59,12 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-background text-foreground antialiased">
         <ThemeProvider>
-          <TooltipProvider delay={400}>
-            {children}
-            <CommandMenu />
-          </TooltipProvider>
+          <ShortcutProvider>
+            <TooltipProvider delay={400}>
+              {children}
+              <CommandMenu />
+            </TooltipProvider>
+          </ShortcutProvider>
         </ThemeProvider>
       </body>
     </html>
