@@ -190,67 +190,69 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                             </DropdownMenuSubContent>
                         </DropdownMenuSub>
 
-                        <DropdownMenuItem
-                            onClick={() => setCreateProjectOpen(true)}
-                            className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
-                        >
-                            <Plus className="size-3.5 text-muted-foreground" />
-                            <span>New Project</span>
-                        </DropdownMenuItem>
+                        <DropdownMenuGroup>
+                            <DropdownMenuItem
+                                onClick={() => setCreateProjectOpen(true)}
+                                className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
+                            >
+                                <Plus className="size-3.5 text-muted-foreground" />
+                                <span>New Project</span>
+                            </DropdownMenuItem>
 
-                        <DropdownMenuItem
-                            onClick={handleAddTable}
-                            className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs font-medium text-primary"
-                        >
-                            <Table className="size-3.5 text-primary" />
-                            <span>Create New Table</span>
-                        </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={handleAddTable}
+                                className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs font-medium text-primary"
+                            >
+                                <Table className="size-3.5 text-primary" />
+                                <span>Create New Table</span>
+                            </DropdownMenuItem>
 
-                        <DropdownMenuItem
-                            onClick={() => setSettingsOpen(true)}
-                            className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
-                        >
-                            <Settings className="size-3.5 text-muted-foreground" />
-                            <span>Project Settings</span>
-                        </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() => setSettingsOpen(true)}
+                                className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
+                            >
+                                <Settings className="size-3.5 text-muted-foreground" />
+                                <span>Project Settings</span>
+                            </DropdownMenuItem>
 
-                        <DropdownMenuSeparator />
+                            <DropdownMenuSeparator />
 
-                        <DropdownMenuItem
-                            onClick={saveProject}
-                            disabled={isSaving}
-                            className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs font-medium"
-                        >
-                            <Save className="size-3.5 text-primary" />
-                            <span>{isSaving ? "Saving..." : "Save Database"}</span>
-                            <DropdownMenuShortcut><Kbd>Ctrl+S</Kbd></DropdownMenuShortcut>
-                        </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={saveProject}
+                                disabled={isSaving}
+                                className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs font-medium"
+                            >
+                                <Save className="size-3.5 text-primary" />
+                                <span>{isSaving ? "Saving..." : "Save Database"}</span>
+                                <DropdownMenuShortcut><Kbd>Ctrl+S</Kbd></DropdownMenuShortcut>
+                            </DropdownMenuItem>
 
-                        <DropdownMenuSeparator />
+                            <DropdownMenuSeparator />
 
-                        <DropdownMenuItem
-                            onClick={triggerImport}
-                            className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
-                        >
-                            <Upload className="size-3.5 text-muted-foreground" />
-                            <span>Import JSON</span>
-                        </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={triggerImport}
+                                className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
+                            >
+                                <Upload className="size-3.5 text-muted-foreground" />
+                                <span>Import JSON</span>
+                            </DropdownMenuItem>
 
-                        <DropdownMenuItem
-                            onClick={exportSchema}
-                            className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
-                        >
-                            <Download className="size-3.5 text-muted-foreground" />
-                            <span>Export JSON</span>
-                        </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={exportSchema}
+                                className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
+                            >
+                                <Download className="size-3.5 text-muted-foreground" />
+                                <span>Export JSON</span>
+                            </DropdownMenuItem>
 
-                        <DropdownMenuItem
-                            onClick={() => exportCanvasToPng(projectName)}
-                            className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
-                        >
-                            <ImageIcon className="size-3.5 text-muted-foreground" aria-hidden="true" />
-                            <span>Export Diagram (PNG)</span>
-                        </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() => exportCanvasToPng(projectName)}
+                                className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
+                            >
+                                <ImageIcon className="size-3.5 text-muted-foreground" aria-hidden="true" />
+                                <span>Export Diagram (PNG)</span>
+                            </DropdownMenuItem>
+                        </DropdownMenuGroup>
                     </DropdownMenuContent>
                 </DropdownMenu>
 
@@ -263,39 +265,40 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                         </Button>
                     } />
                     <DropdownMenuContent align="start" className="w-52 bg-card border shadow-md p-1 rounded-md text-foreground z-50">
-                        <DropdownMenuItem
-                            onClick={handleAddTable}
-                            className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs font-medium text-primary"
-                        >
-                            <Table className="size-3.5 text-primary" />
-                            <span>Create New Table</span>
-                        </DropdownMenuItem>
+                        <DropdownMenuGroup>
+                            <DropdownMenuItem
+                                onClick={handleAddTable}
+                                className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs font-medium text-primary"
+                            >
+                                <Table className="size-3.5 text-primary" />
+                                <span>Create New Table</span>
+                            </DropdownMenuItem>
 
-                        <DropdownMenuSeparator />
+                            <DropdownMenuSeparator />
 
-                        <DropdownMenuItem
-                            onClick={undo}
-                            disabled={past.length === 0}
-                            className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
-                        >
-                            <Undo2 className="size-3.5 text-muted-foreground" />
-                            <span>Undo</span>
-                            <DropdownMenuShortcut><Kbd>Ctrl+Z</Kbd></DropdownMenuShortcut>
-                        </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={undo}
+                                disabled={past.length === 0}
+                                className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
+                            >
+                                <Undo2 className="size-3.5 text-muted-foreground" />
+                                <span>Undo</span>
+                                <DropdownMenuShortcut><Kbd>Ctrl+Z</Kbd></DropdownMenuShortcut>
+                            </DropdownMenuItem>
 
-                        <DropdownMenuItem
-                            onClick={redo}
-                            disabled={future.length === 0}
-                            className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
-                        >
-                            <Redo2 className="size-3.5 text-muted-foreground" />
-                            <span>Redo</span>
-                            <DropdownMenuShortcut><Kbd>Ctrl+Y</Kbd></DropdownMenuShortcut>
-                        </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={redo}
+                                disabled={future.length === 0}
+                                className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
+                            >
+                                <Redo2 className="size-3.5 text-muted-foreground" />
+                                <span>Redo</span>
+                                <DropdownMenuShortcut><Kbd>Ctrl+Y</Kbd></DropdownMenuShortcut>
+                            </DropdownMenuItem>
 
-                        <DropdownMenuSeparator />
+                            <DropdownMenuSeparator />
 
-                        <DropdownMenuSub>
+                            <DropdownMenuSub>
                             <DropdownMenuSubTrigger className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs">
                                 <LayoutGrid className="size-3.5 text-muted-foreground" />
                                 <span>Auto-Layout Diagram</span>
@@ -317,10 +320,9 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                                 </DropdownMenuItem>
                             </DropdownMenuSubContent>
                         </DropdownMenuSub>
+                        </DropdownMenuGroup>
                     </DropdownMenuContent>
                 </DropdownMenu>
-
-                {/* View Menu */}
                 <DropdownMenu>
                     <DropdownMenuTrigger render={
                         <Button variant="ghost" size="sm" aria-label="View menu" data-slot="button" className="h-8 px-2 sm:px-2.5 gap-1.5 text-xs font-medium cursor-pointer hover:bg-muted">
@@ -329,42 +331,44 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                         </Button>
                     } />
                     <DropdownMenuContent align="start" className="w-56 bg-card border shadow-md p-1 rounded-md text-foreground z-50">
-                        <DropdownMenuItem
-                            onClick={toggleLeftSidebar}
-                            className="flex items-center justify-between cursor-pointer p-2 hover:bg-muted text-xs"
-                        >
-                            <div className="flex items-center gap-2">
-                                <PanelLeft className="size-3.5 text-muted-foreground" />
-                                <span>Explorer Sidebar</span>
-                            </div>
-                            {showLeftSidebar && <Check className="size-3.5 text-primary" />}
-                        </DropdownMenuItem>
+                        <DropdownMenuGroup>
+                            <DropdownMenuItem
+                                onClick={toggleLeftSidebar}
+                                className="flex items-center justify-between cursor-pointer p-2 hover:bg-muted text-xs"
+                            >
+                                <div className="flex items-center gap-2">
+                                    <PanelLeft className="size-3.5 text-muted-foreground" />
+                                    <span>Explorer Sidebar</span>
+                                </div>
+                                {showLeftSidebar && <Check className="size-3.5 text-primary" />}
+                            </DropdownMenuItem>
 
-                        <DropdownMenuItem
-                            onClick={toggleRightSidebar}
-                            className="flex items-center justify-between cursor-pointer p-2 hover:bg-muted text-xs"
-                        >
-                            <div className="flex items-center gap-2">
-                                <PanelRight className="size-3.5 text-muted-foreground" />
-                                <span>Inspector Sidebar</span>
-                            </div>
-                            {showRightSidebar && <Check className="size-3.5 text-primary" />}
-                        </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={toggleRightSidebar}
+                                className="flex items-center justify-between cursor-pointer p-2 hover:bg-muted text-xs"
+                            >
+                                <div className="flex items-center gap-2">
+                                    <PanelRight className="size-3.5 text-muted-foreground" />
+                                    <span>Inspector Sidebar</span>
+                                </div>
+                                {showRightSidebar && <Check className="size-3.5 text-primary" />}
+                            </DropdownMenuItem>
 
-                        <DropdownMenuSeparator />
+                            <DropdownMenuSeparator />
 
-                        <DropdownMenuItem
-                            onClick={toggleTheme}
-                            aria-label="Toggle Theme"
-                            className="flex items-center justify-between cursor-pointer p-2 hover:bg-muted text-xs"
-                        >
-                            {theme === "dark" ? (
-                                <Sun className="size-3.5 text-amber-400" />
-                            ) : (
-                                <Moon className="size-3.5 text-slate-700" />
-                            )}
-                            <DropdownMenuShortcut><Kbd>Ctrl+Shift+D</Kbd></DropdownMenuShortcut>
-                        </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={toggleTheme}
+                                aria-label="Toggle Theme"
+                                className="flex items-center justify-between cursor-pointer p-2 hover:bg-muted text-xs"
+                            >
+                                {theme === "dark" ? (
+                                    <Sun className="size-3.5 text-amber-400" />
+                                ) : (
+                                    <Moon className="size-3.5 text-slate-700" />
+                                )}
+                                <DropdownMenuShortcut><Kbd>Ctrl+Shift+D</Kbd></DropdownMenuShortcut>
+                            </DropdownMenuItem>
+                        </DropdownMenuGroup>
                     </DropdownMenuContent>
                 </DropdownMenu>
 
@@ -377,16 +381,18 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                         </Button>
                     } />
                     <DropdownMenuContent align="start" className="w-48 bg-card border shadow-md p-1 rounded-md text-foreground z-50">
-                        <DropdownMenuItem
-                            onClick={toggleAIDrawer}
-                            className="flex items-center justify-between cursor-pointer p-2 hover:bg-muted text-xs font-medium"
-                        >
-                            <div className="flex items-center gap-2">
-                                <Sparkles className="size-3.5 text-violet-500" />
-                                <span>AI Architect</span>
-                            </div>
-                            {isAIOpen && <Check className="size-3.5 text-violet-500" />}
-                        </DropdownMenuItem>
+                        <DropdownMenuGroup>
+                            <DropdownMenuItem
+                                onClick={toggleAIDrawer}
+                                className="flex items-center justify-between cursor-pointer p-2 hover:bg-muted text-xs font-medium"
+                            >
+                                <div className="flex items-center gap-2">
+                                    <Sparkles className="size-3.5 text-violet-500" />
+                                    <span>AI Architect</span>
+                                </div>
+                                {isAIOpen && <Check className="size-3.5 text-violet-500" />}
+                            </DropdownMenuItem>
+                        </DropdownMenuGroup>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>

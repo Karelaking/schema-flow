@@ -48,7 +48,7 @@ export const OrchestrationProgress: React.FC<OrchestrationProgressProps> = ({
     };
 
     return (
-        <div className="mx-3 my-2 rounded-xl border border-primary/20 bg-primary/5 p-2.5 flex flex-col gap-2">
+        <div role="status" aria-live="polite" className="mx-3 my-2 rounded-xl border border-primary/20 bg-primary/5 p-2.5 flex flex-col gap-2">
             {phase && (
                 <div className="flex items-center gap-2">
                     <div className="size-6 rounded-lg bg-background border flex items-center justify-center shrink-0 shadow-xs">

@@ -2,6 +2,7 @@
 
 import React, { useEffect } from "react";
 import { useStore } from "@/lib/store";
+import { useTheme } from "@/providers/ThemeProvider";
 
 /**
  * Props for ShortcutProvider.
@@ -16,6 +17,8 @@ export interface ShortcutProviderProps {
  * Listens for app-wide keyboard shortcuts (Ctrl+Z / Cmd+Z for Undo, Ctrl+Y / Cmd+Y / Ctrl+Shift+Z for Redo).
  */
 export function ShortcutProvider({ children }: ShortcutProviderProps): React.ReactElement {
+    const { toggleTheme } = useTheme();
+
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent): void => {
             const target = e.target as HTMLElement | null;
@@ -115,11 +118,21 @@ export function ShortcutProvider({ children }: ShortcutProviderProps): React.Rea
                 }
                 return;
             }
+
+            // Toggle Theme: D key (standalone) or Ctrl/Cmd+Shift+D
+            const isSingleD = keyLower === "d" && !e.metaKey && !e.ctrlKey && !e.altKey && !e.shiftKey;
+            const isCmdShiftD = isControl && e.shiftKey && keyLower === "d";
+
+            if (isSingleD || isCmdShiftD) {
+                e.preventDefault();
+                toggleTheme();
+                return;
+            }
         };
 
         window.addEventListener("keydown", handleKeyDown, { capture: true });
         return () => window.removeEventListener("keydown", handleKeyDown, { capture: true });
-    }, []);
+    }, [toggleTheme]);
 
     return <>{children}</>;
 }
