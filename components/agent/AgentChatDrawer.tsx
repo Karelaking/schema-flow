@@ -294,7 +294,9 @@ export const AgentChatDrawer: React.FC<AgentChatDrawerProps> = ({ className, sty
                             <Tooltip>
                                 <TooltipTrigger render={
                                     <button
+                                        type="button"
                                         onClick={toggleGoalMode}
+                                        aria-label={isGoalMode ? "Autonomous Goal Mode (ON)" : "Standard Mode (OFF)"}
                                         className={`p-1.5 rounded-md transition-colors cursor-pointer ${
                                             isGoalMode
                                                 ? "bg-emerald-500/15 text-emerald-600 hover:bg-emerald-500/25"
@@ -314,7 +316,9 @@ export const AgentChatDrawer: React.FC<AgentChatDrawerProps> = ({ className, sty
                             <Tooltip>
                                 <TooltipTrigger render={
                                     <button
+                                        type="button"
                                         onClick={() => setRulesOpen(true)}
+                                        aria-label="Custom Rules"
                                         className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                                     >
                                         <BookOpen className="size-3.5" />
@@ -326,7 +330,9 @@ export const AgentChatDrawer: React.FC<AgentChatDrawerProps> = ({ className, sty
                             <Tooltip>
                                 <TooltipTrigger render={
                                     <button
+                                        type="button"
                                         onClick={() => setSettingsOpen(true)}
+                                        aria-label="AI Settings"
                                         className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                                     >
                                         <Settings className="size-3.5" />
@@ -338,7 +344,9 @@ export const AgentChatDrawer: React.FC<AgentChatDrawerProps> = ({ className, sty
                             <Tooltip>
                                 <TooltipTrigger render={
                                     <button
+                                        type="button"
                                         onClick={clearChat}
+                                        aria-label="Clear Project Memory"
                                         className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                                         disabled={messages.length === 0}
                                     >
@@ -351,7 +359,9 @@ export const AgentChatDrawer: React.FC<AgentChatDrawerProps> = ({ className, sty
                             <Tooltip>
                                 <TooltipTrigger render={
                                     <button
+                                        type="button"
                                         onClick={() => useAIStore.getState().setOpen(false)}
+                                        aria-label="Close panel"
                                         className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                                     >
                                         <X className="size-3.5" />
@@ -394,9 +404,9 @@ export const AgentChatDrawer: React.FC<AgentChatDrawerProps> = ({ className, sty
                                 {QUICK_ACTIONS.map(action => (
                                     <button
                                         key={action.label}
+                                        type="button"
                                         onClick={() => handleQuickAction(action.prompt)}
-                                        disabled={isGenerating}
-                                        className="text-[11px] text-left px-3 py-2 rounded-lg border border-border hover:border-primary/30 hover:bg-primary/5 transition-all cursor-pointer disabled:opacity-50"
+                                        className="text-xs px-3 py-1.5 rounded-lg border bg-background hover:bg-muted/50 text-foreground transition-colors cursor-pointer text-left flex items-center justify-between group"
                                     >
                                         <span className="font-medium">{action.label}</span>
                                     </button>
@@ -410,7 +420,7 @@ export const AgentChatDrawer: React.FC<AgentChatDrawerProps> = ({ className, sty
                             ))}
 
                             {isGenerating && (
-                                <div className="flex items-center gap-2 px-3 py-2">
+                                <div role="status" aria-live="polite" className="flex items-center gap-2 px-3 py-2">
                                     <div className="size-6 rounded-lg bg-primary/10 flex items-center justify-center">
                                         <Loader2 className="size-3.5 text-primary animate-spin" />
                                     </div>
@@ -423,14 +433,16 @@ export const AgentChatDrawer: React.FC<AgentChatDrawerProps> = ({ className, sty
                             {pendingPatch && <DiffPreviewCard />}
 
                             {error && (
-                                <div className="mx-3 my-2 rounded-lg border border-destructive/30 bg-destructive/5 p-2.5 flex items-start gap-2">
+                                <div role="alert" aria-live="assertive" className="mx-3 my-2 rounded-lg border border-destructive/30 bg-destructive/5 p-2.5 flex items-start gap-2">
                                     <AlertCircle className="size-4 text-destructive shrink-0 mt-0.5" />
                                     <div className="flex-1">
                                         <p className="text-xs text-destructive font-medium">Error</p>
                                         <p className="text-[11px] text-muted-foreground mt-0.5">{error}</p>
                                     </div>
                                     <button
+                                        type="button"
                                         onClick={clearError}
+                                        aria-label="Dismiss error"
                                         className="p-0.5 text-muted-foreground hover:text-foreground cursor-pointer"
                                     >
                                         <X className="size-3" />
@@ -451,12 +463,15 @@ export const AgentChatDrawer: React.FC<AgentChatDrawerProps> = ({ className, sty
                             onChange={e => setInput(e.target.value)}
                             onKeyDown={handleKeyDown}
                             placeholder="Ask the Schema Architect..."
+                            aria-label="Ask the Schema Architect..."
                             rows={1}
-                            className="flex-1 bg-transparent text-xs resize-none outline-none placeholder:text-muted-foreground min-h-5 max-h-30 py-0.5"
+                            className="flex-1 bg-transparent text-xs resize-none outline-none focus-visible:ring-1 focus-visible:ring-primary/50 rounded-xs placeholder:text-muted-foreground min-h-5 max-h-30 py-0.5"
                             disabled={isGenerating}
                         />
                         <Button
                             size="icon"
+                            type="button"
+                            aria-label="Send message"
                             onClick={handleSend}
                             disabled={!input.trim() || isGenerating}
                             className="size-7 rounded-lg shrink-0 cursor-pointer"

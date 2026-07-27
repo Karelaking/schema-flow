@@ -183,10 +183,10 @@ await db.insert(users).values({
             </div>
 
             {/* Simulated ERD Canvas Area */}
-            <div className="relative flex-1 min-h-[380px] bg-slate-950/90 dark:bg-black/90 rounded-xl p-4 border border-white/10 overflow-hidden font-sans">
+            <div className="relative flex-1 min-h-95 bg-slate-950/90 dark:bg-black/90 rounded-xl p-4 border border-white/10 overflow-hidden font-sans">
               
               {/* Background Grid Pattern */}
-              <div className="absolute inset-0 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:16px_16px] opacity-40 pointer-events-none" />
+              <div className="absolute inset-0 bg-[radial-gradient(#334155_1px,transparent_1px)] bg-size-[16px_16px] opacity-40 pointer-events-none" />
 
               {/* Connecting Relation SVG Line */}
               <svg className="absolute inset-0 size-full pointer-events-none z-10">
@@ -210,8 +210,16 @@ await db.insert(users).values({
                 
                 {/* Table Node 1: users */}
                 <div 
+                  role="button"
+                  tabIndex={0}
+                  aria-label="Select demo table users"
                   onClick={() => setSelectedTable("users")}
-                  className={`rounded-lg border bg-slate-900/90 p-3 shadow-lg transition-all cursor-pointer ${
+                  onKeyDown={e => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      setSelectedTable("users");
+                    }
+                  }}
+                  className={`rounded-lg border bg-slate-900/90 p-3 shadow-lg transition-all cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary ${
                     selectedTable === "users" ? "border-primary ring-2 ring-primary/30 scale-[1.02]" : "border-slate-800 hover:border-slate-700 opacity-90"
                   }`}
                 >
@@ -251,8 +259,16 @@ await db.insert(users).values({
 
                 {/* Table Node 2: posts */}
                 <div 
+                  role="button"
+                  tabIndex={0}
+                  aria-label="Select demo table posts"
                   onClick={() => setSelectedTable("posts")}
-                  className={`rounded-lg border bg-slate-900/90 p-3 shadow-lg transition-all cursor-pointer ${
+                  onKeyDown={e => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      setSelectedTable("posts");
+                    }
+                  }}
+                  className={`rounded-lg border bg-slate-900/90 p-3 shadow-lg transition-all cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary ${
                     selectedTable === "posts" ? "border-primary ring-2 ring-primary/30 scale-[1.02]" : "border-slate-800 hover:border-slate-700 opacity-90"
                   }`}
                 >
@@ -360,7 +376,7 @@ await db.insert(users).values({
             </div>
 
             {/* Code Block Container */}
-            <div className="flex-1 p-4 overflow-y-auto max-h-[420px] bg-slate-950 text-slate-200 leading-relaxed font-mono">
+            <div className="flex-1 p-4 overflow-y-auto max-h-105 bg-slate-950 text-slate-200 leading-relaxed font-mono">
               <pre className="whitespace-pre-wrap">{getCurrentCode()}</pre>
             </div>
 

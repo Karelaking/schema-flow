@@ -34,6 +34,7 @@ export const CenterControls: React.FC<CenterControlsProps> = ({ className = "" }
                 size="icon"
                 onClick={toggleLeftSidebar}
                 title={showLeftSidebar ? "Hide Left Sidebar (Explorer)" : "Show Left Sidebar (Explorer)"}
+                aria-label={showLeftSidebar ? "Hide Left Sidebar (Explorer)" : "Show Left Sidebar (Explorer)"}
                 className="size-8 cursor-pointer"
             >
                 <PanelLeft className="size-4" />
@@ -44,6 +45,7 @@ export const CenterControls: React.FC<CenterControlsProps> = ({ className = "" }
                 size="icon"
                 onClick={toggleRightSidebar}
                 title={showRightSidebar ? "Hide Right Sidebar (Inspector)" : "Show Right Sidebar (Inspector)"}
+                aria-label={showRightSidebar ? "Hide Right Sidebar (Inspector)" : "Show Right Sidebar (Inspector)"}
                 className="size-8 cursor-pointer"
             >
                 <PanelRight className="size-4" />
@@ -57,6 +59,7 @@ export const CenterControls: React.FC<CenterControlsProps> = ({ className = "" }
                 disabled={past.length === 0}
                 onClick={undo}
                 title="Undo (Ctrl+Z)"
+                aria-label="Undo"
                 className="size-8 cursor-pointer"
             >
                 <Undo2 className="size-4" />
@@ -68,6 +71,7 @@ export const CenterControls: React.FC<CenterControlsProps> = ({ className = "" }
                 disabled={future.length === 0}
                 onClick={redo}
                 title="Redo (Ctrl+Y)"
+                aria-label="Redo"
                 className="size-8 cursor-pointer"
             >
                 <Redo2 className="size-4" />
@@ -79,6 +83,7 @@ export const CenterControls: React.FC<CenterControlsProps> = ({ className = "" }
                 size="icon"
                 onClick={() => autoLayoutTables()}
                 title="Auto Layout Diagram"
+                aria-label="Auto Layout Diagram"
                 className="size-8 cursor-pointer"
             >
                 <LayoutGrid className="size-4" />

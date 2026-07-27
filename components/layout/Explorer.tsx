@@ -9,6 +9,8 @@ import {
     DropdownMenu,
     DropdownMenuTrigger,
     DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuLabel,
     DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
@@ -121,30 +123,32 @@ export const Explorer: React.FC<ExplorerProps> = ({ className, style }): React.R
                             }
                         />
                         <DropdownMenuContent align="end" className="w-56">
-                            <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">
-                                Table Defaults
-                            </div>
-                            <DropdownMenuItem
-                                onClick={() => setAutoAddId(!autoAddId)}
-                                className="flex items-center justify-between text-xs cursor-pointer"
-                            >
-                                <span className="flex items-center gap-2">
-                                    <Key className="h-3.5 w-3.5 text-amber-500" />
-                                    Auto-add `id` PK
-                                </span>
-                                {autoAddId && <Check className="h-3.5 w-3.5 text-primary" />}
-                            </DropdownMenuItem>
+                            <DropdownMenuGroup>
+                                <DropdownMenuLabel className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">
+                                    Table Defaults
+                                </DropdownMenuLabel>
+                                <DropdownMenuItem
+                                    onClick={() => setAutoAddId(!autoAddId)}
+                                    className="flex items-center justify-between text-xs cursor-pointer"
+                                >
+                                    <span className="flex items-center gap-2">
+                                        <Key className="h-3.5 w-3.5 text-amber-500" />
+                                        Auto-add `id` PK
+                                    </span>
+                                    {autoAddId && <Check className="h-3.5 w-3.5 text-primary" />}
+                                </DropdownMenuItem>
 
-                            <DropdownMenuItem
-                                onClick={() => setAutoAddTimestamps(!autoAddTimestamps)}
-                                className="flex items-center justify-between text-xs cursor-pointer"
-                            >
-                                <span className="flex items-center gap-2">
-                                    <Clock className="h-3.5 w-3.5 text-blue-500" />
-                                    Auto-add Timestamps
-                                </span>
-                                {autoAddTimestamps && <Check className="h-3.5 w-3.5 text-primary" />}
-                            </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onClick={() => setAutoAddTimestamps(!autoAddTimestamps)}
+                                    className="flex items-center justify-between text-xs cursor-pointer"
+                                >
+                                    <span className="flex items-center gap-2">
+                                        <Clock className="h-3.5 w-3.5 text-blue-500" />
+                                        Auto-add Timestamps
+                                    </span>
+                                    {autoAddTimestamps && <Check className="h-3.5 w-3.5 text-primary" />}
+                                </DropdownMenuItem>
+                            </DropdownMenuGroup>
                         </DropdownMenuContent>
                     </DropdownMenu>
 
@@ -152,8 +156,9 @@ export const Explorer: React.FC<ExplorerProps> = ({ className, style }): React.R
                     <Button
                         onClick={handleAddTable}
                         size="icon"
-                        className="h-7 w-7 bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
+                        className="h-7 w-7 bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm cursor-pointer"
                         title="Add Table"
+                        aria-label="Add Table"
                     >
                         <Plus className="h-4 w-4" />
                     </Button>
@@ -162,8 +167,9 @@ export const Explorer: React.FC<ExplorerProps> = ({ className, style }): React.R
                         onClick={() => useStore.getState().setLeftSidebar(false)}
                         variant="ghost"
                         size="icon"
-                        className="h-7 w-7 text-muted-foreground hover:text-foreground md:hidden"
+                        className="h-7 w-7 text-muted-foreground hover:text-foreground md:hidden cursor-pointer"
                         title="Collapse sidebar"
+                        aria-label="Collapse sidebar"
                     >
                         <PanelLeftClose className="h-4 w-4" />
                     </Button>
@@ -177,6 +183,7 @@ export const Explorer: React.FC<ExplorerProps> = ({ className, style }): React.R
                     <Input
                         type="text"
                         placeholder="Filter tables & enums..."
+                        aria-label="Filter tables & enums"
                         value={search}
                         onChange={e => setSearch(e.target.value)}
                         className="pl-8 h-8 text-xs bg-background"
@@ -206,9 +213,17 @@ export const Explorer: React.FC<ExplorerProps> = ({ className, style }): React.R
                                 return (
                                     <div
                                         key={table.id}
+                                        role="button"
+                                        tabIndex={0}
+                                        aria-label={`Select table ${table.name}`}
                                         onClick={() => selectTable(table.id)}
+                                        onKeyDown={e => {
+                                            if (e.key === "Enter" || e.key === " ") {
+                                                selectTable(table.id);
+                                            }
+                                        }}
                                         className={cn(
-                                            "group flex items-center justify-between px-2 py-1.5 rounded-md text-xs font-medium cursor-pointer transition-colors",
+                                            "group flex items-center justify-between px-2 py-1.5 rounded-md text-xs font-medium cursor-pointer transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary",
                                             isSelected
                                                 ? "bg-accent text-accent-foreground font-semibold"
                                                 : "text-foreground hover:bg-muted/60",
@@ -252,10 +267,11 @@ export const Explorer: React.FC<ExplorerProps> = ({ className, style }): React.R
                             onClick={handleAddEnum}
                             variant="ghost"
                             size="icon"
-                            className="h-4 w-4 text-muted-foreground hover:text-foreground"
+                            className="h-6 w-6 text-muted-foreground hover:text-foreground cursor-pointer"
                             title="Add Enum"
+                            aria-label="Add Enum"
                         >
-                            <Plus className="h-3 w-3" />
+                            <Plus className="h-3.5 w-3.5" />
                         </Button>
                     </div>
 
@@ -281,6 +297,7 @@ export const Explorer: React.FC<ExplorerProps> = ({ className, style }): React.R
                                                         type="text"
                                                         value={enumItem.name}
                                                         onChange={e => updateEnum(enumItem.id, { name: e.target.value })}
+                                                        aria-label="Enum name"
                                                         className="h-6 text-xs px-1.5 font-medium bg-background"
                                                     />
                                                 ) : (
@@ -293,7 +310,9 @@ export const Explorer: React.FC<ExplorerProps> = ({ className, style }): React.R
                                                     onClick={() => setEditingEnumId(isEditing ? undefined : enumItem.id)}
                                                     variant="ghost"
                                                     size="icon"
-                                                    className="h-5 w-5 text-muted-foreground hover:text-foreground"
+                                                    className="h-6 w-6 text-muted-foreground hover:text-foreground cursor-pointer"
+                                                    aria-label={isEditing ? "Done editing enum" : "Edit enum"}
+                                                    title={isEditing ? "Done editing enum" : "Edit enum"}
                                                 >
                                                     <Pencil className="h-3 w-3" />
                                                 </Button>
@@ -302,7 +321,9 @@ export const Explorer: React.FC<ExplorerProps> = ({ className, style }): React.R
                                                     onClick={() => deleteEnum(enumItem.id)}
                                                     variant="ghost"
                                                     size="icon"
-                                                    className="h-5 w-5 text-muted-foreground hover:text-destructive"
+                                                    className="h-6 w-6 text-muted-foreground hover:text-destructive cursor-pointer"
+                                                    aria-label="Delete enum"
+                                                    title="Delete enum"
                                                 >
                                                     <Trash2 className="h-3 w-3" />
                                                 </Button>
@@ -338,6 +359,7 @@ export const Explorer: React.FC<ExplorerProps> = ({ className, style }): React.R
                                                 <Input
                                                     type="text"
                                                     placeholder="Add value..."
+                                                    aria-label="Add enum value"
                                                     value={newEnumValueInput}
                                                     onChange={e => setNewEnumValueInput(e.target.value)}
                                                     onKeyDown={e => {
@@ -351,7 +373,8 @@ export const Explorer: React.FC<ExplorerProps> = ({ className, style }): React.R
                                                 <Button
                                                     onClick={() => handleAddEnumValue(enumItem.id)}
                                                     size="icon"
-                                                    className="h-6 w-6 bg-purple-600 hover:bg-purple-700 text-white shrink-0"
+                                                    aria-label="Add value"
+                                                    className="h-6 w-6 bg-purple-600 hover:bg-purple-700 text-white shrink-0 cursor-pointer"
                                                 >
                                                     <Plus className="h-3 w-3" />
                                                 </Button>

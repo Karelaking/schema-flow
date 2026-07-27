@@ -100,12 +100,14 @@ export const ProjectSwitcher: React.FC<ProjectSwitcherProps> = ({ className = ""
                                 <div className="flex items-center gap-1 shrink-0">
                                     {p.id === projectId && <Check className="size-3.5 text-primary" />}
                                     <button
+                                        type="button"
                                         onClick={e => {
                                             e.stopPropagation();
                                             setDeleteTarget({ id: p.id, name: p.name });
                                         }}
-                                        className="size-5 flex items-center justify-center text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                                        className="size-6 min-h-6 min-w-6 flex items-center justify-center text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                                         title="Delete project"
+                                        aria-label={`Delete project ${p.name}`}
                                     >
                                         <Trash2 className="size-3" />
                                     </button>

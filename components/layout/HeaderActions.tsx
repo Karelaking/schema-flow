@@ -26,9 +26,11 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({ className = "" }):
                 className="hidden sm:flex gap-1.5 h-8 text-xs cursor-pointer font-medium"
                 onClick={saveProject}
                 disabled={isSaving}
+                aria-label="Save Database Project"
+                data-slot="button"
             >
-                <Save className="size-3.5" />
-                {isSaving ? "Saving..." : "Save Database"}
+                <Save className="size-3.5" data-slot="icon" data-icon="inline-start" aria-hidden="true" />
+                <span>{isSaving ? "Saving..." : "Save Database"}</span>
             </Button>
         </div>
     );

@@ -10,7 +10,7 @@ import {
     Save,
     Download,
     Upload,
-    Image,
+    Image as ImageIcon,
     Undo2,
     Redo2,
     LayoutGrid,
@@ -38,10 +38,12 @@ import { CreateProjectDialog } from "@/components/modals/CreateProjectDialog";
 import { ProjectSettingsDialog } from "@/components/modals/ProjectSettingsDialog";
 import { DeleteProjectDialog } from "@/components/modals/DeleteProjectDialog";
 import { Button } from "@/components/ui/button";
+import { Kbd } from "@/components/ui/kbd";
 import {
     DropdownMenu,
     DropdownMenuTrigger,
     DropdownMenuContent,
+    DropdownMenuGroup,
     DropdownMenuItem,
     DropdownMenuSeparator,
     DropdownMenuSub,
@@ -142,6 +144,7 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                 id="header-menubar-import-file-input"
                 type="file"
                 accept=".json"
+                aria-label="Import Schema JSON File"
                 onChange={importSchema}
                 className="hidden"
             />
@@ -151,8 +154,8 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                 {/* File Menu */}
                 <DropdownMenu>
                     <DropdownMenuTrigger render={
-                        <Button variant="ghost" size="sm" className="h-8 px-2 sm:px-2.5 gap-1.5 text-xs font-medium cursor-pointer hover:bg-muted">
-                            <Folder className="size-3.5 text-muted-foreground" />
+                        <Button variant="ghost" size="sm" aria-label="File menu" data-slot="button" className="h-8 px-2 sm:px-2.5 gap-1.5 text-xs font-medium cursor-pointer hover:bg-muted">
+                            <Folder className="size-3.5 text-muted-foreground" data-slot="icon" data-icon="inline-start" aria-hidden="true" />
                             <span>File</span>
                         </Button>
                     } />
@@ -163,31 +166,35 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                                 <span>Switch Project</span>
                             </DropdownMenuSubTrigger>
                             <DropdownMenuSubContent className="w-56 bg-card border shadow-md p-1 rounded-md text-foreground max-h-80 overflow-y-auto z-50">
-                                {projectsList.map(p => (
-                                    <DropdownMenuItem
-                                        key={p.id}
-                                        onClick={() => switchProject(p.id)}
-                                        className="flex items-center justify-between cursor-pointer p-2 hover:bg-muted text-xs rounded-sm group"
-                                    >
-                                        <div className="flex flex-col min-w-0 flex-1 pr-2">
-                                            <span className="font-medium truncate">{p.name}</span>
-                                            <span className="text-[8px] text-muted-foreground uppercase">{p.dialect}</span>
-                                        </div>
-                                        <div className="flex items-center gap-1 shrink-0">
-                                            {p.id === projectId && <Check className="size-3.5 text-primary" />}
-                                            <button
-                                                onClick={e => {
-                                                    e.stopPropagation();
-                                                    setDeleteTarget({ id: p.id, name: p.name });
-                                                }}
-                                                className="size-5 flex items-center justify-center text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                                                title="Delete project"
-                                            >
-                                                <Trash2 className="size-3" />
-                                            </button>
-                                        </div>
-                                    </DropdownMenuItem>
-                                ))}
+                                <DropdownMenuGroup>
+                                    {projectsList.map(p => (
+                                        <DropdownMenuItem
+                                            key={p.id}
+                                            onClick={() => switchProject(p.id)}
+                                            className="flex items-center justify-between cursor-pointer p-2 hover:bg-muted text-xs rounded-sm group"
+                                        >
+                                            <div className="flex flex-col min-w-0 flex-1 pr-2">
+                                                <span className="font-medium truncate">{p.name}</span>
+                                                <span className="text-[8px] text-muted-foreground uppercase">{p.dialect}</span>
+                                            </div>
+                                            <div className="flex items-center gap-1 shrink-0">
+                                                {p.id === projectId && <Check className="size-3.5 text-primary" />}
+                                                <button
+                                                    type="button"
+                                                    onClick={e => {
+                                                        e.stopPropagation();
+                                                        setDeleteTarget({ id: p.id, name: p.name });
+                                                    }}
+                                                    className="size-6 min-h-6 min-w-6 flex items-center justify-center text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                                                    title="Delete project"
+                                                    aria-label={`Delete project ${p.name}`}
+                                                >
+                                                    <Trash2 className="size-3" />
+                                                </button>
+                                            </div>
+                                        </DropdownMenuItem>
+                                    ))}
+                                </DropdownMenuGroup>
                             </DropdownMenuSubContent>
                         </DropdownMenuSub>
 
@@ -224,7 +231,7 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                         >
                             <Save className="size-3.5 text-primary" />
                             <span>{isSaving ? "Saving..." : "Save Database"}</span>
-                            <DropdownMenuShortcut>Ctrl+S</DropdownMenuShortcut>
+                            <DropdownMenuShortcut><Kbd>Ctrl+S</Kbd></DropdownMenuShortcut>
                         </DropdownMenuItem>
 
                         <DropdownMenuSeparator />
@@ -249,7 +256,7 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                             onClick={() => exportCanvasToPng(projectName)}
                             className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
                         >
-                            <Image className="size-3.5 text-muted-foreground" />
+                            <ImageIcon className="size-3.5 text-muted-foreground" aria-hidden="true" />
                             <span>Export Diagram (PNG)</span>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -258,8 +265,8 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                 {/* Edit Menu */}
                 <DropdownMenu>
                     <DropdownMenuTrigger render={
-                        <Button variant="ghost" size="sm" className="h-8 px-2 sm:px-2.5 gap-1.5 text-xs font-medium cursor-pointer hover:bg-muted">
-                            <Edit3 className="size-3.5 text-muted-foreground" />
+                        <Button variant="ghost" size="sm" aria-label="Edit menu" data-slot="button" className="h-8 px-2 sm:px-2.5 gap-1.5 text-xs font-medium cursor-pointer hover:bg-muted">
+                            <Edit3 className="size-3.5 text-muted-foreground" data-slot="icon" data-icon="inline-start" aria-hidden="true" />
                             <span>Edit</span>
                         </Button>
                     } />
@@ -281,7 +288,7 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                         >
                             <Undo2 className="size-3.5 text-muted-foreground" />
                             <span>Undo</span>
-                            <DropdownMenuShortcut>Ctrl+Z</DropdownMenuShortcut>
+                            <DropdownMenuShortcut><Kbd>Ctrl+Z</Kbd></DropdownMenuShortcut>
                         </DropdownMenuItem>
 
                         <DropdownMenuItem
@@ -291,7 +298,7 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                         >
                             <Redo2 className="size-3.5 text-muted-foreground" />
                             <span>Redo</span>
-                            <DropdownMenuShortcut>Ctrl+Y</DropdownMenuShortcut>
+                            <DropdownMenuShortcut><Kbd>Ctrl+Y</Kbd></DropdownMenuShortcut>
                         </DropdownMenuItem>
 
                         <DropdownMenuSeparator />
@@ -324,8 +331,8 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                 {/* View Menu */}
                 <DropdownMenu>
                     <DropdownMenuTrigger render={
-                        <Button variant="ghost" size="sm" className="h-8 px-2 sm:px-2.5 gap-1.5 text-xs font-medium cursor-pointer hover:bg-muted">
-                            <Eye className="size-3.5 text-muted-foreground" />
+                        <Button variant="ghost" size="sm" aria-label="View menu" data-slot="button" className="h-8 px-2 sm:px-2.5 gap-1.5 text-xs font-medium cursor-pointer hover:bg-muted">
+                            <Eye className="size-3.5 text-muted-foreground" data-slot="icon" data-icon="inline-start" aria-hidden="true" />
                             <span>View</span>
                         </Button>
                     } />
@@ -356,16 +363,15 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
 
                         <DropdownMenuItem
                             onClick={toggleTheme}
+                            aria-label="Toggle Theme"
                             className="flex items-center justify-between cursor-pointer p-2 hover:bg-muted text-xs"
                         >
-                            <div className="flex items-center gap-2">
-                                {theme === "dark" ? (
-                                    <Sun className="size-3.5 text-amber-400" />
-                                ) : (
-                                    <Moon className="size-3.5 text-slate-700" />
-                                )}
-                                <span>Switch Theme ({theme === "dark" ? "Light" : "Dark"})</span>
-                            </div>
+                            {theme === "dark" ? (
+                                <Sun className="size-3.5 text-amber-400" />
+                            ) : (
+                                <Moon className="size-3.5 text-slate-700" />
+                            )}
+                            <DropdownMenuShortcut><Kbd>Ctrl+Shift+D</Kbd></DropdownMenuShortcut>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
@@ -373,8 +379,8 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                 {/* Tools Menu */}
                 <DropdownMenu>
                     <DropdownMenuTrigger render={
-                        <Button variant="ghost" size="sm" className="h-8 px-2 sm:px-2.5 gap-1.5 text-xs font-medium cursor-pointer hover:bg-muted">
-                            <Wrench className="size-3.5 text-muted-foreground" />
+                        <Button variant="ghost" size="sm" aria-label="Tools menu" data-slot="button" className="h-8 px-2 sm:px-2.5 gap-1.5 text-xs font-medium cursor-pointer hover:bg-muted">
+                            <Wrench className="size-3.5 text-muted-foreground" data-slot="icon" data-icon="inline-start" aria-hidden="true" />
                             <span>Tools</span>
                         </Button>
                     } />
@@ -397,8 +403,8 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
             <div className="md:hidden flex items-center">
                 <DropdownMenu>
                     <DropdownMenuTrigger render={
-                        <Button variant="outline" size="sm" className="h-8 px-2.5 gap-1.5 text-xs font-medium cursor-pointer border-border">
-                            <Menu className="size-3.5" />
+                        <Button variant="outline" size="sm" aria-label="Mobile menu" data-slot="button" className="h-8 px-2.5 gap-1.5 text-xs font-medium cursor-pointer border-border">
+                            <Menu className="size-3.5" data-slot="icon" data-icon="inline-start" aria-hidden="true" />
                             <span>Menu</span>
                         </Button>
                     } />
@@ -494,7 +500,7 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                                     onClick={() => exportCanvasToPng(projectName)}
                                     className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
                                 >
-                                    <Image className="size-3.5 text-muted-foreground" />
+                                    <ImageIcon className="size-3.5 text-muted-foreground" aria-hidden="true" />
                                     <span>Export Diagram (PNG)</span>
                                 </DropdownMenuItem>
                             </DropdownMenuSubContent>
@@ -595,16 +601,15 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
 
                                 <DropdownMenuItem
                                     onClick={toggleTheme}
+                                    aria-label="Toggle Theme"
                                     className="flex items-center justify-between cursor-pointer p-2 hover:bg-muted text-xs"
                                 >
-                                    <div className="flex items-center gap-2">
-                                        {theme === "dark" ? (
-                                            <Sun className="size-3.5 text-amber-400" />
-                                        ) : (
-                                            <Moon className="size-3.5 text-slate-700" />
-                                        )}
-                                        <span>Switch Theme ({theme === "dark" ? "Light" : "Dark"})</span>
-                                    </div>
+                                    {theme === "dark" ? (
+                                        <Sun className="size-3.5 text-amber-400" />
+                                    ) : (
+                                        <Moon className="size-3.5 text-slate-700" />
+                                    )}
+                                    <DropdownMenuShortcut><Kbd>Ctrl+Shift+D</Kbd></DropdownMenuShortcut>
                                 </DropdownMenuItem>
                             </DropdownMenuSubContent>
                         </DropdownMenuSub>

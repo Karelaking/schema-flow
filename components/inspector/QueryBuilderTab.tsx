@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import {
     Select,
     SelectContent,
+    SelectGroup,
     SelectItem,
     SelectTrigger,
     SelectValue,
@@ -360,40 +361,44 @@ export const QueryBuilderTab: React.FC = (): React.ReactElement => {
             <div className="flex flex-col gap-3">
                 <div className="grid grid-cols-2 gap-2">
                     <div className="flex flex-col gap-1">
-                        <Label className="text-xs">Target Table</Label>
+                        <Label htmlFor="qb-target-table" className="text-xs">Target Table</Label>
                         <Select value={activeTableId} onValueChange={val => {
                             if (val) {
                                 setActiveTableId(val);
                             }
                         }}>
-                            <SelectTrigger className="h-8 text-xs font-semibold">
+                            <SelectTrigger id="qb-target-table" aria-label="Target Table" className="h-8 text-xs font-semibold">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent className="z-50">
-                                {tableList.map(t => (
-                                    <SelectItem key={t.id} value={t.id} className="text-xs cursor-pointer font-mono">
-                                        {t.name}
-                                    </SelectItem>
-                                ))}
+                                <SelectGroup>
+                                    {tableList.map(t => (
+                                        <SelectItem key={t.id} value={t.id} className="text-xs cursor-pointer font-mono">
+                                            {t.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectGroup>
                             </SelectContent>
                         </Select>
                     </div>
 
                     <div className="flex flex-col gap-1">
-                        <Label className="text-xs">Query Type</Label>
+                        <Label htmlFor="qb-query-type" className="text-xs">Query Type</Label>
                         <Select value={queryType} onValueChange={val => {
                             if (val) {
                                 setQueryType(val as typeof queryType);
                             }
                         }}>
-                            <SelectTrigger className="h-8 text-xs font-bold font-mono">
+                            <SelectTrigger id="qb-query-type" aria-label="Query Type" className="h-8 text-xs font-bold font-mono">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent className="z-50">
-                                <SelectItem value="SELECT" className="text-xs font-mono font-bold text-blue-500">SELECT</SelectItem>
-                                <SelectItem value="INSERT" className="text-xs font-mono font-bold text-emerald-500">INSERT</SelectItem>
-                                <SelectItem value="UPDATE" className="text-xs font-mono font-bold text-amber-500">UPDATE</SelectItem>
-                                <SelectItem value="DELETE" className="text-xs font-mono font-bold text-destructive">DELETE</SelectItem>
+                                <SelectGroup>
+                                    <SelectItem value="SELECT" className="text-xs font-mono font-bold text-blue-500">SELECT</SelectItem>
+                                    <SelectItem value="INSERT" className="text-xs font-mono font-bold text-emerald-500">INSERT</SelectItem>
+                                    <SelectItem value="UPDATE" className="text-xs font-mono font-bold text-amber-500">UPDATE</SelectItem>
+                                    <SelectItem value="DELETE" className="text-xs font-mono font-bold text-destructive">DELETE</SelectItem>
+                                </SelectGroup>
                             </SelectContent>
                         </Select>
                     </div>
@@ -433,7 +438,7 @@ export const QueryBuilderTab: React.FC = (): React.ReactElement => {
                         <div className="flex items-center justify-between">
                             <span className="text-[11px] font-semibold">Table Joins</span>
                             <Button size="sm" variant="outline" className="h-6 text-[10px] gap-1 cursor-pointer" onClick={handleAddJoin}>
-                                <Plus className="size-3" />
+                                <Plus className="size-3" data-icon="inline-start" />
                                 Add Join
                             </Button>
                         </div>
@@ -451,13 +456,15 @@ export const QueryBuilderTab: React.FC = (): React.ReactElement => {
                                                     setJoins(prev => prev.map(j => (j.id === join.id ? { ...j, joinType: val as JoinOption["joinType"] } : j)));
                                                 }
                                             }}>
-                                                <SelectTrigger className="h-6 text-[10px] font-mono w-24">
+                                                <SelectTrigger aria-label="Join Type" className="h-6 text-[10px] font-mono w-24">
                                                     <SelectValue />
                                                 </SelectTrigger>
                                                 <SelectContent className="z-50">
-                                                    <SelectItem value="INNER JOIN" className="text-xs">INNER JOIN</SelectItem>
-                                                    <SelectItem value="LEFT JOIN" className="text-xs">LEFT JOIN</SelectItem>
-                                                    <SelectItem value="RIGHT JOIN" className="text-xs">RIGHT JOIN</SelectItem>
+                                                    <SelectGroup>
+                                                        <SelectItem value="INNER JOIN" className="text-xs">INNER JOIN</SelectItem>
+                                                        <SelectItem value="LEFT JOIN" className="text-xs">LEFT JOIN</SelectItem>
+                                                        <SelectItem value="RIGHT JOIN" className="text-xs">RIGHT JOIN</SelectItem>
+                                                    </SelectGroup>
                                                 </SelectContent>
                                             </Select>
                                             <span className="font-mono text-[11px] font-semibold">{targetTable?.name}</span>
@@ -480,7 +487,7 @@ export const QueryBuilderTab: React.FC = (): React.ReactElement => {
                                 WHERE Filters
                             </span>
                             <Button size="sm" variant="outline" className="h-6 text-[10px] gap-1 cursor-pointer" onClick={handleAddCondition}>
-                                <Plus className="size-3" />
+                                <Plus className="size-3" data-icon="inline-start" />
                                 Add Filter
                             </Button>
                         </div>
@@ -497,13 +504,15 @@ export const QueryBuilderTab: React.FC = (): React.ReactElement => {
                                                     handleUpdateCondition(cond.id, { column: val });
                                                 }
                                             }}>
-                                                <SelectTrigger className="h-6 text-[10px] font-mono">
+                                                <SelectTrigger aria-label="Filter Column" className="h-6 text-[10px] font-mono">
                                                     <SelectValue />
                                                 </SelectTrigger>
                                                 <SelectContent className="z-50">
-                                                    {activeTable.columns.map(c => (
-                                                        <SelectItem key={c.id} value={c.name} className="text-xs font-mono">{c.name}</SelectItem>
-                                                    ))}
+                                                    <SelectGroup>
+                                                        {activeTable.columns.map(c => (
+                                                            <SelectItem key={c.id} value={c.name} className="text-xs font-mono">{c.name}</SelectItem>
+                                                        ))}
+                                                    </SelectGroup>
                                                 </SelectContent>
                                             </Select>
                                         </div>
@@ -514,19 +523,21 @@ export const QueryBuilderTab: React.FC = (): React.ReactElement => {
                                                     handleUpdateCondition(cond.id, { operator: val as WhereCondition["operator"] });
                                                 }
                                             }}>
-                                                <SelectTrigger className="h-6 text-[10px] font-mono">
+                                                <SelectTrigger aria-label="Filter Operator" className="h-6 text-[10px] font-mono">
                                                     <SelectValue />
                                                 </SelectTrigger>
                                                 <SelectContent className="z-50">
-                                                    <SelectItem value="=" className="text-xs">=</SelectItem>
-                                                    <SelectItem value="!=" className="text-xs">!=</SelectItem>
-                                                    <SelectItem value=">" className="text-xs">&gt;</SelectItem>
-                                                    <SelectItem value="<" className="text-xs">&lt;</SelectItem>
-                                                    <SelectItem value=">=" className="text-xs">&gt;=</SelectItem>
-                                                    <SelectItem value="<=" className="text-xs">&lt;=</SelectItem>
-                                                    <SelectItem value="LIKE" className="text-xs">LIKE</SelectItem>
-                                                    <SelectItem value="IS NULL" className="text-xs">IS NULL</SelectItem>
-                                                    <SelectItem value="IS NOT NULL" className="text-xs">NOT NULL</SelectItem>
+                                                    <SelectGroup>
+                                                        <SelectItem value="=" className="text-xs">=</SelectItem>
+                                                        <SelectItem value="!=" className="text-xs">!=</SelectItem>
+                                                        <SelectItem value=">" className="text-xs">&gt;</SelectItem>
+                                                        <SelectItem value="<" className="text-xs">&lt;</SelectItem>
+                                                        <SelectItem value=">=" className="text-xs">&gt;=</SelectItem>
+                                                        <SelectItem value="<=" className="text-xs">&lt;=</SelectItem>
+                                                        <SelectItem value="LIKE" className="text-xs">LIKE</SelectItem>
+                                                        <SelectItem value="IS NULL" className="text-xs">IS NULL</SelectItem>
+                                                        <SelectItem value="IS NOT NULL" className="text-xs">NOT NULL</SelectItem>
+                                                    </SelectGroup>
                                                 </SelectContent>
                                             </Select>
                                         </div>
@@ -537,12 +548,13 @@ export const QueryBuilderTab: React.FC = (): React.ReactElement => {
                                                 onChange={e => handleUpdateCondition(cond.id, { value: e.target.value })}
                                                 disabled={cond.operator === "IS NULL" || cond.operator === "IS NOT NULL"}
                                                 placeholder="value..."
+                                                aria-label="Filter condition value"
                                                 className="h-6 text-[10px] font-mono"
                                             />
                                         </div>
 
                                         <div className="col-span-1 flex justify-end">
-                                            <Button size="icon" variant="ghost" className="h-5 w-5 text-destructive" onClick={() => handleRemoveCondition(cond.id)}>
+                                            <Button size="icon" variant="ghost" className="h-6 w-6 text-destructive" aria-label="Remove filter condition" onClick={() => handleRemoveCondition(cond.id)}>
                                                 <Trash2 className="size-3" />
                                             </Button>
                                         </div>
@@ -561,7 +573,7 @@ export const QueryBuilderTab: React.FC = (): React.ReactElement => {
                                 ORDER BY Sorting
                             </span>
                             <Button size="sm" variant="outline" className="h-6 text-[10px] gap-1 cursor-pointer" onClick={handleAddSort}>
-                                <Plus className="size-3" />
+                                <Plus className="size-3" data-icon="inline-start" />
                                 Add Sort
                             </Button>
                         </div>
@@ -580,8 +592,8 @@ export const QueryBuilderTab: React.FC = (): React.ReactElement => {
                                         >
                                             {sort.direction}
                                         </Badge>
-                                        <Button size="icon" variant="ghost" className="h-4 w-4 text-destructive ml-1" onClick={() => handleRemoveSort(sort.column)}>
-                                            <Trash2 className="size-2.5" />
+                                        <Button size="icon" variant="ghost" className="h-6 w-6 text-destructive ml-1" aria-label={`Remove sort for ${sort.column}`} onClick={() => handleRemoveSort(sort.column)}>
+                                            <Trash2 className="size-3" />
                                         </Button>
                                     </div>
                                 ))}
@@ -614,12 +626,12 @@ export const QueryBuilderTab: React.FC = (): React.ReactElement => {
                 {queryType === "SELECT" && (
                     <div className="grid grid-cols-2 gap-2 pt-1">
                         <div className="flex flex-col gap-1">
-                            <Label className="text-xs">LIMIT</Label>
-                            <Input value={limit} onChange={e => setLimit(e.target.value)} className="h-7 text-xs font-mono" placeholder="50" />
+                            <Label htmlFor="qb-limit" className="text-xs">LIMIT</Label>
+                            <Input id="qb-limit" value={limit} onChange={e => setLimit(e.target.value)} aria-label="Query LIMIT" className="h-7 text-xs font-mono" placeholder="50" />
                         </div>
                         <div className="flex flex-col gap-1">
-                            <Label className="text-xs">OFFSET</Label>
-                            <Input value={offset} onChange={e => setOffset(e.target.value)} className="h-7 text-xs font-mono" placeholder="0" />
+                            <Label htmlFor="qb-offset" className="text-xs">OFFSET</Label>
+                            <Input id="qb-offset" value={offset} onChange={e => setOffset(e.target.value)} aria-label="Query OFFSET" className="h-7 text-xs font-mono" placeholder="0" />
                         </div>
                     </div>
                 )}
@@ -629,7 +641,7 @@ export const QueryBuilderTab: React.FC = (): React.ReactElement => {
                 <div className="flex items-center justify-between">
                     <Label className="text-xs font-semibold">Generated SQL Query</Label>
                     <Button size="sm" variant="outline" className="h-6 text-[10px] gap-1 cursor-pointer" onClick={handleCopy}>
-                        {copied ? <Check className="size-3 text-emerald-500" /> : <Copy className="size-3" />}
+                        {copied ? <Check className="size-3 text-emerald-500" data-icon="inline-start" /> : <Copy className="size-3" data-icon="inline-start" />}
                         {copied ? "Copied" : "Copy"}
                     </Button>
                 </div>

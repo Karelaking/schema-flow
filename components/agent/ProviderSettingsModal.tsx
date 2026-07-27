@@ -203,7 +203,7 @@ export const ProviderSettingsModal: React.FC<ProviderSettingsModalProps> = ({ op
                                 disabled={!localKey.trim()}
                                 className="h-9 text-xs gap-1 cursor-pointer shrink-0"
                             >
-                                <RefreshCw className={`size-3 ${isLoadingModels ? "animate-spin" : ""}`} />
+                                <RefreshCw className={`size-3 ${isLoadingModels ? "animate-spin" : ""}`} data-icon="inline-start" />
                                 Load Models
                             </Button>
                         </div>

@@ -78,6 +78,7 @@ export const CodePreviewTab: React.FC = (): React.ReactElement => {
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1 bg-muted p-1 rounded-md">
                     <button
+                        type="button"
                         onClick={() => setCodeType("sql")}
                         className={`px-2.5 py-1 text-xs font-medium rounded-sm transition-colors cursor-pointer ${
                             codeType === "sql" ? "bg-background text-foreground shadow-2xs font-semibold" : "text-muted-foreground hover:text-foreground"
@@ -86,6 +87,7 @@ export const CodePreviewTab: React.FC = (): React.ReactElement => {
                         SQL ({dialect.toUpperCase()})
                     </button>
                     <button
+                        type="button"
                         onClick={() => setCodeType("typescript")}
                         className={`px-2.5 py-1 text-xs font-medium rounded-sm transition-colors cursor-pointer ${
                             codeType === "typescript" ? "bg-background text-foreground shadow-2xs font-semibold" : "text-muted-foreground hover:text-foreground"

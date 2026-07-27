@@ -52,7 +52,7 @@ export const ValidationTab: React.FC = (): React.ReactElement => {
     }, [currentAST]);
 
     return (
-        <div className="flex flex-col gap-4">
+        <div role="status" aria-live="polite" className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
                 <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
                     Diagnostic Report
@@ -75,19 +75,19 @@ export const ValidationTab: React.FC = (): React.ReactElement => {
             ) : (
                 <div className="flex flex-col gap-2 max-h-100 overflow-y-auto pr-1">
                     {validationResult.errors.map((err, i) => (
-                        <Card key={`err-${i}`} className="border-destructive/30 bg-destructive/5">
+                        <Card key={`err-${i}`} role="alert" aria-live="polite" className="border-destructive/30 bg-destructive/5">
                             <CardContent className="p-3 flex items-start gap-2.5">
                                 <AlertCircle className="size-4 text-destructive shrink-0 mt-0.5" />
                                 <div className="flex flex-col gap-0.5">
-                                    <span className="text-xs font-semibold text-destructive">Error</span>
-                                    <span className="text-xs text-foreground/90">{err.message}</span>
+                                    <span className="text-xs font-semibold text-destructive">Field Error</span>
+                                    <span className="text-xs text-foreground/90 font-medium" data-field-error="true">{err.message}</span>
                                 </div>
                             </CardContent>
                         </Card>
                     ))}
 
                     {validationResult.warnings.map((warn, i) => (
-                        <Card key={`warn-${i}`} className="border-amber-500/30 bg-amber-500/5">
+                        <Card key={`warn-${i}`} role="status" aria-live="polite" className="border-amber-500/30 bg-amber-500/5">
                             <CardContent className="p-3 flex items-start gap-2.5">
                                 <AlertTriangle className="size-4 text-amber-500 shrink-0 mt-0.5" />
                                 <div className="flex flex-col gap-0.5">

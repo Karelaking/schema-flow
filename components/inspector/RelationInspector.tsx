@@ -51,9 +51,9 @@ export const RelationInspector: React.FC<RelationInspectorProps> = ({ selectedRe
     };
 
     return (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4" data-slot="relation-inspector">
             <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider" data-slot="section-header">
                     Relationship Details
                 </span>
                 <Button
@@ -62,45 +62,49 @@ export const RelationInspector: React.FC<RelationInspectorProps> = ({ selectedRe
                     className="size-7 text-destructive hover:text-destructive hover:bg-destructive/10 cursor-pointer"
                     onClick={() => deleteRelation(selectedRelation.id)}
                     title="Delete Relationship"
+                    aria-label="Delete Relationship"
+                    data-slot="button"
                 >
-                    <Trash2 className="size-3.5" />
+                    <Trash2 className="size-3.5" data-slot="icon" aria-hidden="true" />
                 </Button>
             </div>
 
-            <div className="flex flex-col gap-2 p-3 bg-primary/5 rounded-md border border-primary/20 text-xs">
+            <div className="flex flex-col gap-2 p-3 bg-primary/5 rounded-md border border-primary/20 text-xs" data-slot="fk-summary">
                 <div className="flex items-center justify-between font-semibold text-primary">
-                    <span>FK Constraint Location:</span>
-                    <span>{fkTable?.name}.{fkCol?.name}</span>
+                    <span data-slot="label">FK Constraint Location:</span>
+                    <span data-slot="value">{fkTable?.name}.{fkCol?.name}</span>
                 </div>
                 <div className="flex items-center justify-between text-muted-foreground text-[11px]">
-                    <span>References:</span>
-                    <span className="font-mono text-foreground">{pkTable?.name}.{pkCol?.name}</span>
+                    <span data-slot="label">References:</span>
+                    <span className="font-mono text-foreground" data-slot="value">{pkTable?.name}.{pkCol?.name}</span>
                 </div>
 
                 <Button
                     variant="outline"
                     size="sm"
                     onClick={handleSwapDirection}
+                    aria-label="Swap Relationship Direction"
+                    data-slot="button"
                     className="h-7 text-xs gap-1.5 mt-1 cursor-pointer w-full"
                 >
-                    <ArrowLeftRight className="size-3.5" />
-                    Swap Relationship Direction
+                    <ArrowLeftRight className="size-3.5" data-slot="icon" data-icon="inline-start" aria-hidden="true" />
+                    <span>Swap Relationship Direction</span>
                 </Button>
             </div>
 
-            <div className="flex flex-col gap-2 p-3 bg-muted/40 rounded-md border text-xs">
+            <div className="flex flex-col gap-2 p-3 bg-muted/40 rounded-md border text-xs" data-slot="table-info">
                 <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Source Table:</span>
-                    <span className="font-semibold">{sourceTable?.name || "Unknown"}</span>
+                    <span className="text-muted-foreground" data-slot="label">Source Table:</span>
+                    <span className="font-semibold" data-slot="value">{sourceTable?.name || "Unknown"}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Target Table:</span>
-                    <span className="font-semibold">{targetTable?.name || "Unknown"}</span>
+                    <span className="text-muted-foreground" data-slot="label">Target Table:</span>
+                    <span className="font-semibold" data-slot="value">{targetTable?.name || "Unknown"}</span>
                 </div>
             </div>
 
             <div className="flex flex-col gap-2">
-                <Label className="text-xs">Relationship Type</Label>
+                <Label htmlFor="rel-type-select" className="text-xs" data-slot="label">Relationship Type</Label>
                 <Select
                     value={selectedRelation.type}
                     onValueChange={val => {
@@ -109,22 +113,22 @@ export const RelationInspector: React.FC<RelationInspectorProps> = ({ selectedRe
                         }
                     }}
                 >
-                    <SelectTrigger className="h-8 text-xs">
+                    <SelectTrigger id="rel-type-select" className="h-8 text-xs" data-slot="select-trigger" aria-label="Relationship Type">
                         <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent data-slot="select-content">
                         <SelectGroup>
-                            <SelectItem value="one-to-one">One-to-One (1:1)</SelectItem>
-                            <SelectItem value="one-to-many">One-to-Many (1:N)</SelectItem>
-                            <SelectItem value="many-to-one">Many-to-One (N:1)</SelectItem>
-                            <SelectItem value="many-to-many">Many-to-Many (N:M)</SelectItem>
+                            <SelectItem value="one-to-one" className="text-xs">One-to-One (1:1)</SelectItem>
+                            <SelectItem value="one-to-many" className="text-xs">One-to-Many (1:N)</SelectItem>
+                            <SelectItem value="many-to-one" className="text-xs">Many-to-One (N:1)</SelectItem>
+                            <SelectItem value="many-to-many" className="text-xs">Many-to-Many (N:M)</SelectItem>
                         </SelectGroup>
                     </SelectContent>
                 </Select>
             </div>
 
             <div className="flex flex-col gap-2">
-                <Label className="text-xs">ON DELETE Action</Label>
+                <Label htmlFor="on-delete-select" className="text-xs" data-slot="label">ON DELETE Action</Label>
                 <Select
                     value={selectedRelation.onDelete || "no-action"}
                     onValueChange={val => {
@@ -133,22 +137,22 @@ export const RelationInspector: React.FC<RelationInspectorProps> = ({ selectedRe
                         }
                     }}
                 >
-                    <SelectTrigger className="h-8 text-xs font-mono">
+                    <SelectTrigger id="on-delete-select" className="h-8 text-xs font-mono" data-slot="select-trigger" aria-label="ON DELETE Action">
                         <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent data-slot="select-content">
                         <SelectGroup>
-                            <SelectItem value="cascade">CASCADE</SelectItem>
-                            <SelectItem value="restrict">RESTRICT</SelectItem>
-                            <SelectItem value="set-null">SET NULL</SelectItem>
-                            <SelectItem value="no-action">NO ACTION</SelectItem>
+                            <SelectItem value="cascade" className="text-xs">CASCADE</SelectItem>
+                            <SelectItem value="restrict" className="text-xs">RESTRICT</SelectItem>
+                            <SelectItem value="set-null" className="text-xs">SET NULL</SelectItem>
+                            <SelectItem value="no-action" className="text-xs">NO ACTION</SelectItem>
                         </SelectGroup>
                     </SelectContent>
                 </Select>
             </div>
 
             <div className="flex flex-col gap-2">
-                <Label className="text-xs">ON UPDATE Action</Label>
+                <Label htmlFor="on-update-select" className="text-xs" data-slot="label">ON UPDATE Action</Label>
                 <Select
                     value={selectedRelation.onUpdate || "no-action"}
                     onValueChange={val => {
@@ -157,15 +161,15 @@ export const RelationInspector: React.FC<RelationInspectorProps> = ({ selectedRe
                         }
                     }}
                 >
-                    <SelectTrigger className="h-8 text-xs font-mono">
+                    <SelectTrigger id="on-update-select" className="h-8 text-xs font-mono" data-slot="select-trigger" aria-label="ON UPDATE Action">
                         <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent data-slot="select-content">
                         <SelectGroup>
-                            <SelectItem value="cascade">CASCADE</SelectItem>
-                            <SelectItem value="restrict">RESTRICT</SelectItem>
-                            <SelectItem value="set-null">SET NULL</SelectItem>
-                            <SelectItem value="no-action">NO ACTION</SelectItem>
+                            <SelectItem value="cascade" className="text-xs">CASCADE</SelectItem>
+                            <SelectItem value="restrict" className="text-xs">RESTRICT</SelectItem>
+                            <SelectItem value="set-null" className="text-xs">SET NULL</SelectItem>
+                            <SelectItem value="no-action" className="text-xs">NO ACTION</SelectItem>
                         </SelectGroup>
                     </SelectContent>
                 </Select>

@@ -3,14 +3,14 @@
 import React from "react";
 import Link from "next/link";
 import { Sparkles, ArrowRight, Terminal, CheckCircle2, Cpu, FileCode2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 
 export function DrizzleSection(): React.JSX.Element {
   return (
-    <section id="drizzle" className="py-16 md:py-24 bg-gradient-to-b from-background via-primary/5 to-background relative overflow-hidden">
+    <section id="drizzle" className="py-16 md:py-24 bg-linear-to-b from-background via-primary/5 to-background relative overflow-hidden">
       
       {/* Glow Blur */}
-      <div className="pointer-events-none absolute top-1/2 left-1/2 -z-10 h-[450px] w-[650px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-500/10 blur-3xl" />
+      <div className="pointer-events-none absolute top-1/2 left-1/2 -z-10 h-112.5 w-162.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-500/10 blur-3xl" />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -50,11 +50,9 @@ export function DrizzleSection(): React.JSX.Element {
             </ul>
 
             <div className="pt-4">
-              <Link href="/workspace">
-                <Button size="lg" className="gap-2 font-semibold shadow-lg shadow-primary/20 cursor-pointer">
-                  <span>Start Building with Drizzle ORM</span>
-                  <ArrowRight className="size-4" />
-                </Button>
+              <Link href="/workspace" className={buttonVariants({ size: "lg", className: "font-semibold shadow-lg shadow-primary/20 cursor-pointer" })}>
+                <span>Start Building with Drizzle ORM</span>
+                <ArrowRight className="size-4" data-icon="inline-end" />
               </Link>
             </div>
           </div>

@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Trash2 } from "lucide-react";
+import { Trash2, Loader2 } from "lucide-react";
 import { projectSettingsSchema, ProjectSettingsInput } from "@/lib/schemas";
 import { useStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
@@ -88,11 +88,18 @@ export const ProjectSettingsDialog: React.FC<ProjectSettingsDialogProps> = ({ op
         }
     }, [open, projectName, projectDescription, dialect, autoAddId, autoAddTimestamps, reset]);
 
-    const onSubmit = (data: ProjectSettingsInput): void => {
-        setProjectDetails(data.name, data.description || "", data.dialect);
-        setAutoAddId(data.autoAddId);
-        setAutoAddTimestamps(data.autoAddTimestamps);
-        onOpenChange(false);
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+    const onSubmit = async (data: ProjectSettingsInput): Promise<void> => {
+        setIsSubmitting(true);
+        try {
+            setProjectDetails(data.name, data.description || "", data.dialect);
+            setAutoAddId(data.autoAddId);
+            setAutoAddTimestamps(data.autoAddTimestamps);
+            onOpenChange(false);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -130,12 +137,12 @@ export const ProjectSettingsDialog: React.FC<ProjectSettingsDialogProps> = ({ op
                     </div>
 
                     <div className="flex flex-col gap-2">
-                        <Label>SQL Dialect</Label>
+                        <Label htmlFor="settings-proj-dialect">SQL Dialect</Label>
                         <Select
                             value={selectedDialect}
                             onValueChange={val => setValue("dialect", val as ProjectSettingsInput["dialect"])}
                         >
-                            <SelectTrigger className="w-full">
+                            <SelectTrigger id="settings-proj-dialect" className="w-full">
                                 <SelectValue placeholder="Select dialect..." />
                             </SelectTrigger>
                             <SelectContent>
@@ -158,10 +165,12 @@ export const ProjectSettingsDialog: React.FC<ProjectSettingsDialogProps> = ({ op
 
                         <div className="flex items-center justify-between">
                             <div className="flex flex-col">
-                                <Label className="text-xs cursor-pointer">Auto-add Primary Key</Label>
+                                <Label htmlFor="setting-auto-id" className="text-xs cursor-pointer">Auto-add Primary Key</Label>
                                 <span className="text-[11px] text-muted-foreground">Add &quot;id&quot; column to new tables</span>
                             </div>
                             <Switch
+                                id="setting-auto-id"
+                                aria-label="Auto-add Primary Key"
                                 checked={watchAutoAddId}
                                 onCheckedChange={val => setValue("autoAddId", val)}
                             />
@@ -169,10 +178,12 @@ export const ProjectSettingsDialog: React.FC<ProjectSettingsDialogProps> = ({ op
 
                         <div className="flex items-center justify-between">
                             <div className="flex flex-col">
-                                <Label className="text-xs cursor-pointer">Auto-add Timestamps</Label>
+                                <Label htmlFor="setting-auto-timestamps" className="text-xs cursor-pointer">Auto-add Timestamps</Label>
                                 <span className="text-[11px] text-muted-foreground">Add created_at &amp; updated_at</span>
                             </div>
                             <Switch
+                                id="setting-auto-timestamps"
+                                aria-label="Auto-add Timestamps"
                                 checked={watchAutoAddTimestamps}
                                 onCheckedChange={val => setValue("autoAddTimestamps", val)}
                             />
@@ -190,9 +201,11 @@ export const ProjectSettingsDialog: React.FC<ProjectSettingsDialogProps> = ({ op
                                     onOpenChange(false);
                                     onDeleteRequest();
                                 }}
+                                aria-label="Delete Project"
+                                data-slot="button"
                             >
-                                <Trash2 className="size-3.5 mr-1" />
-                                Delete Project
+                                <Trash2 className="size-3.5" data-slot="icon" data-icon="inline-start" aria-hidden="true" />
+                                <span>Delete Project</span>
                             </Button>
                         ) : <div />}
 
@@ -200,8 +213,15 @@ export const ProjectSettingsDialog: React.FC<ProjectSettingsDialogProps> = ({ op
                             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                                 Cancel
                             </Button>
-                            <Button type="submit" className="cursor-pointer">
-                                Save Changes
+                            <Button type="submit" disabled={isSubmitting} className="cursor-pointer">
+                                {isSubmitting ? (
+                                    <>
+                                        <Loader2 className="size-3.5 animate-spin" data-icon="inline-start" />
+                                        Saving...
+                                    </>
+                                ) : (
+                                    "Save Changes"
+                                )}
                             </Button>
                         </div>
                     </DialogFooter>

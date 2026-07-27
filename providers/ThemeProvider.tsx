@@ -44,6 +44,33 @@ export function ThemeProvider({ children }: { children: React.ReactNode }): Reac
         useStore.getState().setTheme(theme);
     }, [theme]);
 
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent): void => {
+            const target = e.target as HTMLElement | null;
+            if (
+                target &&
+                (target.tagName === "INPUT" ||
+                    target.tagName === "TEXTAREA" ||
+                    target.tagName === "SELECT" ||
+                    target.isContentEditable ||
+                    Boolean(target.closest && target.closest("input, textarea, select, [contenteditable='true']")))
+            ) {
+                return;
+            }
+            const keyLower = e.key.toLowerCase();
+            const isSingleD = keyLower === "d" && !e.metaKey && !e.ctrlKey && !e.altKey;
+            const isCmdShiftD = (e.metaKey || e.ctrlKey) && e.shiftKey && keyLower === "d";
+
+            if (isSingleD || isCmdShiftD) {
+                e.preventDefault();
+                setThemeState(prev => (prev === "dark" ? "light" : "dark"));
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, []);
+
     const toggleTheme = (): void => {
         setThemeState(prev => (prev === "dark" ? "light" : "dark"));
     };

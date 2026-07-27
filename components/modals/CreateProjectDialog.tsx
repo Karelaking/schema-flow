@@ -127,12 +127,12 @@ export const CreateProjectDialog: React.FC<CreateProjectDialogProps> = ({ open, 
                     </div>
 
                     <div className="flex flex-col gap-2">
-                        <Label>SQL Dialect</Label>
+                        <Label htmlFor="create-proj-dialect">SQL Dialect</Label>
                         <Select
                             value={selectedDialect}
                             onValueChange={val => setValue("dialect", val as CreateProjectInput["dialect"])}
                         >
-                            <SelectTrigger className="w-full">
+                            <SelectTrigger id="create-proj-dialect" className="w-full">
                                 <SelectValue placeholder="Select dialect..." />
                             </SelectTrigger>
                             <SelectContent>

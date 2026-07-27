@@ -19,6 +19,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ activeTab, o
     return (
         <div className="h-14 bg-card/90 border-t border-border backdrop-blur-xs flex items-center justify-around z-40 shrink-0 select-none w-full">
             <button
+                type="button"
                 onClick={() => onTabChange("explorer")}
                 className={cn(
                     "flex flex-col items-center justify-center gap-0.5 w-20 h-full transition-colors cursor-pointer",
@@ -30,6 +31,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ activeTab, o
             </button>
 
             <button
+                type="button"
                 onClick={() => onTabChange("canvas")}
                 className={cn(
                     "flex flex-col items-center justify-center gap-0.5 w-20 h-full transition-colors cursor-pointer",
@@ -41,6 +43,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ activeTab, o
             </button>
 
             <button
+                type="button"
                 onClick={() => onTabChange("inspector")}
                 className={cn(
                     "flex flex-col items-center justify-center gap-0.5 w-20 h-full transition-colors cursor-pointer",

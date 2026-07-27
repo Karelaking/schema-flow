@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { Database, ArrowRight, Heart, Github, Terminal, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 
 export function Footer(): React.JSX.Element {
   return (
@@ -20,11 +20,9 @@ export function Footer(): React.JSX.Element {
               Launch Schema Flow now, build your ERD visually, and export type-safe Drizzle ORM code in seconds.
             </p>
             <div className="pt-2">
-              <Link href="/workspace">
-                <Button size="lg" className="h-12 px-8 font-semibold shadow-lg shadow-primary/25 cursor-pointer hover:scale-103 transition-transform">
-                  <span>Launch Workspace Now</span>
-                  <ArrowRight className="size-4 ml-2" />
-                </Button>
+              <Link href="/workspace" className={buttonVariants({ size: "lg", className: "h-12 px-8 font-semibold shadow-lg shadow-primary/25 cursor-pointer hover:scale-103 transition-transform" })}>
+                <span>Launch Workspace Now</span>
+                <ArrowRight className="size-4 ml-2" data-icon="inline-end" />
               </Link>
             </div>
           </div>

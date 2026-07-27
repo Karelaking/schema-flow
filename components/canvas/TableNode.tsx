@@ -45,9 +45,18 @@ export const TableNode: React.FC<TableNodeProps> = ({ id, data, selected }): Rea
 
     return (
         <div
+            role="button"
+            tabIndex={0}
+            aria-label={`Table node ${table.name}`}
             onClick={handleNodeClick}
+            onKeyDown={e => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.stopPropagation();
+                    selectTable(id);
+                }
+            }}
             className={cn(
-                "min-w-64 rounded-xl border bg-card text-card-foreground shadow-lg transition-all duration-200 select-none",
+                "min-w-64 rounded-xl border bg-card text-card-foreground shadow-lg transition-all duration-200 select-none cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary",
                 selected
                     ? "border-primary ring-2 ring-primary/20 scale-[1.01]"
                     : "border-border hover:border-muted-foreground/30"

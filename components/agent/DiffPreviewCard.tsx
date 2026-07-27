@@ -140,7 +140,7 @@ export const DiffPreviewCard: React.FC = (): React.ReactElement | null => {
                     onClick={rejectPatch}
                     className="h-7 text-xs gap-1 text-destructive hover:text-destructive hover:bg-destructive/10 cursor-pointer"
                 >
-                    <X className="size-3" />
+                    <X className="size-3" data-icon="inline-start" />
                     Reject
                 </Button>
                 <Button
@@ -148,7 +148,7 @@ export const DiffPreviewCard: React.FC = (): React.ReactElement | null => {
                     onClick={approvePatch}
                     className="h-7 text-xs gap-1.5 cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white"
                 >
-                    <Check className="size-3" />
+                    <Check className="size-3" data-icon="inline-start" />
                     Approve &amp; Apply
                 </Button>
             </div>

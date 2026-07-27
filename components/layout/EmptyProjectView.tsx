@@ -100,7 +100,7 @@ export const EmptyProjectView: React.FC<EmptyProjectViewProps> = ({ onProjectCre
                 onClick={() => setCreateOpen(true)}
                 className="gap-2 px-6 cursor-pointer"
             >
-                <Plus className="size-4" />
+                <Plus className="size-4" data-icon="inline-start" />
                 Create New Project
             </Button>
 
@@ -138,7 +138,7 @@ export const EmptyProjectView: React.FC<EmptyProjectViewProps> = ({ onProjectCre
                                 value={newDialect}
                                 onValueChange={val => setNewDialect(val as DatabaseDialect)}
                             >
-                                <SelectTrigger className="w-full">
+                                <SelectTrigger className="w-full" aria-label="SQL Dialect">
                                     <SelectValue placeholder="Select dialect..." />
                                 </SelectTrigger>
                                 <SelectContent>

@@ -76,14 +76,16 @@ export const DeleteProjectDialog: React.FC<DeleteProjectDialogProps> = ({ target
                 </DialogHeader>
 
                 <div className="space-y-2 py-2">
-                    <label className="text-xs font-medium text-muted-foreground block">
+                    <label htmlFor="confirm-project-name" className="text-xs font-medium text-muted-foreground block">
                         To confirm, type <span className="font-semibold text-foreground select-all">&quot;{targetProject?.name}&quot;</span> below:
                     </label>
                     <Input
+                        id="confirm-project-name"
                         type="text"
                         value={typedName}
                         onChange={e => setTypedName(e.target.value)}
                         placeholder={targetProject?.name}
+                        aria-label="Confirm project name"
                         className="h-9 text-xs"
                     />
                 </div>

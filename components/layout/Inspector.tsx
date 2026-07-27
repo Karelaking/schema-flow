@@ -62,7 +62,7 @@ export const Inspector: React.FC<InspectorProps> = ({ className, style }): React
             <div className="p-3 border-b flex items-center justify-between gap-2 shrink-0 bg-muted/10">
                 <div className="flex-1 min-w-0">
                     <Select value={activeView} onValueChange={handleSelectChange}>
-                        <SelectTrigger className="w-full h-8 text-xs font-medium bg-background border-border shadow-xs">
+                        <SelectTrigger className="w-full h-8 text-xs font-medium bg-background border-border shadow-xs" aria-label="Inspector View Panel">
                             <SelectValue placeholder="Select View..." />
                         </SelectTrigger>
                         <SelectContent align="start" className="w-(--anchor-width) min-w-48 bg-card border shadow-md z-50 p-1">

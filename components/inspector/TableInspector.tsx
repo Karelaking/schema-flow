@@ -180,10 +180,12 @@ export const TableInspector: React.FC<TableInspectorProps> = ({ selectedTable, s
                         {PRESET_COLORS.map(c => (
                             <button
                                 key={c.value}
+                                type="button"
                                 onClick={() => updateTable(selectedTable.id, { color: c.value })}
-                                className="size-5 rounded-full border border-border transition-transform hover:scale-110 cursor-pointer"
+                                className="size-6 rounded-full border border-border transition-transform hover:scale-110 cursor-pointer"
                                 style={{ backgroundColor: c.value }}
                                 title={c.name}
+                                aria-label={`Header color ${c.name}`}
                             />
                         ))}
                     </div>
@@ -193,8 +195,8 @@ export const TableInspector: React.FC<TableInspectorProps> = ({ selectedTable, s
             <Separator />
 
             <div className="flex flex-col gap-3">
-                <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                <div className="flex items-center justify-between" data-slot="section-header">
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider" data-slot="label">
                         Columns ({selectedTable.columns.length})
                     </span>
                     <Button
@@ -202,9 +204,11 @@ export const TableInspector: React.FC<TableInspectorProps> = ({ selectedTable, s
                         variant="outline"
                         className="h-7 text-xs gap-1 cursor-pointer"
                         onClick={handleAddColumn}
+                        aria-label="Add Column"
+                        data-slot="button"
                     >
-                        <Plus className="size-3.5" />
-                        Add Column
+                        <Plus className="size-3.5" data-slot="icon" data-icon="inline-start" aria-hidden="true" />
+                        <span>Add Column</span>
                     </Button>
                 </div>
 
@@ -212,12 +216,20 @@ export const TableInspector: React.FC<TableInspectorProps> = ({ selectedTable, s
                     {selectedTable.columns.map((col, idx) => (
                         <div
                             key={col.id}
+                            role="button"
+                            tabIndex={0}
+                            aria-label={`Select column ${col.name}`}
                             draggable
                             onDragStart={e => handleDragStart(e, idx)}
                             onDragOver={handleDragOver}
                             onDrop={e => handleDrop(e, idx)}
                             onClick={() => setSelectedColId(col.id)}
-                            className={`flex items-center justify-between p-2 rounded-md border text-xs cursor-pointer transition-colors ${
+                            onKeyDown={e => {
+                                if (e.key === "Enter" || e.key === " ") {
+                                    setSelectedColId(col.id);
+                                }
+                            }}
+                            className={`flex items-center justify-between p-2 rounded-md border text-xs cursor-pointer transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary ${
                                 selectedColId === col.id ? "border-primary bg-primary/5 font-semibold" : "border-border hover:bg-muted/50"
                             } ${draggedColIndex === idx ? "opacity-40 border-dashed" : ""}`}
                         >
@@ -267,28 +279,33 @@ export const TableInspector: React.FC<TableInspectorProps> = ({ selectedTable, s
 
                             <div className="flex items-center gap-1 shrink-0">
                                 <button
+                                    type="button"
                                     onClick={e => {
                                         e.stopPropagation();
                                         handleMoveColumn(idx, "up");
                                     }}
                                     disabled={idx === 0}
-                                    className="size-5 flex items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-30 cursor-pointer"
+                                    className="size-6 flex items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-30 cursor-pointer"
                                     title="Move Up"
+                                    aria-label={`Move column ${col.name} up`}
                                 >
                                     <ArrowUp className="size-3" />
                                 </button>
                                 <button
+                                    type="button"
                                     onClick={e => {
                                         e.stopPropagation();
                                         handleMoveColumn(idx, "down");
                                     }}
                                     disabled={idx === selectedTable.columns.length - 1}
-                                    className="size-5 flex items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-30 cursor-pointer"
+                                    className="size-6 flex items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-30 cursor-pointer"
                                     title="Move Down"
+                                    aria-label={`Move column ${col.name} down`}
                                 >
                                     <ArrowDown className="size-3" />
                                 </button>
                                 <button
+                                    type="button"
                                     onClick={e => {
                                         e.stopPropagation();
                                         deleteColumn(selectedTable.id, col.id);
@@ -296,8 +313,9 @@ export const TableInspector: React.FC<TableInspectorProps> = ({ selectedTable, s
                                             setSelectedColId(undefined);
                                         }
                                     }}
-                                    className="size-5 flex items-center justify-center text-muted-foreground hover:text-destructive cursor-pointer"
+                                    className="size-6 flex items-center justify-center text-muted-foreground hover:text-destructive cursor-pointer"
                                     title="Delete Column"
+                                    aria-label={`Delete column ${col.name}`}
                                 >
                                     <Trash2 className="size-3" />
                                 </button>
@@ -315,10 +333,12 @@ export const TableInspector: React.FC<TableInspectorProps> = ({ selectedTable, s
                         </span>
 
                         <div className="flex flex-col gap-2">
-                            <Label className="text-xs">Column Name</Label>
+                            <Label htmlFor="inspector-col-name" className="text-xs">Column Name</Label>
                             <Input
+                                id="inspector-col-name"
                                 value={selectedCol.name}
                                 onChange={e => updateColumn(selectedTable.id, selectedCol.id, { name: e.target.value })}
+                                aria-label="Column Name"
                                 className="h-8 text-xs"
                             />
                         </div>
@@ -444,7 +464,7 @@ export const TableInspector: React.FC<TableInspectorProps> = ({ selectedTable, s
                             return (
                                 <>
                                     <div className="flex flex-col gap-2">
-                                        <Label className="text-xs">Default Value</Label>
+                                        <Label htmlFor="inspector-col-default" className="text-xs">Default Value</Label>
                                         {selectedColEnum ? (
                                             <Select
                                                 value={selectedCol.constraints.defaultValue || "__none__"}
@@ -452,18 +472,20 @@ export const TableInspector: React.FC<TableInspectorProps> = ({ selectedTable, s
                                                     constraints: { ...selectedCol.constraints, defaultValue: val === "__none__" ? "" : val ?? undefined }
                                                 })}
                                             >
-                                                <SelectTrigger className="h-8 text-xs font-mono">
+                                                <SelectTrigger id="inspector-col-default" aria-label="Default Value" className="h-8 text-xs font-mono">
                                                     <SelectValue placeholder="Select default..." />
                                                 </SelectTrigger>
                                                 <SelectContent className="z-50">
-                                                    <SelectItem value="__none__" className="text-xs cursor-pointer text-muted-foreground italic">
-                                                        No default
-                                                    </SelectItem>
-                                                    {selectedColEnum.values.map(v => (
-                                                        <SelectItem key={v} value={v} className="text-xs cursor-pointer font-mono">
-                                                            {v}
+                                                    <SelectGroup>
+                                                        <SelectItem value="__none__" className="text-xs cursor-pointer text-muted-foreground italic">
+                                                            No default
                                                         </SelectItem>
-                                                    ))}
+                                                        {selectedColEnum.values.map(v => (
+                                                            <SelectItem key={v} value={v} className="text-xs cursor-pointer font-mono">
+                                                                {v}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectGroup>
                                                 </SelectContent>
                                             </Select>
                                         ) : isBooleanType ? (
@@ -473,27 +495,31 @@ export const TableInspector: React.FC<TableInspectorProps> = ({ selectedTable, s
                                                     constraints: { ...selectedCol.constraints, defaultValue: val === "__none__" ? "" : val ?? undefined }
                                                 })}
                                             >
-                                                <SelectTrigger className="h-8 text-xs font-mono">
+                                                <SelectTrigger id="inspector-col-default" aria-label="Default Value" className="h-8 text-xs font-mono">
                                                     <SelectValue placeholder="Select boolean default..." />
                                                 </SelectTrigger>
                                                 <SelectContent className="z-50">
-                                                    <SelectItem value="__none__" className="text-xs cursor-pointer text-muted-foreground italic">
-                                                        No default
-                                                    </SelectItem>
-                                                    <SelectItem value="TRUE" className="text-xs cursor-pointer font-mono">
-                                                        TRUE
-                                                    </SelectItem>
-                                                    <SelectItem value="FALSE" className="text-xs cursor-pointer font-mono">
-                                                        FALSE
-                                                    </SelectItem>
+                                                    <SelectGroup>
+                                                        <SelectItem value="__none__" className="text-xs cursor-pointer text-muted-foreground italic">
+                                                            No default
+                                                        </SelectItem>
+                                                        <SelectItem value="TRUE" className="text-xs cursor-pointer font-mono">
+                                                            TRUE
+                                                        </SelectItem>
+                                                        <SelectItem value="FALSE" className="text-xs cursor-pointer font-mono">
+                                                            FALSE
+                                                        </SelectItem>
+                                                    </SelectGroup>
                                                 </SelectContent>
                                             </Select>
                                         ) : (
                                             <Input
+                                                id="inspector-col-default"
                                                 value={selectedCol.constraints.defaultValue || ""}
                                                 onChange={e => updateColumn(selectedTable.id, selectedCol.id, {
                                                     constraints: { ...selectedCol.constraints, defaultValue: e.target.value }
                                                 })}
+                                                aria-label="Default Value"
                                                 className="h-8 text-xs font-mono"
                                                 placeholder="NULL, CURRENT_TIMESTAMP..."
                                             />
@@ -505,6 +531,7 @@ export const TableInspector: React.FC<TableInspectorProps> = ({ selectedTable, s
                                             <Label className="text-xs cursor-pointer">Primary Key</Label>
                                             <Switch
                                                 checked={selectedCol.constraints.isPrimaryKey}
+                                                aria-label="Primary Key"
                                                 onCheckedChange={val => updateColumn(selectedTable.id, selectedCol.id, {
                                                     constraints: { ...selectedCol.constraints, isPrimaryKey: val }
                                                 })}
@@ -523,6 +550,7 @@ export const TableInspector: React.FC<TableInspectorProps> = ({ selectedTable, s
                                             <Switch
                                                 checked={selectedCol.constraints.isNullable && !hasDefaultValue}
                                                 disabled={hasDefaultValue}
+                                                aria-label="Nullable"
                                                 onCheckedChange={val => updateColumn(selectedTable.id, selectedCol.id, {
                                                     constraints: { ...selectedCol.constraints, isNullable: val }
                                                 })}
@@ -532,6 +560,7 @@ export const TableInspector: React.FC<TableInspectorProps> = ({ selectedTable, s
                                             <Label className="text-xs cursor-pointer">Unique</Label>
                                             <Switch
                                                 checked={selectedCol.constraints.isUnique}
+                                                aria-label="Unique"
                                                 onCheckedChange={val => updateColumn(selectedTable.id, selectedCol.id, {
                                                     constraints: { ...selectedCol.constraints, isUnique: val }
                                                 })}
@@ -542,6 +571,7 @@ export const TableInspector: React.FC<TableInspectorProps> = ({ selectedTable, s
                                             <Label className="text-xs cursor-pointer">Auto Increment</Label>
                                             <Switch
                                                 checked={selectedCol.constraints.isAutoIncrement}
+                                                aria-label="Auto Increment"
                                                 onCheckedChange={val => updateColumn(selectedTable.id, selectedCol.id, {
                                                     constraints: { ...selectedCol.constraints, isAutoIncrement: val }
                                                 })}
@@ -557,11 +587,11 @@ export const TableInspector: React.FC<TableInspectorProps> = ({ selectedTable, s
 
             <Separator />
 
-            <div className="flex flex-col gap-3">
-                <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
-                        <BookmarkPlus className="size-3" />
-                        Indexes ({selectedTable.indexes?.length || 0})
+            <div className="flex flex-col gap-3" data-slot="indexes-section">
+                <div className="flex items-center justify-between" data-slot="section-header">
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1" data-slot="label">
+                        <BookmarkPlus className="size-3" data-slot="icon" aria-hidden="true" />
+                        <span>Indexes ({selectedTable.indexes?.length || 0})</span>
                     </span>
                     <Button
                         size="sm"
@@ -569,9 +599,11 @@ export const TableInspector: React.FC<TableInspectorProps> = ({ selectedTable, s
                         className="h-7 text-xs gap-1 cursor-pointer"
                         onClick={handleAddIndex}
                         disabled={selectedTable.columns.length === 0}
+                        aria-label="Add Index"
+                        data-slot="button"
                     >
-                        <Plus className="size-3.5" />
-                        Add Index
+                        <Plus className="size-3.5" data-slot="icon" data-icon="inline-start" aria-hidden="true" />
+                        <span>Add Index</span>
                     </Button>
                 </div>
 
@@ -586,12 +618,15 @@ export const TableInspector: React.FC<TableInspectorProps> = ({ selectedTable, s
                                     <Input
                                         value={idx.name}
                                         onChange={e => updateIndex(selectedTable.id, idx.id, { name: e.target.value })}
+                                        aria-label="Index name"
                                         className="h-7 text-xs font-mono flex-1"
                                         placeholder="index_name"
                                     />
                                     <button
+                                        type="button"
                                         onClick={() => deleteIndex(selectedTable.id, idx.id)}
-                                        className="size-5 flex items-center justify-center text-muted-foreground hover:text-destructive cursor-pointer shrink-0"
+                                        aria-label="Delete Index"
+                                        className="size-6 min-h-6 min-w-6 flex items-center justify-center text-muted-foreground hover:text-destructive cursor-pointer shrink-0"
                                         title="Delete Index"
                                     >
                                         <Trash2 className="size-3" />
@@ -645,6 +680,7 @@ export const TableInspector: React.FC<TableInspectorProps> = ({ selectedTable, s
                                     <Label className="text-[11px] cursor-pointer">Unique Index</Label>
                                     <Switch
                                         checked={idx.isUnique}
+                                        aria-label="Unique Index"
                                         onCheckedChange={val => updateIndex(selectedTable.id, idx.id, { isUnique: val })}
                                     />
                                 </div>

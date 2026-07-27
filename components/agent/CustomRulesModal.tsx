@@ -138,10 +138,10 @@ export const CustomRulesModal: React.FC<CustomRulesModalProps> = ({ open, onOpen
                                     />
                                     <div className="flex gap-1.5 justify-end">
                                         <Button size="sm" variant="ghost" onClick={cancelEdit} className="h-7 text-xs gap-1">
-                                            <X className="size-3" /> Cancel
+                                            <X className="size-3" data-icon="inline-start" /> Cancel
                                         </Button>
                                         <Button size="sm" onClick={saveEdit} className="h-7 text-xs gap-1">
-                                            <Check className="size-3" /> Save
+                                            <Check className="size-3" data-icon="inline-start" /> Save
                                         </Button>
                                     </div>
                                 </div>
@@ -173,9 +173,14 @@ export const CustomRulesModal: React.FC<CustomRulesModalProps> = ({ open, onOpen
                                             <Pencil className="size-3" />
                                         </button>
                                         <button
-                                            onClick={() => deleteRule(rule.id)}
+                                            onClick={() => {
+                                                if (window.confirm(`Are you sure you want to delete the rule "${rule.title}"?`)) {
+                                                    deleteRule(rule.id);
+                                                }
+                                            }}
                                             className="p-1 rounded hover:bg-destructive/10 cursor-pointer text-muted-foreground hover:text-destructive transition-colors"
                                             title="Delete rule"
+                                            aria-label={`Delete rule ${rule.title}`}
                                         >
                                             <Trash2 className="size-3" />
                                         </button>
@@ -223,7 +228,7 @@ export const CustomRulesModal: React.FC<CustomRulesModalProps> = ({ open, onOpen
                                     disabled={!newTitle.trim() || !newContent.trim()}
                                     className="h-7 text-xs gap-1"
                                 >
-                                    <Plus className="size-3" /> Add Rule
+                                    <Plus className="size-3" data-icon="inline-start" /> Add Rule
                                 </Button>
                             </div>
                         </div>
@@ -241,6 +246,7 @@ export const CustomRulesModal: React.FC<CustomRulesModalProps> = ({ open, onOpen
                                 return (
                                     <button
                                         key={preset.title}
+                                        type="button"
                                         onClick={() => handleAddPreset(preset)}
                                         disabled={isAlreadyAdded}
                                         className={`text-[10px] px-2.5 py-1 rounded-full border transition-all cursor-pointer ${
@@ -268,7 +274,7 @@ export const CustomRulesModal: React.FC<CustomRulesModalProps> = ({ open, onOpen
                             onClick={() => setIsAdding(true)}
                             className="gap-1 mr-auto"
                         >
-                            <Plus className="size-3.5" />
+                            <Plus className="size-3.5" data-icon="inline-start" />
                             Add Custom Rule
                         </Button>
                     )}

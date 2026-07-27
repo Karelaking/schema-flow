@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { CommandMenu } from "@/components/layout/CommandMenu";
 
 const interSans = Inter({
   variable: "--font-sans",
@@ -21,6 +22,27 @@ export const metadata: Metadata = {
     index: false,
     follow: false,
   },
+  openGraph: {
+    title: "Schema Flow - Visual Database Schema Designer",
+    description: "Visually design database architectures, manage projects, and generate production-ready SQL and TypeScript code.",
+    url: "https://schemaflow.dev",
+    siteName: "Schema Flow",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Schema Flow Visual Database Designer",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Schema Flow - Visual Database Schema Designer",
+    description: "Visually design database architectures, manage projects, and generate production-ready SQL and TypeScript code.",
+    images: ["/og-image.png"],
+  },
 };
 
 export default function RootLayout({
@@ -38,6 +60,7 @@ export default function RootLayout({
         <ThemeProvider>
           <TooltipProvider delay={400}>
             {children}
+            <CommandMenu />
           </TooltipProvider>
         </ThemeProvider>
       </body>

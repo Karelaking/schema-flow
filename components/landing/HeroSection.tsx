@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowRight, Sparkles, Database, Code, ShieldCheck, Zap, Layers } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 
 /**
  * Hero section component for the landing page.
@@ -35,17 +35,26 @@ export const HeroSection: React.FC = (): React.ReactElement => {
                 </p>
 
                 <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <Link href="/workspace" className="w-full sm:w-auto">
-                        <Button size="lg" className="w-full sm:w-auto h-12 px-8 text-base font-semibold shadow-lg shadow-primary/25 hover:scale-103 transition-all cursor-pointer">
-                            <span>Launch Interactive Workspace</span>
-                            <ArrowRight className="size-4 ml-2" />
-                        </Button>
+                    <Link
+                        href="/workspace"
+                        className={buttonVariants({
+                            size: "lg",
+                            className: "w-full sm:w-auto h-12 px-8 text-base font-semibold shadow-lg shadow-primary/25 hover:scale-103 transition-all cursor-pointer",
+                        })}
+                    >
+                        <span>Launch Interactive Workspace</span>
+                        <ArrowRight className="size-4 ml-2" data-icon="inline-end" />
                     </Link>
-                    <a href="#showcase" className="w-full sm:w-auto">
-                        <Button size="lg" variant="outline" className="w-full sm:w-auto h-12 px-6 text-base font-medium border-border/80 hover:bg-muted/50 cursor-pointer">
-                            <Code className="size-4 mr-2 text-primary" />
-                            <span>Explore Live Preview</span>
-                        </Button>
+                    <a
+                        href="#showcase"
+                        className={buttonVariants({
+                            variant: "outline",
+                            size: "lg",
+                            className: "w-full sm:w-auto h-12 px-6 text-base font-medium border-border/80 hover:bg-muted/50 cursor-pointer",
+                        })}
+                    >
+                        <Code className="size-4 mr-2 text-primary" data-icon="inline-start" />
+                        <span>Explore Live Preview</span>
                     </a>
                 </div>
 
