@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Plus, Trash2, ArrowUp, ArrowDown, Palette, GripVertical, BookmarkPlus, List } from "lucide-react";
+import { Plus, Trash2, ArrowUp, ArrowDown, GripVertical, BookmarkPlus, List } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { TableInspectorProps } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -133,67 +133,6 @@ export const TableInspector: React.FC<TableInspectorProps> = ({ selectedTable, s
 
     return (
         <div className="flex flex-col gap-6">
-            <div className="flex flex-col gap-3">
-                <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                        Table Details
-                    </span>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="size-7 text-destructive hover:text-destructive hover:bg-destructive/10 cursor-pointer"
-                        onClick={() => deleteTable(selectedTable.id)}
-                        title="Delete Table"
-                    >
-                        <Trash2 className="size-3.5" />
-                    </Button>
-                </div>
-
-                <div className="flex flex-col gap-2">
-                    <Label htmlFor="table-name" className="text-xs">Table Name</Label>
-                    <Input
-                        id="table-name"
-                        value={selectedTable.name}
-                        onChange={e => updateTable(selectedTable.id, { name: e.target.value })}
-                        className="h-8 text-xs"
-                    />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                    <Label htmlFor="table-desc" className="text-xs">Description</Label>
-                    <Textarea
-                        id="table-desc"
-                        value={selectedTable.description || ""}
-                        onChange={e => updateTable(selectedTable.id, { description: e.target.value })}
-                        rows={2}
-                        className="text-xs min-h-12.5"
-                        placeholder="Optional table comment..."
-                    />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                    <Label className="text-xs flex items-center gap-1.5">
-                        <Palette className="size-3 text-muted-foreground" />
-                        Header Color
-                    </Label>
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                        {PRESET_COLORS.map(c => (
-                            <button
-                                key={c.value}
-                                type="button"
-                                onClick={() => updateTable(selectedTable.id, { color: c.value })}
-                                className="size-6 rounded-full border border-border transition-transform hover:scale-110 cursor-pointer"
-                                style={{ backgroundColor: c.value }}
-                                title={c.name}
-                                aria-label={`Header color ${c.name}`}
-                            />
-                        ))}
-                    </div>
-                </div>
-            </div>
-
-            <Separator />
-
             <div className="flex flex-col gap-3">
                 <div className="flex items-center justify-between" data-slot="section-header">
                     <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider" data-slot="label">

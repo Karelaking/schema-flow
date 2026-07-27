@@ -52,18 +52,10 @@ export const Explorer: React.FC<ExplorerProps> = ({ className, style }): React.R
         enumItem.name.toLowerCase().includes(search.toLowerCase())
     );
 
+    const setCreateTableOpen = useStore(state => state.setCreateTableOpen);
+
     const handleAddTable = (): void => {
-        const x = Math.floor(Math.random() * 200) + 150;
-        const y = Math.floor(Math.random() * 200) + 150;
-
-        let count = Object.keys(tables).length + 1;
-        let name = `new_table_${count}`;
-        while (Object.values(tables).some(t => t.name === name)) {
-            count++;
-            name = `new_table_${count}`;
-        }
-
-        addTable(name, x, y);
+        setCreateTableOpen(true);
     };
 
     const handleAddEnum = (): void => {

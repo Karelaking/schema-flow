@@ -21,6 +21,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
     enums: {},
     showLeftSidebar: true,
     showRightSidebar: true,
+    isCreateTableOpen: false,
     selectedTableId: undefined,
     selectedRelationId: undefined,
     past: [],
@@ -30,6 +31,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
     toggleRightSidebar: (): void => set(state => ({ showRightSidebar: !state.showRightSidebar })),
     setLeftSidebar: (showLeftSidebar: boolean): void => set({ showLeftSidebar }),
     setRightSidebar: (showRightSidebar: boolean): void => set({ showRightSidebar }),
+    setCreateTableOpen: (isCreateTableOpen: boolean): void => set({ isCreateTableOpen }),
 
     loadProject: (ast: SchemaAST): void => {
         set({
@@ -303,12 +305,27 @@ export const useStore = create<ProjectStore>((set, get) => ({
             if (!table) {
                 return state;
             }
+
+            const newColumns = [...table.columns];
+            // Find index of first timestamp column (created_at, updated_at, or TIMESTAMP default)
+            const firstTimestampIndex = newColumns.findIndex(c =>
+                c.name === "created_at" ||
+                c.name === "updated_at" ||
+                (c.constraints?.defaultValue && String(c.constraints.defaultValue).toUpperCase().includes("CURRENT_TIMESTAMP"))
+            );
+
+            if (firstTimestampIndex !== -1) {
+                newColumns.splice(firstTimestampIndex, 0, newColumn);
+            } else {
+                newColumns.push(newColumn);
+            }
+
             return {
                 tables: {
                     ...state.tables,
                     [tableId]: {
                         ...table,
-                        columns: [...table.columns, newColumn],
+                        columns: newColumns,
                     },
                 },
             };

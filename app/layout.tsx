@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/providers/ThemeProvider";
 import { ShortcutProvider } from "@/providers/ShortcutProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { CommandMenu } from "@/components/layout/CommandMenu";
+import { GlobalCreateTableDialog } from "@/components/modals/GlobalCreateTableDialog";
 
 const interSans = Inter({
   variable: "--font-sans",
@@ -63,6 +64,7 @@ export default function RootLayout({
             <TooltipProvider delay={400}>
               {children}
               <CommandMenu />
+              <GlobalCreateTableDialog />
             </TooltipProvider>
           </ShortcutProvider>
         </ThemeProvider>

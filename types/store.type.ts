@@ -39,6 +39,7 @@ export interface ProjectStore {
     // UI Sidebar Visibility & Selection context
     showLeftSidebar: boolean;
     showRightSidebar: boolean;
+    isCreateTableOpen: boolean;
     selectedTableId?: string;
     selectedRelationId?: string;
 
@@ -51,6 +52,7 @@ export interface ProjectStore {
     toggleRightSidebar: () => void;
     setLeftSidebar: (show: boolean) => void;
     setRightSidebar: (show: boolean) => void;
+    setCreateTableOpen: (open: boolean) => void;
 
     // General actions
     loadProject: (ast: SchemaAST) => void;

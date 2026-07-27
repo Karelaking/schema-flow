@@ -32,11 +32,13 @@ export function ShortcutProvider({ children }: ShortcutProviderProps): React.Rea
                 return;
             }
 
-            const keyLower = e.key.toLowerCase();
+            const code = e.code;
+            const keyLower = e.key ? e.key.toLowerCase() : "";
             const isControl = e.metaKey || e.ctrlKey;
 
             // Undo: Ctrl+Z or Cmd+Z (without Shift)
-            if (isControl && !e.shiftKey && keyLower === "z") {
+            const isUndo = isControl && !e.shiftKey && (code === "KeyZ" || keyLower === "z");
+            if (isUndo) {
                 e.preventDefault();
                 const past = useStore.getState().past;
                 if (past.length > 0) {
@@ -46,8 +48,8 @@ export function ShortcutProvider({ children }: ShortcutProviderProps): React.Rea
             }
 
             // Redo: Ctrl+Y, Cmd+Y, or Ctrl+Shift+Z / Cmd+Shift+Z
-            const isCtrlY = isControl && keyLower === "y";
-            const isCtrlShiftZ = isControl && e.shiftKey && keyLower === "z";
+            const isCtrlY = isControl && (code === "KeyY" || keyLower === "y");
+            const isCtrlShiftZ = isControl && e.shiftKey && (code === "KeyZ" || keyLower === "z");
 
             if (isCtrlY || isCtrlShiftZ) {
                 e.preventDefault();
@@ -57,10 +59,66 @@ export function ShortcutProvider({ children }: ShortcutProviderProps): React.Rea
                 }
                 return;
             }
+
+            // Create New Table Modal: Ctrl+Shift+N, Cmd+Shift+N, Alt+N, or Ctrl+N
+            const isCreateShortcut =
+                (isControl && e.shiftKey && (code === "KeyN" || keyLower === "n")) ||
+                (e.altKey && (code === "KeyN" || keyLower === "n"));
+
+            if (isCreateShortcut) {
+                e.preventDefault();
+                useStore.getState().setCreateTableOpen(true);
+                return;
+            }
+
+            // Duplicate Selected Table: Ctrl+Shift+C or Alt+D
+            const isDuplicateShortcut =
+                (isControl && e.shiftKey && (code === "KeyC" || keyLower === "c")) ||
+                (e.altKey && (code === "KeyD" || keyLower === "d"));
+
+            if (isDuplicateShortcut) {
+                const selectedTableId = useStore.getState().selectedTableId;
+                if (selectedTableId) {
+                    e.preventDefault();
+                    useStore.getState().duplicateTable(selectedTableId);
+                }
+                return;
+            }
+
+            // Delete Selected Node or Relation: Delete or Backspace key
+            const isDeleteKey = code === "Delete" || code === "Backspace" || keyLower === "delete" || keyLower === "backspace";
+            if (isDeleteKey) {
+                const selectedTableId = useStore.getState().selectedTableId;
+                const selectedRelationId = useStore.getState().selectedRelationId;
+
+                if (selectedTableId) {
+                    e.preventDefault();
+                    useStore.getState().deleteTable(selectedTableId);
+                    return;
+                }
+
+                if (selectedRelationId) {
+                    e.preventDefault();
+                    useStore.getState().deleteRelation(selectedRelationId);
+                    return;
+                }
+            }
+
+            // Deselect: Escape key
+            const isEscapeKey = code === "Escape" || keyLower === "escape";
+            if (isEscapeKey) {
+                const state = useStore.getState();
+                if (state.selectedTableId || state.selectedRelationId) {
+                    e.preventDefault();
+                    state.selectTable(undefined);
+                    state.selectRelation(undefined);
+                }
+                return;
+            }
         };
 
-        window.addEventListener("keydown", handleKeyDown);
-        return () => window.removeEventListener("keydown", handleKeyDown);
+        window.addEventListener("keydown", handleKeyDown, { capture: true });
+        return () => window.removeEventListener("keydown", handleKeyDown, { capture: true });
     }, []);
 
     return <>{children}</>;

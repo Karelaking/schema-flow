@@ -55,6 +55,7 @@ export const CommandMenu: React.FC<CommandMenuProps> = ({
     const { theme, toggleTheme } = useTheme();
     const addTable = useStore(state => state.addTable);
     const tables = useStore(state => state.tables);
+    const setCreateTableOpen = useStore(state => state.setCreateTableOpen);
     const loadProject = useStore(state => state.loadProject);
     const { exportSchema } = useProjectActions();
 
@@ -136,8 +137,7 @@ export const CommandMenu: React.FC<CommandMenuProps> = ({
                     <button
                         type="button"
                         onClick={() => handleAction(() => {
-                            const count = Object.keys(tables).length + 1;
-                            addTable(`table_${count}`, 250, 250);
+                            setCreateTableOpen(true);
                         })}
                         className="w-full flex items-center justify-between px-3 py-2 rounded-md hover:bg-primary/10 hover:text-primary text-left transition-colors cursor-pointer font-medium"
                     >
