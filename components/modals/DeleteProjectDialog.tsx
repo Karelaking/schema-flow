@@ -65,7 +65,7 @@ export const DeleteProjectDialog: React.FC<DeleteProjectDialogProps> = ({ target
 
     return (
         <Dialog open={Boolean(targetProject)} onOpenChange={handleClose}>
-            <DialogContent className="sm:max-w-[420px]">
+            <DialogContent className="sm:max-w-105">
                 <DialogHeader>
                     <DialogTitle className="text-destructive font-semibold">Delete Project (2-Step Verification)</DialogTitle>
                     <DialogDescription className="text-xs">

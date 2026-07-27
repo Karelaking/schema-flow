@@ -115,7 +115,7 @@ export const CodePreviewTab: React.FC = (): React.ReactElement => {
                 </Button>
             </div>
 
-            <div className="flex-1 min-h-[350px] border rounded-md overflow-hidden bg-background">
+            <div className="flex-1 min-h-87.5 border rounded-md overflow-hidden bg-background">
                 <Editor
                     height="100%"
                     language={codeType === "sql" ? "sql" : "typescript"}

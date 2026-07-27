@@ -73,7 +73,7 @@ export const ValidationTab: React.FC = (): React.ReactElement => {
                     </CardContent>
                 </Card>
             ) : (
-                <div className="flex flex-col gap-2 max-h-[400px] overflow-y-auto pr-1">
+                <div className="flex flex-col gap-2 max-h-100 overflow-y-auto pr-1">
                     {validationResult.errors.map((err, i) => (
                         <Card key={`err-${i}`} className="border-destructive/30 bg-destructive/5">
                             <CardContent className="p-3 flex items-start gap-2.5">

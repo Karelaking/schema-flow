@@ -187,8 +187,8 @@ export const WorkspaceClient: React.FC<WorkspaceClientProps> = ({ initialProject
 
                                 <div
                                     className={cn(
-                                        "w-[3px] hover:w-[5px] bg-border hover:bg-primary/50 active:bg-primary transition-all cursor-col-resize h-full select-none z-50 shrink-0",
-                                        resizingSide === "left" && "bg-primary w-[5px]"
+                                        "w-0.75 hover:w-1.25 bg-border hover:bg-primary/50 active:bg-primary transition-all cursor-col-resize h-full select-none z-50 shrink-0",
+                                        resizingSide === "left" && "bg-primary w-1.25"
                                     )}
                                     onMouseDown={() => setResizingSide("left")}
                                 />
@@ -203,8 +203,8 @@ export const WorkspaceClient: React.FC<WorkspaceClientProps> = ({ initialProject
                             <>
                                 <div
                                     className={cn(
-                                        "w-[3px] hover:w-[5px] bg-border hover:bg-primary/50 active:bg-primary transition-all cursor-col-resize h-full select-none z-50 shrink-0",
-                                        resizingSide === "right" && "bg-primary w-[5px]"
+                                        "w-0.75 hover:w-1.25 bg-border hover:bg-primary/50 active:bg-primary transition-all cursor-col-resize h-full select-none z-50 shrink-0",
+                                        resizingSide === "right" && "bg-primary w-1.25"
                                     )}
                                     onMouseDown={() => setResizingSide("right")}
                                 />
@@ -217,7 +217,7 @@ export const WorkspaceClient: React.FC<WorkspaceClientProps> = ({ initialProject
                             <>
                                 <div
                                     className={cn(
-                                        "w-[3px] hover:w-[5px] bg-border hover:bg-violet-500/50 active:bg-violet-500 transition-all cursor-col-resize h-full select-none z-50 shrink-0"
+                                        "w-0.75 hover:w-1.25 bg-border hover:bg-violet-500/50 active:bg-violet-500 transition-all cursor-col-resize h-full select-none z-50 shrink-0"
                                     )}
                                 />
                                 <AgentChatDrawer style={{ width: aiDrawerWidth }} />

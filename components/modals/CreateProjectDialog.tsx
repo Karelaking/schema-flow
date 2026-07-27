@@ -18,6 +18,7 @@ import {
 import {
     Select,
     SelectContent,
+    SelectGroup,
     SelectItem,
     SelectTrigger,
     SelectValue,
@@ -85,7 +86,7 @@ export const CreateProjectDialog: React.FC<CreateProjectDialogProps> = ({ open, 
             }
             onOpenChange(val);
         }}>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-106.25">
                 <DialogHeader>
                     <DialogTitle>Create New Project</DialogTitle>
                     <DialogDescription>
@@ -135,9 +136,11 @@ export const CreateProjectDialog: React.FC<CreateProjectDialogProps> = ({ open, 
                                 <SelectValue placeholder="Select dialect..." />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="sqlite">SQLite</SelectItem>
-                                <SelectItem value="postgres">PostgreSQL</SelectItem>
-                                <SelectItem value="mysql">MySQL</SelectItem>
+                                <SelectGroup>
+                                    <SelectItem value="sqlite">SQLite</SelectItem>
+                                    <SelectItem value="postgres">PostgreSQL</SelectItem>
+                                    <SelectItem value="mysql">MySQL</SelectItem>
+                                </SelectGroup>
                             </SelectContent>
                         </Select>
                         {errors.dialect && (

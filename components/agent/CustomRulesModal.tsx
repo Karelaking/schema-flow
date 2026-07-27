@@ -125,12 +125,14 @@ export const CustomRulesModal: React.FC<CustomRulesModalProps> = ({ open, onOpen
                                         value={editTitle}
                                         onChange={e => setEditTitle(e.target.value)}
                                         placeholder="Rule title"
+                                        aria-label="Edit rule title"
                                         className="text-xs h-8"
                                     />
                                     <Textarea
                                         value={editContent}
                                         onChange={e => setEditContent(e.target.value)}
                                         placeholder="Rule description..."
+                                        aria-label="Edit rule description"
                                         rows={2}
                                         className="text-xs"
                                     />
@@ -190,6 +192,7 @@ export const CustomRulesModal: React.FC<CustomRulesModalProps> = ({ open, onOpen
                                 value={newTitle}
                                 onChange={e => setNewTitle(e.target.value)}
                                 placeholder="Rule title (e.g., 'UUID Primary Keys')"
+                                aria-label="New rule title"
                                 className="text-xs h-8"
                                 autoFocus
                             />
@@ -197,6 +200,7 @@ export const CustomRulesModal: React.FC<CustomRulesModalProps> = ({ open, onOpen
                                 value={newContent}
                                 onChange={e => setNewContent(e.target.value)}
                                 placeholder="Rule description (e.g., 'Always use UUID v4 for primary keys instead of auto-incrementing integers.')"
+                                aria-label="New rule description"
                                 rows={2}
                                 className="text-xs"
                             />

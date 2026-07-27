@@ -69,7 +69,7 @@ export const ProjectSwitcher: React.FC<ProjectSwitcherProps> = ({ className = ""
                 <DropdownMenuTrigger render={
                     <Button
                         variant="ghost"
-                        className="flex items-center gap-2 px-2.5 h-9 font-normal hover:bg-muted cursor-pointer max-w-[200px] sm:max-w-[280px]"
+                        className="flex items-center gap-2 px-2.5 h-9 font-normal hover:bg-muted cursor-pointer max-w-50 sm:max-w-70"
                     >
                         <div className="flex flex-col items-start min-w-0 text-left">
                             <div className="flex items-center gap-1.5 w-full">

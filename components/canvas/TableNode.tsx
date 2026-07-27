@@ -90,7 +90,7 @@ export const TableNode: React.FC<TableNodeProps> = ({ id, data, selected }): Rea
                                     type="target"
                                     position={Position.Left}
                                     id={`col-left-${column.id}`}
-                                    className="!size-2 !bg-muted-foreground/40 !border-border hover:!bg-primary transition-colors"
+                                    className="size-2! bg-muted-foreground/40! border-border! hover:bg-primary! transition-colors"
                                     style={{ left: "-4px" }}
                                 />
 
@@ -143,7 +143,7 @@ export const TableNode: React.FC<TableNodeProps> = ({ id, data, selected }): Rea
                                     type="source"
                                     position={Position.Right}
                                     id={`col-right-${column.id}`}
-                                    className="!size-2 !bg-muted-foreground/40 !border-border hover:!bg-primary transition-colors"
+                                    className="size-2! bg-muted-foreground/40! border-border! hover:bg-primary! transition-colors"
                                     style={{ right: "-4px" }}
                                 />
                             </div>

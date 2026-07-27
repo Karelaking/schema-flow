@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import {
     Select,
     SelectContent,
+    SelectGroup,
     SelectItem,
     SelectTrigger,
     SelectValue,
@@ -112,10 +113,12 @@ export const RelationInspector: React.FC<RelationInspectorProps> = ({ selectedRe
                         <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="one-to-one">One-to-One (1:1)</SelectItem>
-                        <SelectItem value="one-to-many">One-to-Many (1:N)</SelectItem>
-                        <SelectItem value="many-to-one">Many-to-One (N:1)</SelectItem>
-                        <SelectItem value="many-to-many">Many-to-Many (N:M)</SelectItem>
+                        <SelectGroup>
+                            <SelectItem value="one-to-one">One-to-One (1:1)</SelectItem>
+                            <SelectItem value="one-to-many">One-to-Many (1:N)</SelectItem>
+                            <SelectItem value="many-to-one">Many-to-One (N:1)</SelectItem>
+                            <SelectItem value="many-to-many">Many-to-Many (N:M)</SelectItem>
+                        </SelectGroup>
                     </SelectContent>
                 </Select>
             </div>
@@ -134,10 +137,12 @@ export const RelationInspector: React.FC<RelationInspectorProps> = ({ selectedRe
                         <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="cascade">CASCADE</SelectItem>
-                        <SelectItem value="restrict">RESTRICT</SelectItem>
-                        <SelectItem value="set-null">SET NULL</SelectItem>
-                        <SelectItem value="no-action">NO ACTION</SelectItem>
+                        <SelectGroup>
+                            <SelectItem value="cascade">CASCADE</SelectItem>
+                            <SelectItem value="restrict">RESTRICT</SelectItem>
+                            <SelectItem value="set-null">SET NULL</SelectItem>
+                            <SelectItem value="no-action">NO ACTION</SelectItem>
+                        </SelectGroup>
                     </SelectContent>
                 </Select>
             </div>
@@ -156,10 +161,12 @@ export const RelationInspector: React.FC<RelationInspectorProps> = ({ selectedRe
                         <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="cascade">CASCADE</SelectItem>
-                        <SelectItem value="restrict">RESTRICT</SelectItem>
-                        <SelectItem value="set-null">SET NULL</SelectItem>
-                        <SelectItem value="no-action">NO ACTION</SelectItem>
+                        <SelectGroup>
+                            <SelectItem value="cascade">CASCADE</SelectItem>
+                            <SelectItem value="restrict">RESTRICT</SelectItem>
+                            <SelectItem value="set-null">SET NULL</SelectItem>
+                            <SelectItem value="no-action">NO ACTION</SelectItem>
+                        </SelectGroup>
                     </SelectContent>
                 </Select>
             </div>

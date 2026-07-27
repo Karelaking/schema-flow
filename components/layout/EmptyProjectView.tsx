@@ -16,6 +16,7 @@ import {
 import {
     Select,
     SelectContent,
+    SelectGroup,
     SelectItem,
     SelectTrigger,
     SelectValue,
@@ -104,7 +105,7 @@ export const EmptyProjectView: React.FC<EmptyProjectViewProps> = ({ onProjectCre
             </Button>
 
             <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-                <DialogContent className="sm:max-w-[425px]">
+                <DialogContent className="sm:max-w-106.25">
                     <DialogHeader>
                         <DialogTitle>Create New Project</DialogTitle>
                         <DialogDescription>
@@ -141,9 +142,11 @@ export const EmptyProjectView: React.FC<EmptyProjectViewProps> = ({ onProjectCre
                                     <SelectValue placeholder="Select dialect..." />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="sqlite">SQLite</SelectItem>
-                                    <SelectItem value="postgres">PostgreSQL</SelectItem>
-                                    <SelectItem value="mysql">MySQL</SelectItem>
+                                    <SelectGroup>
+                                        <SelectItem value="sqlite">SQLite</SelectItem>
+                                        <SelectItem value="postgres">PostgreSQL</SelectItem>
+                                        <SelectItem value="mysql">MySQL</SelectItem>
+                                    </SelectGroup>
                                 </SelectContent>
                             </Select>
                         </div>

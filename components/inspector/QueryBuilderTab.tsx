@@ -461,7 +461,7 @@ export const QueryBuilderTab: React.FC = (): React.ReactElement => {
                                                 </SelectContent>
                                             </Select>
                                             <span className="font-mono text-[11px] font-semibold">{targetTable?.name}</span>
-                                            <Button size="icon" variant="ghost" className="h-5 w-5 text-destructive ml-auto" onClick={() => handleRemoveJoin(join.id)}>
+                                            <Button size="icon" variant="ghost" className="h-6 w-6 text-destructive ml-auto" aria-label="Remove join" onClick={() => handleRemoveJoin(join.id)}>
                                                 <Trash2 className="size-3" />
                                             </Button>
                                         </div>

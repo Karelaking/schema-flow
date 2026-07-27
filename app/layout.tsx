@@ -17,13 +17,17 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Schema Flow - Visual Database Schema Designer",
   description: "Visually design database architectures, manage projects, and generate production-ready SQL and TypeScript code.",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) {
+}>): React.ReactElement {
   return (
     <html
       lang="en"

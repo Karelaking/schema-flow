@@ -18,6 +18,7 @@ import {
 import {
     Select,
     SelectContent,
+    SelectGroup,
     SelectItem,
     SelectTrigger,
     SelectValue,
@@ -161,11 +162,13 @@ export const ProviderSettingsModal: React.FC<ProviderSettingsModalProps> = ({ op
                                 <SelectValue placeholder="Select provider" />
                             </SelectTrigger>
                             <SelectContent>
-                                {PROVIDER_OPTIONS.map(p => (
-                                    <SelectItem key={p.value} value={p.value}>
-                                        {p.label}
-                                    </SelectItem>
-                                ))}
+                                <SelectGroup>
+                                    {PROVIDER_OPTIONS.map(p => (
+                                        <SelectItem key={p.value} value={p.value}>
+                                            {p.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectGroup>
                             </SelectContent>
                         </Select>
                         <span className="text-[10px] text-muted-foreground">
@@ -250,6 +253,7 @@ export const ProviderSettingsModal: React.FC<ProviderSettingsModalProps> = ({ op
                                     <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
                                     <Input
                                         placeholder="Search models..."
+                                        aria-label="Search models"
                                         value={modelSearch}
                                         onChange={e => setModelSearch(e.target.value)}
                                         className="pl-8 h-8 text-xs"

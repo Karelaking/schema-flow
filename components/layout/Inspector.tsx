@@ -65,7 +65,7 @@ export const Inspector: React.FC<InspectorProps> = ({ className, style }): React
                         <SelectTrigger className="w-full h-8 text-xs font-medium bg-background border-border shadow-xs">
                             <SelectValue placeholder="Select View..." />
                         </SelectTrigger>
-                        <SelectContent align="start" className="w-[var(--anchor-width)] min-w-48 bg-card border shadow-md z-50 p-1">
+                        <SelectContent align="start" className="w-(--anchor-width) min-w-48 bg-card border shadow-md z-50 p-1">
                             <SelectGroup>
                                 <SelectItem value="inspector" className="text-xs cursor-pointer py-1.5">
                                     <div className="flex items-center gap-2">
@@ -121,10 +121,10 @@ export const Inspector: React.FC<InspectorProps> = ({ className, style }): React
                             selectedRelation={selectedRelation}
                         />
                     ) : (
-                        <div className="h-full min-h-[250px] flex flex-col items-center justify-center gap-2 text-center text-muted-foreground p-6">
+                        <div className="h-full min-h-62.5 flex flex-col items-center justify-center gap-2 text-center text-muted-foreground p-6">
                             <Info className="size-8 text-muted-foreground/50" />
                             <span className="text-xs font-semibold">No Selection</span>
-                            <p className="text-[11px] leading-relaxed max-w-[200px]">
+                            <p className="text-[11px] leading-relaxed max-w-50">
                                 Click on any table or relation line on the canvas to inspect its configuration.
                             </p>
                         </div>

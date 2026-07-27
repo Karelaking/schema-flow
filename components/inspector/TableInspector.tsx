@@ -166,7 +166,7 @@ export const TableInspector: React.FC<TableInspectorProps> = ({ selectedTable, s
                         value={selectedTable.description || ""}
                         onChange={e => updateTable(selectedTable.id, { description: e.target.value })}
                         rows={2}
-                        className="text-xs min-h-[50px]"
+                        className="text-xs min-h-12.5"
                         placeholder="Optional table comment..."
                     />
                 </div>
@@ -357,7 +357,7 @@ export const TableInspector: React.FC<TableInspectorProps> = ({ selectedTable, s
                                         )}
                                     </SelectValue>
                                 </SelectTrigger>
-                                <SelectContent className="max-h-72 w-[var(--radix-select-trigger-width)] min-w-[220px] max-w-[300px] overflow-y-auto z-50">
+                                <SelectContent className="max-h-72 w-(--radix-select-trigger-width) min-w-55 max-w-75 overflow-y-auto z-50">
                                     {enumList.length > 0 && (
                                         <SelectGroup>
                                             <SelectLabel className="text-[10px] font-bold uppercase tracking-wider text-violet-500 px-1 py-0.5">
@@ -400,7 +400,7 @@ export const TableInspector: React.FC<TableInspectorProps> = ({ selectedTable, s
                                                                 <div className="flex items-center justify-between w-full gap-2 min-w-0">
                                                                     <span className="font-mono font-medium shrink-0">{t.type}</span>
                                                                     {t.description && (
-                                                                        <span className="text-[10px] text-muted-foreground truncate max-w-[110px]">
+                                                                        <span className="text-[10px] text-muted-foreground truncate max-w-27.5">
                                                                             {t.description}
                                                                         </span>
                                                                     )}
