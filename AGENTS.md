@@ -23,4 +23,8 @@ Before any Next.js work, find and read the relevant doc in `node_modules/next/di
 3. **Do NOT skip drizzle adapters** — use them for all database operations
 4. **Do NOT rename things without checking** — follow the naming conventions above
 
+## Shadscan
+
+Before creating any commit, use $shadscan-pre-commit. Establish the current score when work begins, run Shadscan immediately before each commit, and do not commit if the score is unassessed or below the task floor.
+
 <!-- END:nextjs-agent-rules -->
