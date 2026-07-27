@@ -87,16 +87,24 @@ export function useProjectActions(): UseProjectActionsReturn {
             enums,
         };
 
-        const result = await saveProjectAction(projectId, ast);
-        if (result.success) {
-            setSaveMessage("Saved successfully!");
-            setTimeout(() => setSaveMessage(""), 2000);
-            await fetchProjects();
+        try {
+            const result = await saveProjectAction(projectId, ast);
+            if (result.success) {
+                setSaveMessage("Saved successfully!");
+                setTimeout(() => setSaveMessage(""), 2000);
+                await fetchProjects();
+            }
+            else {
+                setSaveMessage(`Error: ${result.error}`);
+            }
         }
-        else {
-            setSaveMessage(`Error: ${result.error}`);
+        catch (err: unknown) {
+            setSaveMessage("Save postponed (network busy)");
+            console.warn("[ProjectActions] Server action save failed:", err);
         }
-        setIsSaving(false);
+        finally {
+            setIsSaving(false);
+        }
     }, [projectId, projectName, projectDescription, dialect, theme, autoAddId, autoAddTimestamps, tables, relations, enums, fetchProjects]);
 
     /**

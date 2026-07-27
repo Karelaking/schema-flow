@@ -1,8 +1,8 @@
 {
   "env": {
-    "ANTHROPIC_BASE_URL": "https://openrouter.ai/api",
-    "ANTHROPIC_AUTH_TOKEN": "",
-    "ANTHROPIC_API_KEY": "",
-    "ANTHROPIC_MODEL":"openrouter/free"
+    "ANTHROPIC_BASE_URL": "http://localhost:11434/api",
+    "ANTHROPIC_AUTH_TOKEN": "123",
+    "ANTHROPIC_API_KEY": "1234",
+    "ANTHROPIC_MODEL":"gemma4:e2b"
   }
 }

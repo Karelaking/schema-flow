@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import {
     Menu,
+    Folder,
     FolderOpen,
     Plus,
     Settings,
@@ -150,8 +151,9 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                 {/* File Menu */}
                 <DropdownMenu>
                     <DropdownMenuTrigger render={
-                        <Button variant="ghost" size="sm" className="h-8 px-2 sm:px-2.5 text-xs font-medium cursor-pointer hover:bg-muted">
-                            File
+                        <Button variant="ghost" size="sm" className="h-8 px-2 sm:px-2.5 gap-1.5 text-xs font-medium cursor-pointer hover:bg-muted">
+                            <Folder className="size-3.5 text-muted-foreground" />
+                            <span>File</span>
                         </Button>
                     } />
                     <DropdownMenuContent align="start" className="w-56 bg-card border shadow-md p-1 rounded-md text-foreground z-50">
@@ -256,8 +258,9 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                 {/* Edit Menu */}
                 <DropdownMenu>
                     <DropdownMenuTrigger render={
-                        <Button variant="ghost" size="sm" className="h-8 px-2 sm:px-2.5 text-xs font-medium cursor-pointer hover:bg-muted">
-                            Edit
+                        <Button variant="ghost" size="sm" className="h-8 px-2 sm:px-2.5 gap-1.5 text-xs font-medium cursor-pointer hover:bg-muted">
+                            <Edit3 className="size-3.5 text-muted-foreground" />
+                            <span>Edit</span>
                         </Button>
                     } />
                     <DropdownMenuContent align="start" className="w-52 bg-card border shadow-md p-1 rounded-md text-foreground z-50">
@@ -321,8 +324,9 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                 {/* View Menu */}
                 <DropdownMenu>
                     <DropdownMenuTrigger render={
-                        <Button variant="ghost" size="sm" className="h-8 px-2 sm:px-2.5 text-xs font-medium cursor-pointer hover:bg-muted">
-                            View
+                        <Button variant="ghost" size="sm" className="h-8 px-2 sm:px-2.5 gap-1.5 text-xs font-medium cursor-pointer hover:bg-muted">
+                            <Eye className="size-3.5 text-muted-foreground" />
+                            <span>View</span>
                         </Button>
                     } />
                     <DropdownMenuContent align="start" className="w-56 bg-card border shadow-md p-1 rounded-md text-foreground z-50">
@@ -369,8 +373,9 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                 {/* Tools Menu */}
                 <DropdownMenu>
                     <DropdownMenuTrigger render={
-                        <Button variant="ghost" size="sm" className="h-8 px-2 sm:px-2.5 text-xs font-medium cursor-pointer hover:bg-muted">
-                            Tools
+                        <Button variant="ghost" size="sm" className="h-8 px-2 sm:px-2.5 gap-1.5 text-xs font-medium cursor-pointer hover:bg-muted">
+                            <Wrench className="size-3.5 text-muted-foreground" />
+                            <span>Tools</span>
                         </Button>
                     } />
                     <DropdownMenuContent align="start" className="w-48 bg-card border shadow-md p-1 rounded-md text-foreground z-50">

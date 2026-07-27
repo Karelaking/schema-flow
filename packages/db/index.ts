@@ -47,10 +47,6 @@ export class DatabaseService {
             authToken = undefined;
         }
 
-        if (process.env.NODE_ENV === "development") {
-            console.log(`[DatabaseService] Connecting to ${url} (Auth Token: ${authToken ? "Present" : "Missing"})`);
-        }
-
         this.client = createClient({
             url,
             authToken,

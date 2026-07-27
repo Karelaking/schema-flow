@@ -79,25 +79,30 @@ export const WorkspaceClient: React.FC<WorkspaceClientProps> = ({ initialProject
         }
 
         const timer = setTimeout(async () => {
-            const ast: SchemaAST = {
-                project: {
-                    id: projectId,
-                    name: projectName,
-                    description: projectDescription,
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
-                },
-                settings: {
-                    dialect,
-                    theme,
-                    autoAddId,
-                    autoAddTimestamps,
-                },
-                tables,
-                relations,
-                enums,
-            };
-            await saveProjectAction(projectId, ast);
+            try {
+                const ast: SchemaAST = {
+                    project: {
+                        id: projectId,
+                        name: projectName,
+                        description: projectDescription,
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                    },
+                    settings: {
+                        dialect,
+                        theme,
+                        autoAddId,
+                        autoAddTimestamps,
+                    },
+                    tables,
+                    relations,
+                    enums,
+                };
+                await saveProjectAction(projectId, ast);
+            }
+            catch (err: unknown) {
+                console.warn("[WorkspaceClient] Auto-save background sync postponed:", err);
+            }
         }, 3000);
 
         return () => clearTimeout(timer);
