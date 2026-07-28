@@ -1,9 +1,15 @@
 import React from "react";
+import type { Metadata } from "next";
 import { getDbService } from "@/packages/db";
 import { WorkspaceClient } from "@/components/layout/WorkspaceClient";
 import { SchemaAST } from "@/packages/schema-core";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+    title: "Workspace",
+    description: "Visual ERD canvas workspace for designing database tables, relationships, Drizzle ORM models, and exporting SQL.",
+};
 
 /**
  * Server component for workspace page.

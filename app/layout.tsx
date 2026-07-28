@@ -20,31 +20,59 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Schema Flow - Visual Database Schema Designer",
-  description: "Visually design database architectures, manage projects, and generate production-ready SQL and TypeScript code.",
+  metadataBase: new URL("https://schemaflow.dev"),
+  title: {
+    default: "Schema Flow - Visual Database Schema & Drizzle ORM Designer",
+    template: "%s | Schema Flow",
+  },
+  description: "Visually design database architectures, auto-generate Drizzle ORM models & migrations, export production-ready SQL, and generate TypeScript types in real-time.",
+  keywords: [
+    "visual database designer",
+    "ERD tool",
+    "database schema builder",
+    "Drizzle ORM generator",
+    "SQL generator",
+    "PostgreSQL ERD",
+    "MySQL schema designer",
+    "SQLite schema builder",
+    "TypeScript types generator",
+    "database architecture tool",
+  ],
+  authors: [{ name: "Schema Flow Team" }],
+  creator: "Schema Flow",
+  publisher: "Schema Flow",
+  category: "Developer Tools",
   robots: {
-    index: false,
-    follow: false,
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
   openGraph: {
-    title: "Schema Flow - Visual Database Schema Designer",
-    description: "Visually design database architectures, manage projects, and generate production-ready SQL and TypeScript code.",
+    title: "Schema Flow - Visual Database Schema & Drizzle ORM Designer",
+    description: "Visually design database architectures, auto-generate Drizzle ORM models & migrations, export production-ready SQL, and generate TypeScript types in real-time.",
     url: "https://schemaflow.dev",
     siteName: "Schema Flow",
+    locale: "en_US",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Schema Flow Visual Database Designer",
+        alt: "Schema Flow Visual Database Designer Interface",
       },
     ],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Schema Flow - Visual Database Schema Designer",
-    description: "Visually design database architectures, manage projects, and generate production-ready SQL and TypeScript code.",
+    title: "Schema Flow - Visual Database Schema & Drizzle ORM Designer",
+    description: "Visually design database architectures, auto-generate Drizzle ORM models & migrations, export production-ready SQL, and generate TypeScript types.",
     images: ["/og-image.png"],
   },
 };
