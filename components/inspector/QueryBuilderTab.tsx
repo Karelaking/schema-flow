@@ -1,8 +1,14 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
-import Editor from "@monaco-editor/react";
+import dynamic from "next/dynamic";
 import { Copy, Check, Terminal, Plus, Trash2, Layers, Filter, ArrowUpDown } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const Editor = dynamic(() => import("@monaco-editor/react"), {
+    ssr: false,
+    loading: () => <Skeleton className="w-full h-full min-h-[300px]" />,
+});
 import { useStore } from "@/lib/store";
 import { useTheme } from "@/providers/ThemeProvider";
 import { Table } from "@/packages/schema-core";

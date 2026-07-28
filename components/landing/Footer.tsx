@@ -1,8 +1,6 @@
-"use client";
-
 import React from "react";
 import Link from "next/link";
-import { Database, ArrowRight, Heart, Github, Terminal, Sparkles } from "lucide-react";
+import { Database, ArrowRight } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 
 export function Footer(): React.JSX.Element {

@@ -1,8 +1,14 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import Editor from "@monaco-editor/react";
+import dynamic from "next/dynamic";
 import { Copy, Check } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const Editor = dynamic(() => import("@monaco-editor/react"), {
+    ssr: false,
+    loading: () => <Skeleton className="w-full h-full min-h-75" />,
+});
 import { useStore } from "@/lib/store";
 import { useTheme } from "@/providers/ThemeProvider";
 import { getGeneratorForDialect, createTypescriptGenerator } from "@/packages/generators";

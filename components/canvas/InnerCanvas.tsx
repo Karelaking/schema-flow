@@ -2,8 +2,6 @@ import React, { useCallback, useMemo } from "react";
 import {
     ReactFlow,
     Background,
-    Controls,
-    MiniMap,
     NodeChange,
     EdgeChange,
     Connection,

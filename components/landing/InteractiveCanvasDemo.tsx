@@ -3,17 +3,14 @@
 import React, { useState } from "react";
 import { 
   Database, 
-  Code2, 
   Copy, 
   Check, 
   Sparkles, 
   Key, 
   Link2, 
-  Plus, 
   Layers, 
   FileCode, 
   Terminal,
-  Columns
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

@@ -1,10 +1,22 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { HeroSection } from "@/components/landing/HeroSection";
-import { InteractiveCanvasDemo } from "@/components/landing/InteractiveCanvasDemo";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
 import { DrizzleSection } from "@/components/landing/DrizzleSection";
 import { Footer } from "@/components/landing/Footer";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const InteractiveCanvasDemo = dynamic(
+  () => import("@/components/landing/InteractiveCanvasDemo").then(mod => mod.InteractiveCanvasDemo),
+  {
+    loading: () => (
+      <div className="container mx-auto px-4 py-8">
+        <Skeleton className="w-full h-112.5 rounded-xl border border-border/40" />
+      </div>
+    ),
+  }
+);
 
 export const metadata: Metadata = {
   title: "Schema Flow - Visual Database Schema builder",

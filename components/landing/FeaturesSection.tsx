@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import { 
   Zap, 
@@ -8,7 +6,6 @@ import {
   Layers, 
   Terminal, 
   ShieldAlert,
-  Sparkles,
   CheckCircle2
 } from "lucide-react";
 

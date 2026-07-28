@@ -2,17 +2,37 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import { Header } from "@/components/layout/Header";
-import { Explorer } from "@/components/layout/Explorer";
 import { Canvas } from "@/components/canvas/Canvas";
-import { Inspector } from "@/components/layout/Inspector";
 import { EmptyProjectView } from "@/components/layout/EmptyProjectView";
 import { MobileNavigation } from "@/components/layout/MobileNavigation";
 import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { ProjectMetadata, SchemaAST } from "@/packages/schema-core";
+import dynamic from "next/dynamic";
 import { saveProjectAction } from "@/app/actions/projects";
-import { AgentChatDrawer } from "@/components/agent/AgentChatDrawer";
 import { useAIStore } from "@/lib/ai-store";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const Explorer = dynamic(
+    () => import("@/components/layout/Explorer").then(mod => mod.Explorer),
+    {
+        ssr: false,
+        loading: () => <Skeleton className="w-64 h-full rounded-none shrink-0" />,
+    }
+);
+
+const Inspector = dynamic(
+    () => import("@/components/layout/Inspector").then(mod => mod.Inspector),
+    {
+        ssr: false,
+        loading: () => <Skeleton className="w-80 h-full rounded-none shrink-0" />,
+    }
+);
+
+const AgentChatDrawer = dynamic(
+    () => import("@/components/agent/AgentChatDrawer").then(mod => mod.AgentChatDrawer),
+    { ssr: false }
+);
 
 /**
  * Props for WorkspaceClient component.

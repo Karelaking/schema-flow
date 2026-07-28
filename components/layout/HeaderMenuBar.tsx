@@ -649,21 +649,29 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                 </DropdownMenu>
             </div>
 
-            <CreateProjectDialog open={createProjectOpen} onOpenChange={setCreateProjectOpen} />
-            <ProjectSettingsDialog
-                open={settingsOpen}
-                onOpenChange={setSettingsOpen}
-                onDeleteRequest={projectId ? () => setDeleteTarget({ id: projectId, name: projectName }) : undefined}
-            />
-            <DeleteProjectDialog
-                targetProject={deleteTarget}
-                onOpenChange={open => {
-                    if (!open) {
-                        setDeleteTarget(undefined);
-                    }
-                }}
-                onDeleted={handleProjectDeleted}
-            />
+            <React.Suspense fallback={null}>
+                {createProjectOpen && (
+                    <CreateProjectDialog open={createProjectOpen} onOpenChange={setCreateProjectOpen} />
+                )}
+                {settingsOpen && (
+                    <ProjectSettingsDialog
+                        open={settingsOpen}
+                        onOpenChange={setSettingsOpen}
+                        onDeleteRequest={projectId ? () => setDeleteTarget({ id: projectId, name: projectName }) : undefined}
+                    />
+                )}
+                {deleteTarget && (
+                    <DeleteProjectDialog
+                        targetProject={deleteTarget}
+                        onOpenChange={open => {
+                            if (!open) {
+                                setDeleteTarget(undefined);
+                            }
+                        }}
+                        onDeleted={handleProjectDeleted}
+                    />
+                )}
+            </React.Suspense>
         </div>
     );
 };

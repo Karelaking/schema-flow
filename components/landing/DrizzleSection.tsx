@@ -1,8 +1,6 @@
-"use client";
-
 import React from "react";
 import Link from "next/link";
-import { Sparkles, ArrowRight, Terminal, CheckCircle2, Cpu, FileCode2 } from "lucide-react";
+import { Sparkles, ArrowRight, Terminal, CheckCircle2} from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 
 export function DrizzleSection(): React.JSX.Element {

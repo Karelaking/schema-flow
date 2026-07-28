@@ -20,11 +20,25 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import dynamic from "next/dynamic";
+import { Skeleton } from "@/components/ui/skeleton";
 import { TableInspector } from "@/components/inspector/TableInspector";
 import { RelationInspector } from "@/components/inspector/RelationInspector";
-import { CodePreviewTab } from "@/components/inspector/CodePreviewTab";
-import { ValidationTab } from "@/components/inspector/ValidationTab";
-import { QueryBuilderTab } from "@/components/inspector/QueryBuilderTab";
+
+const CodePreviewTab = dynamic(
+    () => import("@/components/inspector/CodePreviewTab").then(mod => mod.CodePreviewTab),
+    { ssr: false, loading: () => <Skeleton className="w-full h-64 rounded-lg" /> }
+);
+
+const QueryBuilderTab = dynamic(
+    () => import("@/components/inspector/QueryBuilderTab").then(mod => mod.QueryBuilderTab),
+    { ssr: false, loading: () => <Skeleton className="w-full h-64 rounded-lg" /> }
+);
+
+const ValidationTab = dynamic(
+    () => import("@/components/inspector/ValidationTab").then(mod => mod.ValidationTab),
+    { ssr: false, loading: () => <Skeleton className="w-full h-64 rounded-lg" /> }
+);
 
 export interface InspectorProps {
     /** Optional custom CSS class name */

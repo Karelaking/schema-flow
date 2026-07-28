@@ -2,22 +2,17 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import {
-    Command,
     Search,
     Plus,
     Sun,
     Moon,
     Download,
-    FileText,
-    Sparkles,
     Trash2,
-    X,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { useTheme } from "@/providers/ThemeProvider";
 import { useProjectActions } from "@/hooks/project-actions.hook";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
 
 export interface CommandMenuProps {
