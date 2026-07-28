@@ -24,7 +24,8 @@ describe("SchemaValidator", () => {
           ]
         }
       },
-      relations: {}
+      relations: {},
+      enums: {}
     };
     const errors = validator.validate(ast);
     expect(errors).toHaveLength(0);
@@ -62,7 +63,8 @@ describe("SchemaValidator", () => {
           ]
         }
       },
-      relations: {}
+      relations: {},
+      enums: {}
     };
     const errors = validator.validate(ast);
     const tableErrors = errors.filter(e => e.path === "tables.users");
@@ -96,7 +98,8 @@ describe("SchemaValidator", () => {
           ]
         }
       },
-      relations: {}
+      relations: {},
+      enums: {}
     };
     const errors = validator.validate(ast);
     const colErrors = errors.filter(e => e.path === "tables.users.columns.email");
@@ -124,7 +127,8 @@ describe("SchemaValidator", () => {
           ]
         }
       },
-      relations: {}
+      relations: {},
+      enums: {}
     };
     const errors = validator.validate(ast);
     const tableErrors = errors.filter(e => e.path === "tables.users");
@@ -161,7 +165,8 @@ describe("SchemaValidator", () => {
           targetColumnId: "c_invalid",
           type: "many-to-one"
         }
-      }
+      },
+      enums: {}
     };
     const errors = validator.validate(ast);
     const relErrors = errors.filter(e => e.path.startsWith("relations.r1"));

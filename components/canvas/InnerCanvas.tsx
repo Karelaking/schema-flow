@@ -37,6 +37,7 @@ export const CanvasInner: React.FC = (): React.ReactElement => {
 
     const updateTablePosition = useStore(state => state.updateTablePosition);
     const selectTable = useStore(state => state.selectTable);
+    const deleteTable = useStore(state => state.deleteTable);
     const selectRelation = useStore(state => state.selectRelation);
     const addRelation = useStore(state => state.addRelation);
     const deleteRelation = useStore(state => state.deleteRelation);
@@ -61,9 +62,12 @@ export const CanvasInner: React.FC = (): React.ReactElement => {
                 if (change.type === "select") {
                     selectTable(change.selected ? change.id : undefined);
                 }
+                if (change.type === "remove") {
+                    deleteTable(change.id);
+                }
             });
         },
-        [updateTablePosition, selectTable]
+        [updateTablePosition, selectTable, deleteTable]
     );
 
     const onEdgesChange = useCallback(
