@@ -61,9 +61,7 @@ export const WorkspaceClient: React.FC<WorkspaceClientProps> = ({ initialProject
         if (initialProject) {
             loadProject(initialProject);
             setIsEmpty(false);
-            setTimeout(() => {
-                isLoadedRef.current = true;
-            }, 300);
+            isLoadedRef.current = true;
         }
         else if (initialProjectsList.length === 0) {
             setIsEmpty(true);
@@ -140,20 +138,38 @@ export const WorkspaceClient: React.FC<WorkspaceClientProps> = ({ initialProject
             return;
         }
 
+        const winWidth = window.innerWidth;
+        let rafId: number | null = null;
+        let currentLeft = leftWidth;
+        let currentRight = rightWidth;
+
         const handleMouseMove = (e: MouseEvent): void => {
-            if (resizingSide === "left") {
-                const newWidth = Math.max(180, Math.min(400, e.clientX));
-                setLeftWidth(newWidth);
-                localStorage.setItem("schema-flow:left-width", String(newWidth));
+            const clientX = e.clientX;
+            if (rafId !== null) {
+                cancelAnimationFrame(rafId);
             }
-            else if (resizingSide === "right") {
-                const newWidth = Math.max(320, Math.min(600, window.innerWidth - e.clientX));
-                setRightWidth(newWidth);
-                localStorage.setItem("schema-flow:right-width", String(newWidth));
-            }
+
+            rafId = requestAnimationFrame(() => {
+                if (resizingSide === "left") {
+                    const newWidth = Math.max(180, Math.min(400, clientX));
+                    currentLeft = newWidth;
+                    setLeftWidth(newWidth);
+                }
+                else if (resizingSide === "right") {
+                    const newWidth = Math.max(320, Math.min(600, winWidth - clientX));
+                    currentRight = newWidth;
+                    setRightWidth(newWidth);
+                }
+            });
         };
 
         const handleMouseUp = (): void => {
+            if (resizingSide === "left") {
+                localStorage.setItem("schema-flow:left-width", String(currentLeft));
+            }
+            else if (resizingSide === "right") {
+                localStorage.setItem("schema-flow:right-width", String(currentRight));
+            }
             setResizingSide(undefined);
         };
 
@@ -164,12 +180,15 @@ export const WorkspaceClient: React.FC<WorkspaceClientProps> = ({ initialProject
         document.body.style.cursor = "col-resize";
 
         return () => {
+            if (rafId !== null) {
+                cancelAnimationFrame(rafId);
+            }
             window.removeEventListener("mousemove", handleMouseMove);
             window.removeEventListener("mouseup", handleMouseUp);
             document.body.style.userSelect = "";
             document.body.style.cursor = "";
         };
-    }, [resizingSide]);
+    }, [resizingSide, leftWidth, rightWidth]);
 
     if (isEmpty || !projectId) {
         return <EmptyProjectView onProjectCreated={() => setIsEmpty(false)} />;

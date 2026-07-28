@@ -60,6 +60,12 @@ export default function RootLayout({
       className={`${interSans.variable} ${jetbrainsMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
+      <head>
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      </head>
       <body className="min-h-full flex flex-col bg-background text-foreground antialiased">
         <ThemeProvider>
           <ShortcutProvider>

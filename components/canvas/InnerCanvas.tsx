@@ -139,15 +139,6 @@ export const CanvasInner: React.FC = (): React.ReactElement => {
                     size={1.5}
                     color={theme === "dark" ? "#334155" : "#cbd5e1"}
                 />
-                <Controls className="bg-card border-border fill-foreground text-foreground shadow-md rounded-md" />
-                <MiniMap
-                    style={{ width: 120, height: 80 }}
-                    zoomable
-                    pannable
-                    className="bg-card border border-border shadow-lg rounded-md overflow-hidden"
-                    nodeColor={theme === "dark" ? "#3b82f6" : "#2563eb"}
-                    maskColor={theme === "dark" ? "rgba(15, 23, 42, 0.7)" : "rgba(241, 245, 249, 0.7)"}
-                />
             </ReactFlow>
         </div>
     );
