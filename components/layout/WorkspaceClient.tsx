@@ -41,6 +41,7 @@ export const WorkspaceClient: React.FC<WorkspaceClientProps> = ({ initialProject
     const showLeftSidebar = useStore(state => state.showLeftSidebar);
     const showRightSidebar = useStore(state => state.showRightSidebar);
     const enums = useStore(state => state.enums);
+    const crudVersion = useStore(state => state.crudVersion);
 
     const [isEmpty, setIsEmpty] = useState(!initialProject && initialProjectsList.length === 0);
     const [leftWidth, setLeftWidth] = useState(256);
@@ -74,7 +75,7 @@ export const WorkspaceClient: React.FC<WorkspaceClientProps> = ({ initialProject
     }, [initialProject, initialProjectsList, loadProject]);
 
     useEffect(() => {
-        if (!isLoadedRef.current || !projectId) {
+        if (!isLoadedRef.current || !projectId || crudVersion === 0) {
             return;
         }
 
@@ -103,10 +104,10 @@ export const WorkspaceClient: React.FC<WorkspaceClientProps> = ({ initialProject
             catch (err: unknown) {
                 console.warn("[WorkspaceClient] Auto-save background sync postponed:", err);
             }
-        }, 3000);
+        }, 1500);
 
         return () => clearTimeout(timer);
-    }, [projectId, projectName, projectDescription, dialect, theme, autoAddId, autoAddTimestamps, tables, relations, enums]);
+    }, [projectId, crudVersion]);
 
     useEffect(() => {
         const checkMobile = (): void => {

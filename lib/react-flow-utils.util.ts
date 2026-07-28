@@ -88,6 +88,14 @@ export function convertRelationsToEdges(
         return [];
     }
 
+    const tableList = Object.values(tables);
+    const tableNameMap = new Map<string, Table>();
+    for (const t of tableList) {
+        if (t?.name) {
+            tableNameMap.set(t.name, t);
+        }
+    }
+
     const edges: RelationEdge[] = [];
 
     for (const rel of Object.values(relations)) {
@@ -97,9 +105,9 @@ export function convertRelationsToEdges(
 
         const isSelected = rel.id === selectedRelationId;
 
-        // Resolve source and target table objects (by ID or name)
-        const sourceTable = tables[rel.sourceTableId] || Object.values(tables).find(t => t.name === rel.sourceTableId);
-        const targetTable = tables[rel.targetTableId] || Object.values(tables).find(t => t.name === rel.targetTableId);
+        // Resolve source and target table objects (by ID or O(1) Map lookup)
+        const sourceTable = tables[rel.sourceTableId] || tableNameMap.get(rel.sourceTableId);
+        const targetTable = tables[rel.targetTableId] || tableNameMap.get(rel.targetTableId);
 
         const sourceTableId = sourceTable ? sourceTable.id : rel.sourceTableId;
         const targetTableId = targetTable ? targetTable.id : rel.targetTableId;

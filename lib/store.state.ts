@@ -3,6 +3,8 @@ import { Table, Relation, Column, Index, IndexColumn, DatabaseDialect, SchemaAST
 import { CanvasHistoryState, ProjectStore } from "@/types/store.type";
 import { getLayoutedElements, LayoutDirection } from "@/lib/auto-layout";
 
+const nextCrudVersion = (v: number): number => (v % 1_000_000) + 1;
+
 /**
  * Zustand hook for global project state management.
  */
@@ -19,6 +21,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
     tables: {},
     relations: {},
     enums: {},
+    crudVersion: 0,
     showLeftSidebar: true,
     showRightSidebar: true,
     isCreateTableOpen: false,
@@ -45,6 +48,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
             tables: ast.tables || {},
             relations: ast.relations || {},
             enums: ast.enums || {},
+            crudVersion: 0,
             selectedTableId: undefined,
             selectedRelationId: undefined,
             past: [],
@@ -54,11 +58,12 @@ export const useStore = create<ProjectStore>((set, get) => ({
 
     setProjectDetails: (name: string, description: string, dialect: DatabaseDialect): void => {
         get().pushHistory();
-        set({
+        set(state => ({
             projectName: name,
             projectDescription: description,
-            dialect
-        });
+            dialect,
+            crudVersion: nextCrudVersion(state.crudVersion),
+        }));
     },
 
     setTheme: (theme: "dark" | "light"): void => {
@@ -70,7 +75,9 @@ export const useStore = create<ProjectStore>((set, get) => ({
 
     pushHistory: (): void => {
         const { tables, relations, enums, past } = get();
-        const snap: CanvasHistoryState = JSON.parse(JSON.stringify({ tables, relations, enums }));
+        const snap: CanvasHistoryState = typeof structuredClone === "function" 
+            ? structuredClone({ tables, relations, enums })
+            : JSON.parse(JSON.stringify({ tables, relations, enums }));
 
         const newPast = past.length >= 50 ? past.slice(1) : past;
 
@@ -88,17 +95,20 @@ export const useStore = create<ProjectStore>((set, get) => ({
 
         const previous = past[past.length - 1];
         const newPast = past.slice(0, past.length - 1);
-        const currentSnap: CanvasHistoryState = JSON.parse(JSON.stringify({ tables, relations, enums }));
+        const currentSnap: CanvasHistoryState = typeof structuredClone === "function"
+            ? structuredClone({ tables, relations, enums })
+            : JSON.parse(JSON.stringify({ tables, relations, enums }));
 
-        set({
+        set(state => ({
             tables: previous.tables,
             relations: previous.relations,
             enums: previous.enums,
             past: newPast,
             future: [currentSnap, ...future],
             selectedTableId: undefined,
-            selectedRelationId: undefined
-        });
+            selectedRelationId: undefined,
+            crudVersion: nextCrudVersion(state.crudVersion),
+        }));
     },
 
     redo: (): void => {
@@ -109,17 +119,20 @@ export const useStore = create<ProjectStore>((set, get) => ({
 
         const next = future[0];
         const newFuture = future.slice(1);
-        const currentSnap: CanvasHistoryState = JSON.parse(JSON.stringify({ tables, relations, enums }));
+        const currentSnap: CanvasHistoryState = typeof structuredClone === "function"
+            ? structuredClone({ tables, relations, enums })
+            : JSON.parse(JSON.stringify({ tables, relations, enums }));
 
-        set({
+        set(state => ({
             tables: next.tables,
             relations: next.relations,
             enums: next.enums,
             past: [...past, currentSnap],
             future: newFuture,
             selectedTableId: undefined,
-            selectedRelationId: undefined
-        });
+            selectedRelationId: undefined,
+            crudVersion: nextCrudVersion(state.crudVersion),
+        }));
     },
 
     clearHistory: (): void => set({ past: [], future: [] }),
@@ -186,6 +199,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
         set(state => ({
             tables: { ...state.tables, [id]: newTable },
             selectedTableId: id,
+            crudVersion: nextCrudVersion(state.crudVersion),
         }));
 
         return id;
@@ -203,6 +217,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
                     ...state.tables,
                     [id]: { ...table, ...updates },
                 },
+                crudVersion: nextCrudVersion(state.crudVersion),
             };
         });
     },
@@ -240,6 +255,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
                 tables: newTables,
                 relations: newRelations,
                 selectedTableId: state.selectedTableId === id ? undefined : state.selectedTableId,
+                crudVersion: nextCrudVersion(state.crudVersion),
             };
         });
     },
@@ -281,6 +297,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
         set(state => ({
             tables: { ...state.tables, [newTableId]: duplicatedTable },
             selectedTableId: newTableId,
+            crudVersion: nextCrudVersion(state.crudVersion),
         }));
     },
 
@@ -328,6 +345,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
                         columns: newColumns,
                     },
                 },
+                crudVersion: nextCrudVersion(state.crudVersion),
             };
         });
 
@@ -356,6 +374,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
                     ...state.tables,
                     [tableId]: { ...table, columns: updatedColumns },
                 },
+                crudVersion: nextCrudVersion(state.crudVersion),
             };
         });
     },
@@ -383,6 +402,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
                     [tableId]: { ...table, columns: filteredColumns },
                 },
                 relations: newRelations,
+                crudVersion: nextCrudVersion(state.crudVersion),
             };
         });
     },
@@ -399,6 +419,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
                     ...state.tables,
                     [tableId]: { ...table, columns },
                 },
+                crudVersion: nextCrudVersion(state.crudVersion),
             };
         });
     },
@@ -421,6 +442,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
                         indexes: [...(table.indexes || []), newIndex],
                     },
                 },
+                crudVersion: nextCrudVersion(state.crudVersion),
             };
         });
 
@@ -445,6 +467,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
                     ...state.tables,
                     [tableId]: { ...table, indexes: updatedIndexes },
                 },
+                crudVersion: nextCrudVersion(state.crudVersion),
             };
         });
     },
@@ -462,6 +485,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
                     ...state.tables,
                     [tableId]: { ...table, indexes: filteredIndexes },
                 },
+                crudVersion: nextCrudVersion(state.crudVersion),
             };
         });
     },
@@ -474,6 +498,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
         set(state => ({
             relations: { ...state.relations, [relId]: newRelation },
             selectedRelationId: relId,
+            crudVersion: nextCrudVersion(state.crudVersion),
         }));
 
         return relId;
@@ -491,6 +516,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
                     ...state.relations,
                     [id]: { ...rel, ...updates },
                 },
+                crudVersion: nextCrudVersion(state.crudVersion),
             };
         });
     },
@@ -503,6 +529,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
             return {
                 relations: newRelations,
                 selectedRelationId: state.selectedRelationId === id ? undefined : state.selectedRelationId,
+                crudVersion: nextCrudVersion(state.crudVersion),
             };
         });
     },
@@ -514,6 +541,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
 
         set(state => ({
             enums: { ...state.enums, [enumId]: newEnum },
+            crudVersion: nextCrudVersion(state.crudVersion),
         }));
 
         return enumId;
@@ -531,6 +559,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
                     ...state.enums,
                     [id]: { ...enumDef, ...updates },
                 },
+                crudVersion: nextCrudVersion(state.crudVersion),
             };
         });
     },
@@ -542,6 +571,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
             delete newEnums[id];
             return {
                 enums: newEnums,
+                crudVersion: nextCrudVersion(state.crudVersion),
             };
         });
     },

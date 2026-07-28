@@ -35,6 +35,7 @@ export interface ProjectStore {
     tables: Record<string, Table>;
     relations: Record<string, Relation>;
     enums: Record<string, EnumDefinition>;
+    crudVersion: number;
 
     // UI Sidebar Visibility & Selection context
     showLeftSidebar: boolean;

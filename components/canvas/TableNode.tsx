@@ -22,7 +22,7 @@ interface TableNodeProps {
 /**
  * React Flow node rendering database table schema card.
  */
-export const TableNode: React.FC<TableNodeProps> = ({ id, data, selected }): React.ReactElement => {
+const TableNodeComponent: React.FC<TableNodeProps> = ({ id, data, selected }): React.ReactElement => {
     const table = data.table;
     const selectTable = useStore(state => state.selectTable);
     const deleteTable = useStore(state => state.deleteTable);
@@ -30,12 +30,18 @@ export const TableNode: React.FC<TableNodeProps> = ({ id, data, selected }): Rea
     const tables = useStore(state => state.tables);
     const enums = useStore(state => state.enums);
 
-    const isForeignKey = (colId: string): boolean => {
-        return Object.values(relations).some(rel => {
+    const fkColumnSet = React.useMemo(() => {
+        const set = new Set<string>();
+        const relList = Object.values(relations);
+        for (const rel of relList) {
+            if (!rel) continue;
             const resolved = resolveRelationFK(rel, tables);
-            return resolved.fkTableId === id && resolved.fkColumnId === colId;
-        });
-    };
+            if (resolved.fkTableId === id) {
+                set.add(resolved.fkColumnId);
+            }
+        }
+        return set;
+    }, [id, relations, tables]);
 
     const handleNodeClick = (event: React.MouseEvent): void => {
         event.stopPropagation();
@@ -103,7 +109,7 @@ export const TableNode: React.FC<TableNodeProps> = ({ id, data, selected }): Rea
                 ) : (
                     table.columns.map(column => {
                         const isPk = column.constraints.isPrimaryKey;
-                        const isFk = isForeignKey(column.id);
+                        const isFk = fkColumnSet.has(column.id);
                         const isUq = column.constraints.isUnique;
 
                         return (
@@ -182,3 +188,5 @@ export const TableNode: React.FC<TableNodeProps> = ({ id, data, selected }): Rea
         </div>
     );
 };
+
+export const TableNode = React.memo(TableNodeComponent);
