@@ -1,6 +1,7 @@
-# Targets modern evergreen browsers to eliminate legacy polyfills and transpilation
-last 2 Chrome versions
-last 2 Firefox versions
-last 2 Safari versions
-last 2 Edge versions
+# Modern evergreen browsers - ZERO polyfills or legacy transpilation
+Chrome >= 110
+Firefox >= 110
+Safari >= 16.4
+Edge >= 110
 not dead
+not IE 11

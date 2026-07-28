@@ -71,7 +71,7 @@ export const Inspector: React.FC<InspectorProps> = ({ className, style }): React
     };
 
     return (
-        <aside style={style} className={cn("sidebar-panel bg-card text-card-foreground flex flex-col shrink-0 select-none border-l overflow-hidden", className)}>
+        <aside style={style} className={cn("sidebar-panel bg-card text-card-foreground flex flex-col h-full shrink-0 select-none border-l overflow-hidden", className)}>
             {/* Inspector Header with Select Dropdown */}
             <div className="p-3 border-b flex items-center justify-between gap-2 shrink-0 bg-muted/10">
                 <div className="flex-1 min-w-0">
