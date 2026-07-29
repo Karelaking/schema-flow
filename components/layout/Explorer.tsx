@@ -44,12 +44,18 @@ export const Explorer: React.FC<ExplorerProps> = ({ className, style }): React.R
     const [editingEnumId, setEditingEnumId] = useState<string | undefined>(undefined);
     const [newEnumValueInput, setNewEnumValueInput] = useState("");
 
-    const filteredTables = Object.values(activeTables).filter(table =>
-        table.name.toLowerCase().includes(search.toLowerCase())
-    );
+    const searchLower = search.trim().toLowerCase();
+    const filteredTables = Object.values(activeTables).filter(table => {
+        if (!searchLower) {
+            return true;
+        }
+        const matchesTableName = table.name.toLowerCase().includes(searchLower);
+        const matchesColumnName = table.columns?.some(col => col.name.toLowerCase().includes(searchLower));
+        return matchesTableName || matchesColumnName;
+    });
 
     const filteredEnums = Object.values(enums).filter(enumItem =>
-        enumItem.name.toLowerCase().includes(search.toLowerCase())
+        !searchLower || enumItem.name.toLowerCase().includes(searchLower)
     );
 
     const setCreateTableOpen = useStore(state => state.setCreateTableOpen);

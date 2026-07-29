@@ -13,6 +13,7 @@ import { useAIStore } from "@/lib/ai-store";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePanelResizing } from "@/hooks/usePanelResizing";
 import { useAutoSave } from "@/hooks/useAutoSave";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 
 const Explorer = dynamic(
     () => import("@/components/layout/Explorer").then(mod => mod.Explorer),
@@ -84,6 +85,9 @@ export const WorkspaceClient: React.FC<WorkspaceClientProps> = ({ initialProject
 
     // Background Auto-Save Hook
     useAutoSave(isLoaded);
+
+    // Workspace Keyboard Shortcuts Hook
+    useKeyboardShortcuts();
 
     // Responsive Mobile layout detection
     useEffect(() => {

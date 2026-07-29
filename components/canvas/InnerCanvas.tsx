@@ -9,6 +9,7 @@ import {
     useReactFlow,
     Node,
     Edge,
+    OnNodeDrag,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
@@ -68,9 +69,6 @@ export const CanvasInner: React.FC = (): React.ReactElement => {
     const onNodesChange = useCallback(
         (changes: NodeChange[]) => {
             changes.forEach(change => {
-                if (change.type === "position" && change.position) {
-                    updateTablePosition(change.id, change.position.x, change.position.y);
-                }
                 if (change.type === "select") {
                     selectTable(change.selected ? change.id : undefined);
                 }
@@ -79,7 +77,19 @@ export const CanvasInner: React.FC = (): React.ReactElement => {
                 }
             });
         },
-        [updateTablePosition, selectTable, deleteTable]
+        [selectTable, deleteTable]
+    );
+
+    const onNodeDragStop = useCallback(
+        (_event: React.MouseEvent | MouseEvent | TouchEvent, node: Node, draggedNodes: Node[]) => {
+            const targets = draggedNodes && draggedNodes.length > 0 ? draggedNodes : [node];
+            targets.forEach(n => {
+                if (n && n.position) {
+                    updateTablePosition(n.id, n.position.x, n.position.y);
+                }
+            });
+        },
+        [updateTablePosition]
     );
 
     const onEdgesChange = useCallback(
@@ -174,11 +184,13 @@ export const CanvasInner: React.FC = (): React.ReactElement => {
                     pushHistory();
                     setMenuState(null);
                 }}
+                onNodeDragStop={onNodeDragStop}
                 onMoveStart={() => setMenuState(null)}
                 onPaneClick={onPaneClick}
                 onPaneContextMenu={onPaneContextMenu}
                 onNodeContextMenu={onNodeContextMenu}
                 onEdgeContextMenu={onEdgeContextMenu}
+                onlyRenderVisibleElements={true}
                 colorMode={theme === "dark" ? "dark" : "light"}
                 fitView
                 snapToGrid

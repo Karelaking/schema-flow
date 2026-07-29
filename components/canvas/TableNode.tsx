@@ -188,4 +188,10 @@ const TableNodeComponent: React.FC<TableNodeProps> = ({ id, data, selected }): R
     );
 };
 
-export const TableNode = React.memo(TableNodeComponent);
+export const TableNode = React.memo(TableNodeComponent, (prevProps, nextProps) => {
+    return (
+        prevProps.id === nextProps.id &&
+        prevProps.selected === nextProps.selected &&
+        prevProps.data.table === nextProps.data.table
+    );
+});
