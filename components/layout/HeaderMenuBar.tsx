@@ -340,7 +340,10 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                                     <PanelLeft className="size-3.5 text-muted-foreground" />
                                     <span>Explorer Sidebar</span>
                                 </div>
-                                {showLeftSidebar && <Check className="size-3.5 text-primary" />}
+                                <div className="flex items-center gap-2">
+                                    <DropdownMenuShortcut><Kbd>Ctrl+V</Kbd></DropdownMenuShortcut>
+                                    {showLeftSidebar && <Check className="size-3.5 text-primary" />}
+                                </div>
                             </DropdownMenuItem>
 
                             <DropdownMenuItem
@@ -351,7 +354,10 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                                     <PanelRight className="size-3.5 text-muted-foreground" />
                                     <span>Inspector Sidebar</span>
                                 </div>
-                                {showRightSidebar && <Check className="size-3.5 text-primary" />}
+                                <div className="flex items-center gap-2">
+                                    <DropdownMenuShortcut><Kbd>Ctrl+B</Kbd></DropdownMenuShortcut>
+                                    {showRightSidebar && <Check className="size-3.5 text-primary" />}
+                                </div>
                             </DropdownMenuItem>
 
                             <DropdownMenuSeparator />
@@ -581,7 +587,10 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                                         <PanelLeft className="size-3.5 text-muted-foreground" />
                                         <span>Explorer Sidebar</span>
                                     </div>
-                                    {showLeftSidebar && <Check className="size-3.5 text-primary" />}
+                                    <div className="flex items-center gap-2">
+                                        <DropdownMenuShortcut><Kbd>Ctrl+V</Kbd></DropdownMenuShortcut>
+                                        {showLeftSidebar && <Check className="size-3.5 text-primary" />}
+                                    </div>
                                 </DropdownMenuItem>
 
                                 <DropdownMenuItem
@@ -592,7 +601,10 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                                         <PanelRight className="size-3.5 text-muted-foreground" />
                                         <span>Inspector Sidebar</span>
                                     </div>
-                                    {showRightSidebar && <Check className="size-3.5 text-primary" />}
+                                    <div className="flex items-center gap-2">
+                                        <DropdownMenuShortcut><Kbd>Ctrl+B</Kbd></DropdownMenuShortcut>
+                                        {showRightSidebar && <Check className="size-3.5 text-primary" />}
+                                    </div>
                                 </DropdownMenuItem>
 
                                 <DropdownMenuSeparator />

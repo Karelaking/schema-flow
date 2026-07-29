@@ -8,6 +8,8 @@ import {
     Moon,
     Download,
     Trash2,
+    PanelLeft,
+    PanelRight,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { useTheme } from "@/providers/ThemeProvider";
@@ -157,6 +159,30 @@ export const CommandMenu: React.FC<CommandMenuProps> = ({
                             <span>Toggle Theme</span>
                         </div>
                         <Kbd>Ctrl+Shift+D</Kbd>
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={() => handleAction(() => useStore.getState().toggleLeftSidebar())}
+                        className="w-full flex items-center justify-between px-3 py-2 rounded-md hover:bg-accent text-left transition-colors cursor-pointer"
+                    >
+                        <div className="flex items-center gap-2.5">
+                            <PanelLeft className="size-4 text-muted-foreground" data-icon="inline-start" />
+                            <span>Toggle Left Sidebar (Explorer)</span>
+                        </div>
+                        <Kbd>Ctrl+V</Kbd>
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={() => handleAction(() => useStore.getState().toggleRightSidebar())}
+                        className="w-full flex items-center justify-between px-3 py-2 rounded-md hover:bg-accent text-left transition-colors cursor-pointer"
+                    >
+                        <div className="flex items-center gap-2.5">
+                            <PanelRight className="size-4 text-muted-foreground" data-icon="inline-start" />
+                            <span>Toggle Right Sidebar (Inspector)</span>
+                        </div>
+                        <Kbd>Ctrl+B</Kbd>
                     </button>
 
                     <button

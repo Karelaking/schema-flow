@@ -33,8 +33,8 @@ export const CenterControls: React.FC<CenterControlsProps> = ({ className = "" }
                 variant={showLeftSidebar ? "secondary" : "ghost"}
                 size="icon"
                 onClick={toggleLeftSidebar}
-                title={showLeftSidebar ? "Hide Left Sidebar (Explorer)" : "Show Left Sidebar (Explorer)"}
-                aria-label={showLeftSidebar ? "Hide Left Sidebar (Explorer)" : "Show Left Sidebar (Explorer)"}
+                title={showLeftSidebar ? "Hide Left Sidebar (Ctrl+V)" : "Show Left Sidebar (Ctrl+V)"}
+                aria-label={showLeftSidebar ? "Hide Left Sidebar (Ctrl+V)" : "Show Left Sidebar (Ctrl+V)"}
                 className="size-8 cursor-pointer"
             >
                 <PanelLeft className="size-4" />
@@ -44,8 +44,8 @@ export const CenterControls: React.FC<CenterControlsProps> = ({ className = "" }
                 variant={showRightSidebar ? "secondary" : "ghost"}
                 size="icon"
                 onClick={toggleRightSidebar}
-                title={showRightSidebar ? "Hide Right Sidebar (Inspector)" : "Show Right Sidebar (Inspector)"}
-                aria-label={showRightSidebar ? "Hide Right Sidebar (Inspector)" : "Show Right Sidebar (Inspector)"}
+                title={showRightSidebar ? "Hide Right Sidebar (Ctrl+B)" : "Show Right Sidebar (Ctrl+B)"}
+                aria-label={showRightSidebar ? "Hide Right Sidebar (Ctrl+B)" : "Show Right Sidebar (Ctrl+B)"}
                 className="size-8 cursor-pointer"
             >
                 <PanelRight className="size-4" />

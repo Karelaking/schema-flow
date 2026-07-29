@@ -128,6 +128,22 @@ export function ShortcutProvider({ children }: ShortcutProviderProps): React.Rea
                 toggleTheme();
                 return;
             }
+
+            // Toggle Left Sidebar (Explorer): Ctrl+V or Cmd+V
+            const isToggleLeftSidebar = isControl && !e.shiftKey && !e.altKey && (code === "KeyV" || keyLower === "v");
+            if (isToggleLeftSidebar) {
+                e.preventDefault();
+                useStore.getState().toggleLeftSidebar();
+                return;
+            }
+
+            // Toggle Right Sidebar (Inspector): Ctrl+B or Cmd+B
+            const isToggleRightSidebar = isControl && !e.shiftKey && !e.altKey && (code === "KeyB" || keyLower === "b");
+            if (isToggleRightSidebar) {
+                e.preventDefault();
+                useStore.getState().toggleRightSidebar();
+                return;
+            }
         };
 
         window.addEventListener("keydown", handleKeyDown, { capture: true });
