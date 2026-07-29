@@ -219,8 +219,8 @@ export const Explorer: React.FC<ExplorerProps> = ({ className, style }): React.R
                                             isSelected
                                                 ? "bg-accent text-accent-foreground font-semibold"
                                                 : "text-foreground hover:bg-muted/60",
-                                            isAiProposed && "border border-amber-500/50 bg-amber-500/10 text-amber-300",
-                                            isAiModified && "border border-blue-500/50 bg-blue-500/10 text-blue-300"
+                                            isAiProposed && "border border-amber-500/50 bg-amber-500/10 text-amber-700 dark:text-amber-300",
+                                            isAiModified && "border border-blue-500/50 bg-blue-500/10 text-blue-700 dark:text-blue-300"
                                         )}
                                     >
                                         <div className="flex items-center gap-2 min-w-0">
@@ -283,7 +283,7 @@ export const Explorer: React.FC<ExplorerProps> = ({ className, style }): React.R
                                     >
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-1.5 font-medium text-foreground min-w-0">
-                                                <List className="h-3.5 w-3.5 text-purple-400 shrink-0" />
+                                                <List className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400 shrink-0" />
                                                 {isEditing ? (
                                                     <Input
                                                         type="text"
@@ -328,7 +328,7 @@ export const Explorer: React.FC<ExplorerProps> = ({ className, style }): React.R
                                                 <Badge
                                                     key={val}
                                                     variant="outline"
-                                                    className="text-[10px] px-1.5 py-0 font-mono bg-purple-500/10 border-purple-500/30 text-purple-300 flex items-center gap-1"
+                                                    className="text-[10px] px-1.5 py-0 font-mono bg-purple-500/10 border-purple-500/30 text-purple-700 dark:text-purple-300 flex items-center gap-1"
                                                 >
                                                     <span>{val}</span>
                                                     {isEditing && (

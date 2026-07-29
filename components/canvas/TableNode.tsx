@@ -124,7 +124,7 @@ const TableNodeComponent: React.FC<TableNodeProps> = ({ id, data, selected }): R
                                     type="target"
                                     position={Position.Left}
                                     id={`col-left-${column.id}`}
-                                    className="size-2! bg-muted-foreground/40! border-border! hover:bg-primary! transition-colors"
+                                    className="size-2! bg-muted-foreground/80! border-border! hover:bg-primary! transition-colors"
                                     style={{ left: "-4px" }}
                                 />
 
@@ -132,17 +132,17 @@ const TableNodeComponent: React.FC<TableNodeProps> = ({ id, data, selected }): R
                                     <div className="flex items-center gap-0.5 min-w-4 text-muted-foreground">
                                         {isPk && (
                                             <span title="Primary Key">
-                                                <Key className="h-3.5 w-3.5 text-amber-500 shrink-0" />
+                                                <Key className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
                                             </span>
                                         )}
                                         {isFk && !isPk && (
                                             <span title="Foreign Key">
-                                                <LinkIcon className="h-3.5 w-3.5 text-blue-500 shrink-0" />
+                                                <LinkIcon className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
                                             </span>
                                         )}
                                         {isUq && !isPk && (
                                             <span title="Unique Constraint">
-                                                <Fingerprint className="h-3.5 w-3.5 text-purple-400 shrink-0" />
+                                                <Fingerprint className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400 shrink-0" />
                                             </span>
                                         )}
                                     </div>
@@ -150,8 +150,7 @@ const TableNodeComponent: React.FC<TableNodeProps> = ({ id, data, selected }): R
                                     <span
                                         className={cn(
                                             "truncate font-mono text-[11px]",
-                                            isPk && "font-semibold text-foreground",
-                                            !isPk && "text-foreground/80"
+                                            isPk ? "font-semibold text-foreground" : "text-foreground"
                                         )}
                                     >
                                         {column.name}
@@ -160,7 +159,7 @@ const TableNodeComponent: React.FC<TableNodeProps> = ({ id, data, selected }): R
 
                                 <div className="flex items-center gap-2 font-mono text-[10px] text-muted-foreground shrink-0 pl-2">
                                     {column.enumId && enums[column.enumId] ? (
-                                        <span className="text-purple-400 font-semibold flex items-center gap-1">
+                                        <span className="text-purple-600 dark:text-purple-400 font-semibold flex items-center gap-1">
                                             <List className="h-2.5 w-2.5" />
                                             {enums[column.enumId].name}
                                         </span>
@@ -168,7 +167,7 @@ const TableNodeComponent: React.FC<TableNodeProps> = ({ id, data, selected }): R
                                         <span>{column.type.toLowerCase()}</span>
                                     )}
 
-                                    <span className="text-[9px] opacity-70">
+                                    <span className="text-[9px] text-muted-foreground font-semibold">
                                         {column.constraints.isNullable ? "NULL" : "NN"}
                                     </span>
                                 </div>
@@ -177,7 +176,7 @@ const TableNodeComponent: React.FC<TableNodeProps> = ({ id, data, selected }): R
                                     type="source"
                                     position={Position.Right}
                                     id={`col-right-${column.id}`}
-                                    className="size-2! bg-muted-foreground/40! border-border! hover:bg-primary! transition-colors"
+                                    className="size-2! bg-muted-foreground/80! border-border! hover:bg-primary! transition-colors"
                                     style={{ right: "-4px" }}
                                 />
                             </div>

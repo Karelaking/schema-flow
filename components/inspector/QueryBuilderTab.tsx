@@ -7,7 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const Editor = dynamic(() => import("@monaco-editor/react"), {
     ssr: false,
-    loading: () => <Skeleton className="w-full h-full min-h-[300px]" />,
+    loading: () => <Skeleton className="w-full h-full min-h-75" />,
 });
 import { useStore } from "@/lib/store";
 import { useTheme } from "@/providers/ThemeProvider";

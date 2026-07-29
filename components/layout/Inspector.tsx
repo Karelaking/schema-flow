@@ -83,25 +83,25 @@ export const Inspector: React.FC<InspectorProps> = ({ className, style }): React
                             <SelectGroup>
                                 <SelectItem value="inspector" className="text-xs cursor-pointer py-1.5">
                                     <div className="flex items-center gap-2">
-                                        <Layers className="size-3.5 text-blue-500" />
+                                        <Layers className="size-3.5 text-blue-600 dark:text-blue-400" />
                                         <span>Inspector & Attributes</span>
                                     </div>
                                 </SelectItem>
                                 <SelectItem value="code" className="text-xs cursor-pointer py-1.5">
                                     <div className="flex items-center gap-2">
-                                        <Code className="size-3.5 text-emerald-500" />
+                                        <Code className="size-3.5 text-emerald-600 dark:text-emerald-400" />
                                         <span>Generated Code</span>
                                     </div>
                                 </SelectItem>
                                 <SelectItem value="query" className="text-xs cursor-pointer py-1.5">
                                     <div className="flex items-center gap-2">
-                                        <Terminal className="size-3.5 text-purple-500" />
+                                        <Terminal className="size-3.5 text-purple-600 dark:text-purple-400" />
                                         <span>Query Builder</span>
                                     </div>
                                 </SelectItem>
                                 <SelectItem value="validation" className="text-xs cursor-pointer py-1.5">
                                     <div className="flex items-center gap-2">
-                                        <AlertTriangle className="size-3.5 text-amber-500" />
+                                        <AlertTriangle className="size-3.5 text-amber-600 dark:text-amber-400" />
                                         <span>Schema Validation</span>
                                     </div>
                                 </SelectItem>

@@ -130,12 +130,13 @@ export const CanvasInner: React.FC = (): React.ReactElement => {
                     type: "smoothstep",
                     animated: true
                 }}
+                proOptions={{ hideAttribution: true }}
             >
                 <Background
                     variant={BackgroundVariant.Dots}
                     gap={20}
                     size={1.5}
-                    color={theme === "dark" ? "#334155" : "#cbd5e1"}
+                    color={theme === "dark" ? "#475569" : "#94a3b8"}
                 />
             </ReactFlow>
         </div>
