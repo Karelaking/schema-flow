@@ -2,6 +2,7 @@ import { useState, useCallback, ChangeEvent } from "react";
 import { useStore } from "@/lib/store";
 import { SchemaAST, ProjectMetadata } from "@/packages/schema-core";
 import { saveProjectAction, listProjectsAction, getProjectAction } from "@/app/actions/projects";
+import { toast } from "@/components/ui/sonner";
 
 /**
  * Return type interface for useProjectActions hook.
@@ -91,11 +92,13 @@ export function useProjectActions(): UseProjectActionsReturn {
             const result = await saveProjectAction(projectId, ast);
             if (result.success) {
                 setSaveMessage("Saved successfully!");
+                toast.success("Database saved successfully");
                 setTimeout(() => setSaveMessage(""), 2000);
                 await fetchProjects();
             }
             else {
                 setSaveMessage(`Error: ${result.error}`);
+                toast.error(result.error || "Failed to save project");
             }
         }
         catch (err: unknown) {

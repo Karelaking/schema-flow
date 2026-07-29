@@ -25,6 +25,8 @@ export const useStore = create<ProjectStore>((set, get) => ({
     showLeftSidebar: false,
     showRightSidebar: false,
     isCreateTableOpen: false,
+    isCommentDialogOpen: false,
+    commentDialogTargetId: undefined,
     selectedTableId: undefined,
     selectedRelationId: undefined,
     past: [],
@@ -35,6 +37,7 @@ export const useStore = create<ProjectStore>((set, get) => ({
     setLeftSidebar: (showLeftSidebar: boolean): void => set({ showLeftSidebar }),
     setRightSidebar: (showRightSidebar: boolean): void => set({ showRightSidebar }),
     setCreateTableOpen: (isCreateTableOpen: boolean): void => set({ isCreateTableOpen }),
+    setCommentDialogOpen: (isCommentDialogOpen: boolean, commentDialogTargetId?: string): void => set({ isCommentDialogOpen, commentDialogTargetId }),
 
     loadProject: (ast: SchemaAST): void => {
         set({

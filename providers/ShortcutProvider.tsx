@@ -119,11 +119,11 @@ export function ShortcutProvider({ children }: ShortcutProviderProps): React.Rea
                 return;
             }
 
-            // Toggle Theme: D key (standalone) or Ctrl/Cmd+Shift+D
-            const isSingleD = keyLower === "d" && !e.metaKey && !e.ctrlKey && !e.altKey && !e.shiftKey;
-            const isCmdShiftD = isControl && e.shiftKey && keyLower === "d";
-
-            if (isSingleD || isCmdShiftD) {
+            // Toggle Theme: D key (standalone) or Cmd+Shift+D / Ctrl+Shift+D
+            if (
+                (e.key === "d" || e.key === "D" || e.code === "KeyD") &&
+                (((e.metaKey || e.ctrlKey) && e.shiftKey) || (!e.metaKey && !e.ctrlKey && !e.altKey && !e.shiftKey))
+            ) {
                 e.preventDefault();
                 toggleTheme();
                 return;

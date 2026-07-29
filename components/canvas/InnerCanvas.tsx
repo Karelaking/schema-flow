@@ -1,11 +1,14 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import {
     ReactFlow,
     Background,
     NodeChange,
     EdgeChange,
     Connection,
-    BackgroundVariant
+    BackgroundVariant,
+    useReactFlow,
+    Node,
+    Edge,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
@@ -14,16 +17,19 @@ import { useAIStore } from "@/lib/ai-store";
 import { useTheme } from "@/providers/ThemeProvider";
 import { convertTablesToNodes, convertRelationsToEdges } from "@/lib/react-flow-utils";
 import { TableNode } from "./TableNode";
+import { CanvasContextMenu } from "./CanvasContextMenu";
+import { CommentDialog } from "@/components/modals/CommentDialog";
 
 const nodeTypes = {
     table: TableNode
 };
 
 /**
- * Inner React Flow canvas rendering nodes, edges, background, and controls.
+ * Inner React Flow canvas rendering nodes, edges, background, controls, context menu, and dialogs.
  */
 export const CanvasInner: React.FC = (): React.ReactElement => {
     const { theme } = useTheme();
+    const { screenToFlowPosition } = useReactFlow();
     const tables = useStore(state => state.tables);
     const relations = useStore(state => state.relations);
     const selectedTableId = useStore(state => state.selectedTableId);
@@ -40,6 +46,14 @@ export const CanvasInner: React.FC = (): React.ReactElement => {
     const addRelation = useStore(state => state.addRelation);
     const deleteRelation = useStore(state => state.deleteRelation);
     const pushHistory = useStore(state => state.pushHistory);
+
+    const [menuState, setMenuState] = useState<{
+        x: number;
+        y: number;
+        flowPosition: { x: number; y: number };
+        targetType: "pane" | "node" | "edge";
+        targetId?: string;
+    } | null>(null);
 
     const nodes = useMemo(
         () => convertTablesToNodes(activeTables, selectedTableId),
@@ -107,7 +121,45 @@ export const CanvasInner: React.FC = (): React.ReactElement => {
     const onPaneClick = useCallback(() => {
         selectTable(undefined);
         selectRelation(undefined);
+        setMenuState(null);
     }, [selectTable, selectRelation]);
+
+    const onPaneContextMenu = useCallback((event: MouseEvent | React.MouseEvent) => {
+        event.preventDefault();
+        const flowPosition = screenToFlowPosition({ x: event.clientX, y: event.clientY });
+        setMenuState({
+            x: event.clientX,
+            y: event.clientY,
+            flowPosition,
+            targetType: "pane",
+        });
+    }, [screenToFlowPosition]);
+
+    const onNodeContextMenu = useCallback((event: MouseEvent | React.MouseEvent, node: Node) => {
+        event.preventDefault();
+        selectTable(node.id);
+        const flowPosition = screenToFlowPosition({ x: event.clientX, y: event.clientY });
+        setMenuState({
+            x: event.clientX,
+            y: event.clientY,
+            flowPosition,
+            targetType: "node",
+            targetId: node.id,
+        });
+    }, [screenToFlowPosition, selectTable]);
+
+    const onEdgeContextMenu = useCallback((event: MouseEvent | React.MouseEvent, edge: Edge) => {
+        event.preventDefault();
+        selectRelation(edge.id);
+        const flowPosition = screenToFlowPosition({ x: event.clientX, y: event.clientY });
+        setMenuState({
+            x: event.clientX,
+            y: event.clientY,
+            flowPosition,
+            targetType: "edge",
+            targetId: edge.id,
+        });
+    }, [screenToFlowPosition, selectRelation]);
 
     return (
         <div className="w-full h-full bg-background relative">
@@ -118,8 +170,15 @@ export const CanvasInner: React.FC = (): React.ReactElement => {
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
-                onNodeDragStart={() => pushHistory()}
+                onNodeDragStart={() => {
+                    pushHistory();
+                    setMenuState(null);
+                }}
+                onMoveStart={() => setMenuState(null)}
                 onPaneClick={onPaneClick}
+                onPaneContextMenu={onPaneContextMenu}
+                onNodeContextMenu={onNodeContextMenu}
+                onEdgeContextMenu={onEdgeContextMenu}
                 colorMode={theme === "dark" ? "dark" : "light"}
                 fitView
                 snapToGrid
@@ -139,6 +198,19 @@ export const CanvasInner: React.FC = (): React.ReactElement => {
                     color={theme === "dark" ? "#475569" : "#94a3b8"}
                 />
             </ReactFlow>
+
+            {menuState && (
+                <CanvasContextMenu
+                    x={menuState.x}
+                    y={menuState.y}
+                    flowPosition={menuState.flowPosition}
+                    targetType={menuState.targetType}
+                    targetId={menuState.targetId}
+                    onClose={() => setMenuState(null)}
+                />
+            )}
+
+            <CommentDialog />
         </div>
     );
 };

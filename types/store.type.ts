@@ -41,6 +41,8 @@ export interface ProjectStore {
     showLeftSidebar: boolean;
     showRightSidebar: boolean;
     isCreateTableOpen: boolean;
+    isCommentDialogOpen: boolean;
+    commentDialogTargetId?: string;
     selectedTableId?: string;
     selectedRelationId?: string;
 
@@ -54,6 +56,7 @@ export interface ProjectStore {
     setLeftSidebar: (show: boolean) => void;
     setRightSidebar: (show: boolean) => void;
     setCreateTableOpen: (open: boolean) => void;
+    setCommentDialogOpen: (open: boolean, targetTableId?: string) => void;
 
     // General actions
     loadProject: (ast: SchemaAST) => void;
