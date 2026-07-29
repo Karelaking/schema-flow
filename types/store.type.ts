@@ -6,7 +6,8 @@ import {
     IndexColumn,
     DatabaseDialect,
     SchemaAST,
-    EnumDefinition
+    EnumDefinition,
+    ProjectMetadata,
 } from "@/packages/schema-core";
 
 /**
@@ -32,17 +33,23 @@ export interface ProjectStore {
     autoAddTimestamps: boolean;
 
     // Schema state
+    projectsList: ProjectMetadata[];
     tables: Record<string, Table>;
     relations: Record<string, Relation>;
     enums: Record<string, EnumDefinition>;
     crudVersion: number;
+    setProjectsList: (projects: ProjectMetadata[]) => void;
 
     // UI Sidebar Visibility & Selection context
     showLeftSidebar: boolean;
     showRightSidebar: boolean;
     isCreateTableOpen: boolean;
+    isEditTableInfoOpen: boolean;
+    editTableInfoTargetId?: string;
     isCommentDialogOpen: boolean;
     commentDialogTargetId?: string;
+    commentDialogTargetType?: "node" | "edge";
+    commentDialogMode?: "description" | "comment";
     selectedTableId?: string;
     selectedRelationId?: string;
 
@@ -56,7 +63,13 @@ export interface ProjectStore {
     setLeftSidebar: (show: boolean) => void;
     setRightSidebar: (show: boolean) => void;
     setCreateTableOpen: (open: boolean) => void;
-    setCommentDialogOpen: (open: boolean, targetTableId?: string) => void;
+    setEditTableInfoOpen: (open: boolean, targetId?: string) => void;
+    setCommentDialogOpen: (
+        open: boolean,
+        targetId?: string,
+        targetType?: "node" | "edge",
+        mode?: "description" | "comment"
+    ) => void;
 
     // General actions
     loadProject: (ast: SchemaAST) => void;

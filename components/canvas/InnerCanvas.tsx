@@ -20,6 +20,7 @@ import { convertTablesToNodes, convertRelationsToEdges } from "@/lib/react-flow-
 import { TableNode } from "./TableNode";
 import { CanvasContextMenu } from "./CanvasContextMenu";
 import { CommentDialog } from "@/components/modals/CommentDialog";
+import { EditTableInfoDialog } from "@/components/modals/EditTableInfoDialog";
 
 const nodeTypes = {
     table: TableNode
@@ -223,6 +224,7 @@ export const CanvasInner: React.FC = (): React.ReactElement => {
             )}
 
             <CommentDialog />
+            <EditTableInfoDialog />
         </div>
     );
 };

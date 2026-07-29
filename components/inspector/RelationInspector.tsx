@@ -5,6 +5,7 @@ import { Trash2, ArrowLeftRight } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { Relation } from "@/packages/schema-core";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
     Select,
@@ -173,6 +174,28 @@ export const RelationInspector: React.FC<RelationInspectorProps> = ({ selectedRe
                         </SelectGroup>
                     </SelectContent>
                 </Select>
+            </div>
+
+            <div className="flex flex-col gap-2 pt-1">
+                <Label htmlFor="rel-description-input" className="text-xs">Description</Label>
+                <Input
+                    id="rel-description-input"
+                    value={selectedRelation.description || ""}
+                    onChange={e => updateRelation(selectedRelation.id, { description: e.target.value.trim() ? e.target.value : undefined })}
+                    placeholder="Documentation for this relationship..."
+                    className="h-8 text-xs"
+                />
+            </div>
+
+            <div className="flex flex-col gap-2">
+                <Label htmlFor="rel-comment-input" className="text-xs">Comment</Label>
+                <Input
+                    id="rel-comment-input"
+                    value={selectedRelation.comment || ""}
+                    onChange={e => updateRelation(selectedRelation.id, { comment: e.target.value.trim() ? e.target.value : undefined })}
+                    placeholder="Internal note or visual annotation..."
+                    className="h-8 text-xs"
+                />
             </div>
         </div>
     );

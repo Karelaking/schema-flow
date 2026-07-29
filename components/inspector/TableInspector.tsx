@@ -133,6 +133,34 @@ export const TableInspector: React.FC<TableInspectorProps> = ({ selectedTable, s
     return (
         <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-3">
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                    Table Documentation & Notes
+                </span>
+                <div className="grid grid-cols-1 gap-2 p-3 bg-muted/30 rounded-md border text-xs">
+                    <div className="flex flex-col gap-1.5">
+                        <Label htmlFor="table-description-input" className="text-xs font-medium">Description</Label>
+                        <Input
+                            id="table-description-input"
+                            value={selectedTable.description || ""}
+                            onChange={e => updateTable(selectedTable.id, { description: e.target.value.trim() ? e.target.value : undefined })}
+                            placeholder="Documentation describing table structure/purpose..."
+                            className="h-8 text-xs bg-background"
+                        />
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                        <Label htmlFor="table-comment-input" className="text-xs font-medium">Comment</Label>
+                        <Input
+                            id="table-comment-input"
+                            value={selectedTable.comment || ""}
+                            onChange={e => updateTable(selectedTable.id, { comment: e.target.value.trim() ? e.target.value : undefined })}
+                            placeholder="Internal notes or canvas annotations..."
+                            className="h-8 text-xs bg-background"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <div className="flex flex-col gap-3">
                 <div className="flex items-center justify-between" data-slot="section-header">
                     <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider" data-slot="label">
                         Columns ({selectedTable.columns.length})

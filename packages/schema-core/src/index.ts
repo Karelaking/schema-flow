@@ -100,6 +100,7 @@ export interface Table {
     id: string;
     name: string;
     description?: string;
+    comment?: string;
     color?: string;
     position: { x: number; y: number };
     columns: Column[];
@@ -112,6 +113,8 @@ export interface Table {
 export interface Relation {
     id: string;
     name?: string;
+    description?: string;
+    comment?: string;
     sourceTableId: string;
     sourceColumnId: string;
     targetTableId: string;

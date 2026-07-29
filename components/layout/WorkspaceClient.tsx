@@ -49,6 +49,7 @@ interface WorkspaceClientProps {
  */
 export const WorkspaceClient: React.FC<WorkspaceClientProps> = ({ initialProjectsList, initialProject }): React.ReactElement => {
     const loadProject = useStore(state => state.loadProject);
+    const setProjectsList = useStore(state => state.setProjectsList);
     const projectId = useStore(state => state.projectId);
     const selectedTableId = useStore(state => state.selectedTableId);
     const selectedRelationId = useStore(state => state.selectedRelationId);
@@ -66,7 +67,13 @@ export const WorkspaceClient: React.FC<WorkspaceClientProps> = ({ initialProject
     // Dynamic Sidebar Resizing and settings state hook
     const { leftWidth, rightWidth, resizingSide, setResizingSide } = usePanelResizing();
 
-    // Load initial project properties
+    // Load initial project properties & projects list into store
+    useEffect(() => {
+        if (initialProjectsList && initialProjectsList.length > 0) {
+            setProjectsList(initialProjectsList);
+        }
+    }, [initialProjectsList, setProjectsList]);
+
     useEffect(() => {
         setIsLoaded(false);
         if (initialProject) {

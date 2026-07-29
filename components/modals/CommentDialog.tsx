@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { MessageSquarePlus, Trash2, Check, X } from "lucide-react";
+import { MessageSquarePlus, FileText, Trash2, Check, X } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { resolveRelationFK } from "@/lib/react-flow-utils";
 
 /**
  * Props for CommentDialog component.
@@ -17,14 +18,18 @@ export interface CommentDialogProps {
 }
 
 /**
- * Reusable modal dialog for creating and updating comments/descriptions on database tables.
+ * Reusable modal dialog for creating and updating descriptions and comments on database tables and relations.
  */
 export const CommentDialog: React.FC<CommentDialogProps> = ({ open, onOpenChange }): React.ReactElement => {
     const isCommentDialogOpen = useStore(state => state.isCommentDialogOpen);
     const commentDialogTargetId = useStore(state => state.commentDialogTargetId);
+    const targetType = useStore(state => state.commentDialogTargetType || "node");
+    const mode = useStore(state => state.commentDialogMode || "description");
     const setCommentDialogOpen = useStore(state => state.setCommentDialogOpen);
     const tables = useStore(state => state.tables);
+    const relations = useStore(state => state.relations);
     const updateTable = useStore(state => state.updateTable);
+    const updateRelation = useStore(state => state.updateRelation);
     const pushHistory = useStore(state => state.pushHistory);
 
     const isOpen = open !== undefined ? open : isCommentDialogOpen;
@@ -36,76 +41,127 @@ export const CommentDialog: React.FC<CommentDialogProps> = ({ open, onOpenChange
         }
     };
 
-    const targetTable = commentDialogTargetId ? tables[commentDialogTargetId] : undefined;
-    const existingComment = targetTable?.description || "";
+    const targetTable = targetType === "node" && commentDialogTargetId ? tables[commentDialogTargetId] : undefined;
+    const targetRelation = targetType === "edge" && commentDialogTargetId ? relations[commentDialogTargetId] : undefined;
 
-    const [commentText, setCommentText] = useState<string>(existingComment);
+    let existingText = "";
+    if (targetType === "node" && targetTable) {
+        existingText = mode === "description" ? (targetTable.description || "") : (targetTable.comment || "");
+    } else if (targetType === "edge" && targetRelation) {
+        existingText = mode === "description" ? (targetRelation.description || "") : (targetRelation.comment || "");
+    }
+
+    const [textValue, setTextValue] = useState<string>(existingText);
 
     useEffect(() => {
         if (isOpen) {
-            setCommentText(existingComment);
+            setTextValue(existingText);
         }
-    }, [isOpen, existingComment]);
+    }, [isOpen, existingText]);
 
     const handleSave = (): void => {
-        if (!commentDialogTargetId || !targetTable) {
+        if (!commentDialogTargetId) {
             handleClose(false);
             return;
         }
 
         pushHistory();
-        updateTable(commentDialogTargetId, {
-            description: commentText.trim() ? commentText.trim() : undefined
-        });
+        const valueToSave = textValue.trim() ? textValue.trim() : undefined;
+
+        if (targetType === "node" && targetTable) {
+            if (mode === "description") {
+                updateTable(commentDialogTargetId, { description: valueToSave });
+            } else {
+                updateTable(commentDialogTargetId, { comment: valueToSave });
+            }
+        } else if (targetType === "edge" && targetRelation) {
+            if (mode === "description") {
+                updateRelation(commentDialogTargetId, { description: valueToSave });
+            } else {
+                updateRelation(commentDialogTargetId, { comment: valueToSave });
+            }
+        }
+
         handleClose(false);
     };
 
     const handleRemove = (): void => {
-        if (!commentDialogTargetId || !targetTable) {
+        if (!commentDialogTargetId) {
             handleClose(false);
             return;
         }
 
         pushHistory();
-        updateTable(commentDialogTargetId, {
-            description: undefined
-        });
+        if (targetType === "node" && targetTable) {
+            if (mode === "description") {
+                updateTable(commentDialogTargetId, { description: undefined });
+            } else {
+                updateTable(commentDialogTargetId, { comment: undefined });
+            }
+        } else if (targetType === "edge" && targetRelation) {
+            if (mode === "description") {
+                updateRelation(commentDialogTargetId, { description: undefined });
+            } else {
+                updateRelation(commentDialogTargetId, { comment: undefined });
+            }
+        }
+
         handleClose(false);
     };
 
-    const isUpdating = Boolean(existingComment);
+    let targetName = "";
+    if (targetType === "node" && targetTable) {
+        targetName = targetTable.name;
+    } else if (targetType === "edge" && targetRelation) {
+        const resolved = resolveRelationFK(targetRelation, tables);
+        const fkTable = tables[resolved.fkTableId];
+        const fkCol = fkTable?.columns.find(c => c.id === resolved.fkColumnId);
+        const pkTable = tables[resolved.pkTableId];
+        const pkCol = pkTable?.columns.find(c => c.id === resolved.pkColumnId);
+        targetName = fkTable && pkTable ? `${fkTable.name}.${fkCol?.name} → ${pkTable.name}.${pkCol?.name}` : "Relation";
+    }
+
+    const isUpdating = Boolean(existingText);
+    const fieldLabel = mode === "description" ? "Description" : "Comment";
+    const entityType = targetType === "node" ? "Table" : "Relation";
+    const dialogTitle = `${isUpdating ? "Update" : "Add"} ${entityType} ${fieldLabel}`;
+    const DialogIcon = mode === "description" ? FileText : MessageSquarePlus;
 
     return (
         <Dialog open={isOpen} onOpenChange={handleClose}>
             <DialogContent className="sm:max-w-md bg-card border shadow-lg">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2 text-foreground text-base">
-                        <MessageSquarePlus className="size-4 text-primary shrink-0" />
-                        <span>{isUpdating ? "Update Comment" : "Add Comment"}</span>
-                        {targetTable && (
-                            <span className="text-xs font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground font-normal truncate max-w-40">
-                                {targetTable.name}
+                        <DialogIcon className="size-4 text-primary shrink-0" />
+                        <span>{dialogTitle}</span>
+                        {targetName && (
+                            <span className="text-xs font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground font-normal truncate max-w-48">
+                                {targetName}
                             </span>
                         )}
                     </DialogTitle>
                     <DialogDescription className="text-xs text-muted-foreground">
-                        {isUpdating
-                            ? "Modify or clear the description comment for this table schema."
-                            : "Add notes or a documentation comment for this table schema."}
+                        {mode === "description"
+                            ? `Documentation description for this ${entityType.toLowerCase()} schema.`
+                            : `Internal notes or visual canvas annotations for this ${entityType.toLowerCase()}.`}
                     </DialogDescription>
                 </DialogHeader>
 
                 <div className="space-y-3 py-2">
                     <div className="space-y-1.5">
                         <Label htmlFor="comment-text-area" className="text-xs font-medium text-foreground">
-                            Comment / Description
+                            {fieldLabel}
                         </Label>
                         <Textarea
                             id="comment-text-area"
                             rows={4}
-                            placeholder="e.g. Primary table storing user profiles, security credentials, and preferences..."
-                            value={commentText}
-                            onChange={e => setCommentText(e.target.value)}
+                            placeholder={
+                                mode === "description"
+                                    ? `e.g. Stores documentation and structural metadata for ${targetName || entityType}...`
+                                    : `e.g. Note: Check cascade behavior or indexed query performance...`
+                            }
+                            value={textValue}
+                            onChange={e => setTextValue(e.target.value)}
                             onKeyDown={e => {
                                 if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
                                     e.preventDefault();

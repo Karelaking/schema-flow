@@ -96,10 +96,6 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
     const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
     const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | undefined>(undefined);
 
-    useEffect(() => {
-        fetchProjects();
-    }, [projectId, fetchProjects]);
-
     const handleProjectDeleted = async (deletedId: string): Promise<void> => {
         setDeleteTarget(undefined);
         if (deletedId === projectId) {

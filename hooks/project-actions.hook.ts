@@ -34,8 +34,9 @@ export function useProjectActions(): UseProjectActionsReturn {
     const relations = useStore(state => state.relations);
     const enums = useStore(state => state.enums);
     const loadProject = useStore(state => state.loadProject);
+    const projectsList = useStore(state => state.projectsList);
+    const setProjectsList = useStore(state => state.setProjectsList);
 
-    const [projectsList, setProjectsList] = useState<ProjectMetadata[]>([]);
     const [isSaving, setIsSaving] = useState(false);
     const [saveMessage, setSaveMessage] = useState("");
 
@@ -47,7 +48,7 @@ export function useProjectActions(): UseProjectActionsReturn {
         if (result.success) {
             setProjectsList(result.projects);
         }
-    }, []);
+    }, [setProjectsList]);
 
     /**
      * Switches active project by loading its AST.

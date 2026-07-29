@@ -39,10 +39,6 @@ export const ProjectSwitcher: React.FC<ProjectSwitcherProps> = ({ className = ""
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | undefined>(undefined);
 
-    useEffect(() => {
-        fetchProjects();
-    }, [projectId, fetchProjects]);
-
     const handleProjectDeleted = async (deletedId: string): Promise<void> => {
         setDeleteTarget(undefined);
         if (deletedId === projectId) {

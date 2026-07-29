@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Table, Relation, Column, Index, IndexColumn, DatabaseDialect, SchemaAST, EnumDefinition } from "@/packages/schema-core";
+import { Table, Relation, Column, Index, IndexColumn, DatabaseDialect, SchemaAST, EnumDefinition, ProjectMetadata } from "@/packages/schema-core";
 import { CanvasHistoryState, ProjectStore } from "@/types/store.type";
 import { getLayoutedElements, LayoutDirection } from "@/lib/auto-layout";
 
@@ -18,15 +18,21 @@ export const useStore = create<ProjectStore>((set, get) => ({
     theme: "dark",
     autoAddId: true,
     autoAddTimestamps: true,
+    projectsList: [],
     tables: {},
     relations: {},
     enums: {},
     crudVersion: 0,
+    setProjectsList: (projectsList: ProjectMetadata[]): void => set({ projectsList }),
     showLeftSidebar: false,
     showRightSidebar: false,
     isCreateTableOpen: false,
+    isEditTableInfoOpen: false,
+    editTableInfoTargetId: undefined,
     isCommentDialogOpen: false,
     commentDialogTargetId: undefined,
+    commentDialogTargetType: "node",
+    commentDialogMode: "description",
     selectedTableId: undefined,
     selectedRelationId: undefined,
     past: [],
@@ -37,7 +43,19 @@ export const useStore = create<ProjectStore>((set, get) => ({
     setLeftSidebar: (showLeftSidebar: boolean): void => set({ showLeftSidebar }),
     setRightSidebar: (showRightSidebar: boolean): void => set({ showRightSidebar }),
     setCreateTableOpen: (isCreateTableOpen: boolean): void => set({ isCreateTableOpen }),
-    setCommentDialogOpen: (isCommentDialogOpen: boolean, commentDialogTargetId?: string): void => set({ isCommentDialogOpen, commentDialogTargetId }),
+    setEditTableInfoOpen: (isEditTableInfoOpen: boolean, editTableInfoTargetId?: string): void =>
+        set({ isEditTableInfoOpen, editTableInfoTargetId }),
+    setCommentDialogOpen: (
+        isCommentDialogOpen: boolean,
+        commentDialogTargetId?: string,
+        commentDialogTargetType: "node" | "edge" = "node",
+        commentDialogMode: "description" | "comment" = "description"
+    ): void => set({
+        isCommentDialogOpen,
+        commentDialogTargetId,
+        commentDialogTargetType,
+        commentDialogMode
+    }),
 
     loadProject: (ast: SchemaAST): void => {
         set({

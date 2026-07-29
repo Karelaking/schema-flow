@@ -4,16 +4,18 @@ import React, { useEffect, useRef } from "react";
 import {
     Plus,
     MessageSquarePlus,
+    FileText,
     Pencil,
     Copy,
     Trash2,
     Save,
     LayoutGrid,
     Sparkles,
+    Settings,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { useProjectActions } from "@/hooks/project-actions.hook";
-import { cn } from "@/lib/utils";
+import { resolveRelationFK } from "@/lib/react-flow-utils";
 
 /**
  * Props for CanvasContextMenu component.
@@ -40,8 +42,10 @@ export const CanvasContextMenu: React.FC<CanvasContextMenuProps> = ({
 }): React.ReactElement => {
     const menuRef = useRef<HTMLDivElement>(null);
     const tables = useStore(state => state.tables);
+    const relations = useStore(state => state.relations);
     const setCreateTableOpen = useStore(state => state.setCreateTableOpen);
     const setCommentDialogOpen = useStore(state => state.setCommentDialogOpen);
+    const setEditTableInfoOpen = useStore(state => state.setEditTableInfoOpen);
     const deleteTable = useStore(state => state.deleteTable);
     const duplicateTable = useStore(state => state.duplicateTable);
     const deleteRelation = useStore(state => state.deleteRelation);
@@ -51,8 +55,26 @@ export const CanvasContextMenu: React.FC<CanvasContextMenuProps> = ({
 
     const { saveProject, isSaving } = useProjectActions();
 
-    const activeTable = targetId && tables[targetId] ? tables[targetId] : undefined;
-    const hasComment = Boolean(activeTable?.description);
+    const activeTable = targetType === "node" && targetId && tables[targetId] ? tables[targetId] : undefined;
+    const activeRelation = targetType === "edge" && targetId && relations[targetId] ? relations[targetId] : undefined;
+
+    const hasNodeDescription = Boolean(activeTable?.description);
+    const hasNodeComment = Boolean(activeTable?.comment);
+
+    const hasEdgeDescription = Boolean(activeRelation?.description);
+    const hasEdgeComment = Boolean(activeRelation?.comment);
+
+    let relationLabel = "Relation";
+    if (activeRelation) {
+        const resolved = resolveRelationFK(activeRelation, tables);
+        const fkTable = tables[resolved.fkTableId];
+        const fkCol = fkTable?.columns.find(c => c.id === resolved.fkColumnId);
+        const pkTable = tables[resolved.pkTableId];
+        const pkCol = pkTable?.columns.find(c => c.id === resolved.pkColumnId);
+        if (fkTable && pkTable) {
+            relationLabel = `${fkTable.name}.${fkCol?.name || "fk"} → ${pkTable.name}.${pkCol?.name || "pk"}`;
+        }
+    }
 
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent): void => {
@@ -78,7 +100,7 @@ export const CanvasContextMenu: React.FC<CanvasContextMenuProps> = ({
 
     // Boundary check so menu doesn't overflow screen
     const menuWidth = 210;
-    const menuHeight = 260;
+    const menuHeight = 280;
     const adjustedX = Math.min(x, (typeof window !== "undefined" ? window.innerWidth : 1000) - menuWidth - 10);
     const adjustedY = Math.min(y, (typeof window !== "undefined" ? window.innerHeight : 1000) - menuHeight - 10);
 
@@ -99,10 +121,24 @@ export const CanvasContextMenu: React.FC<CanvasContextMenuProps> = ({
         addTable(tableName, Math.round(flowPosition.x), Math.round(flowPosition.y));
     };
 
-    const handleCommentAction = (): void => {
+    const handleOpenEditTableInfo = (): void => {
         onClose();
         if (targetId) {
-            setCommentDialogOpen(true, targetId);
+            setEditTableInfoOpen(true, targetId);
+        }
+    };
+
+    const handleOpenDescription = (): void => {
+        onClose();
+        if (targetId) {
+            setCommentDialogOpen(true, targetId, targetType === "edge" ? "edge" : "node", "description");
+        }
+    };
+
+    const handleOpenComment = (): void => {
+        onClose();
+        if (targetId) {
+            setCommentDialogOpen(true, targetId, targetType === "edge" ? "edge" : "node", "comment");
         }
     };
 
@@ -149,6 +185,17 @@ export const CanvasContextMenu: React.FC<CanvasContextMenuProps> = ({
                 </div>
             )}
 
+            {targetType === "edge" && activeRelation && (
+                <div className="px-2 py-1.5 border-b mb-1">
+                    <span className="text-xs font-semibold text-foreground truncate block font-mono">
+                        {relationLabel}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground block truncate capitalize">
+                        {activeRelation.type} relation
+                    </span>
+                </div>
+            )}
+
             <div className="space-y-0.5">
                 {/* Create Table Options */}
                 {targetType === "pane" && (
@@ -178,16 +225,41 @@ export const CanvasContextMenu: React.FC<CanvasContextMenuProps> = ({
                     <>
                         <button
                             type="button"
-                            onClick={handleCommentAction}
+                            onClick={handleOpenEditTableInfo}
+                            className="w-full flex items-center justify-between px-2 py-1.5 rounded-md hover:bg-accent text-xs cursor-pointer transition-colors text-left"
+                        >
+                            <div className="flex items-center gap-2 font-medium">
+                                <Settings className="size-3.5 text-primary shrink-0" />
+                                <span>Edit Table Info</span>
+                            </div>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={handleOpenDescription}
                             className="w-full flex items-center justify-between px-2 py-1.5 rounded-md hover:bg-accent text-xs cursor-pointer transition-colors text-left"
                         >
                             <div className="flex items-center gap-2">
-                                {hasComment ? (
+                                {hasNodeDescription ? (
+                                    <Pencil className="size-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />
+                                ) : (
+                                    <FileText className="size-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />
+                                )}
+                                <span>{hasNodeDescription ? "Edit Description" : "Add Description"}</span>
+                            </div>
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={handleOpenComment}
+                            className="w-full flex items-center justify-between px-2 py-1.5 rounded-md hover:bg-accent text-xs cursor-pointer transition-colors text-left"
+                        >
+                            <div className="flex items-center gap-2">
+                                {hasNodeComment ? (
                                     <Pencil className="size-3.5 text-purple-600 dark:text-purple-400 shrink-0" />
                                 ) : (
                                     <MessageSquarePlus className="size-3.5 text-purple-600 dark:text-purple-400 shrink-0" />
                                 )}
-                                <span>{hasComment ? "Update Comment" : "Add Comment"}</span>
+                                <span>{hasNodeComment ? "Edit Comment" : "Add Comment"}</span>
                             </div>
                         </button>
 
@@ -198,6 +270,41 @@ export const CanvasContextMenu: React.FC<CanvasContextMenuProps> = ({
                         >
                             <Copy className="size-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
                             <span>Duplicate Table</span>
+                        </button>
+                    </>
+                )}
+
+                {/* Edge-specific Actions */}
+                {targetType === "edge" && (
+                    <>
+                        <button
+                            type="button"
+                            onClick={handleOpenDescription}
+                            className="w-full flex items-center justify-between px-2 py-1.5 rounded-md hover:bg-accent text-xs cursor-pointer transition-colors text-left"
+                        >
+                            <div className="flex items-center gap-2">
+                                {hasEdgeDescription ? (
+                                    <Pencil className="size-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />
+                                ) : (
+                                    <FileText className="size-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />
+                                )}
+                                <span>{hasEdgeDescription ? "Edit Description" : "Add Description"}</span>
+                            </div>
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={handleOpenComment}
+                            className="w-full flex items-center justify-between px-2 py-1.5 rounded-md hover:bg-accent text-xs cursor-pointer transition-colors text-left"
+                        >
+                            <div className="flex items-center gap-2">
+                                {hasEdgeComment ? (
+                                    <Pencil className="size-3.5 text-purple-600 dark:text-purple-400 shrink-0" />
+                                ) : (
+                                    <MessageSquarePlus className="size-3.5 text-purple-600 dark:text-purple-400 shrink-0" />
+                                )}
+                                <span>{hasEdgeComment ? "Edit Comment" : "Add Comment"}</span>
+                            </div>
                         </button>
                     </>
                 )}
