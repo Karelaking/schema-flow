@@ -8,25 +8,32 @@ import {
   Sparkles, 
   Key, 
   Link2, 
-  Layers, 
   FileCode, 
-  Terminal,
+  Zap,
+  ShieldCheck,
+  RefreshCw,
+  Palette,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
+type CodeTheme = "monochrome-dark" | "monochrome-light" | "tokyo-night" | "dracula";
+
+/**
+ * Live Schema Studio interactive workbench styled with Black & White code editor theme.
+ */
 export function InteractiveCanvasDemo(): React.JSX.Element {
   const [activeTab, setActiveTab] = useState<"drizzle" | "postgres" | "mysql" | "query">("drizzle");
+  const [codeTheme, setCodeTheme] = useState<CodeTheme>("monochrome-dark");
   const [copied, setCopied] = useState(false);
   const [autoTimestamps, setAutoTimestamps] = useState(true);
-  const [selectedTable, setSelectedTable] = useState<"users" | "posts" | "comments">("users");
+  const [selectedTable, setSelectedTable] = useState<"users" | "posts">("users");
 
-  // Dynamic Drizzle code snippet generation based on state
   const getDrizzleCode = () => {
-    return `import { sqliteTable, text, integer, real } from "drizzle-orm/sqlite-core";
+    return `import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
 import { relations } from "drizzle-orm";
 
-// 1. Users Table
+// 1. Users Table Schema
 export const users = sqliteTable("users", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
@@ -43,7 +50,6 @@ export const posts = sqliteTable("posts", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   title: text("title").notNull(),
-  content: text("content"),
   published: integer("published").notNull().default(0),${autoTimestamps ? `
   createdAt: text("created_at").notNull(),` : ""}
 });
@@ -51,13 +57,6 @@ export const posts = sqliteTable("posts", {
 // 3. Relational Mappings
 export const usersRelations = relations(users, ({ many }) => ({
   posts: many(posts),
-}));
-
-export const postsRelations = relations(posts, ({ one }) => ({
-  author: one(users, {
-    fields: [posts.userId],
-    references: [users.id],
-  }),
 }));`;
   };
 
@@ -75,7 +74,6 @@ CREATE TABLE "posts" (
   "id" VARCHAR(255) PRIMARY KEY,
   "user_id" VARCHAR(255) NOT NULL,
   "title" VARCHAR(255) NOT NULL,
-  "content" TEXT,
   "published" BOOLEAN DEFAULT false NOT NULL${autoTimestamps ? `,
   "created_at" TIMESTAMP WITH TIME ZONE NOT NULL` : ""},
   CONSTRAINT "fk_posts_user_id" FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE
@@ -86,40 +84,16 @@ CREATE TABLE "posts" (
     return `CREATE TABLE \`users\` (
   \`id\` VARCHAR(255) PRIMARY KEY,
   \`name\` VARCHAR(255) NOT NULL,
-  \`email\` VARCHAR(255) NOT NULL UNIQUE,
-  \`role\` VARCHAR(64) DEFAULT 'user' NOT NULL${autoTimestamps ? `,
-  \`created_at\` DATETIME NOT NULL,
-  \`updated_at\` DATETIME NOT NULL` : ""}
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE \`posts\` (
-  \`id\` VARCHAR(255) PRIMARY KEY,
-  \`user_id\` VARCHAR(255) NOT NULL,
-  \`title\` VARCHAR(255) NOT NULL,
-  \`content\` TEXT NULL,
-  \`published\` TINYINT(1) DEFAULT 0 NOT NULL${autoTimestamps ? `,
-  \`created_at\` DATETIME NOT NULL` : ""},
-  CONSTRAINT \`fk_posts_user_id\` FOREIGN KEY (\`user_id\`) REFERENCES \`users\` (\`id\`) ON DELETE CASCADE
+  \`email\` VARCHAR(255) NOT NULL UNIQUE${autoTimestamps ? `,
+  \`created_at\` DATETIME NOT NULL` : ""}
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`;
   };
 
   const getQueryCode = () => {
-    return `-- Type-Safe Select with Drizzle ORM Relational Query
+    return `-- Drizzle ORM Relational Query
 const userWithPosts = await db.query.users.findFirst({
   where: eq(users.id, "u-101"),
-  with: {
-    posts: {
-      where: eq(posts.published, 1),
-    },
-  },
-});
-
--- Insert Record using Drizzle ORM
-await db.insert(users).values({
-  id: "u-102",
-  name: "Sarah Connor",
-  email: "sarah@example.com",
-  role: "admin",
+  with: { posts: true },
 });`;
   };
 
@@ -138,41 +112,82 @@ await db.insert(users).values({
     setTimeout(() => setCopied(false), 2000);
   };
 
+  // Black and white theme style mappings
+  const getThemeStyles = () => {
+    switch (codeTheme) {
+      case "monochrome-dark":
+        return {
+          containerBg: "bg-black text-white border-zinc-800 shadow-2xl",
+          headerBg: "bg-zinc-950 border-zinc-800",
+          activeTabBtn: "bg-white text-black font-extrabold shadow-sm",
+          inactiveTabBtn: "text-zinc-400 hover:text-white font-medium",
+          footerBg: "bg-zinc-950 border-zinc-800 text-zinc-400",
+          dotColor: "bg-white",
+        };
+      case "monochrome-light":
+        return {
+          containerBg: "bg-white text-black border-slate-300 shadow-xl",
+          headerBg: "bg-slate-100 border-slate-200",
+          activeTabBtn: "bg-black text-white font-extrabold shadow-sm",
+          inactiveTabBtn: "text-slate-600 hover:text-black font-medium",
+          footerBg: "bg-slate-100 border-slate-200 text-slate-600",
+          dotColor: "bg-black",
+        };
+      case "tokyo-night":
+        return {
+          containerBg: "bg-[#1a1b26] text-[#a9b1d6] border-[#24283b]",
+          headerBg: "bg-[#16161e] border-[#24283b]",
+          activeTabBtn: "bg-[#7dcfff] text-[#1a1b26] font-extrabold shadow-sm",
+          inactiveTabBtn: "text-[#565f89] hover:text-[#a9b1d6]",
+          footerBg: "bg-[#16161e] border-[#24283b] text-[#565f89]",
+          dotColor: "bg-[#7dcfff]",
+        };
+      case "dracula":
+        return {
+          containerBg: "bg-[#282a36] text-[#f8f8f2] border-[#44475a]",
+          headerBg: "bg-[#21222c] border-[#44475a]",
+          activeTabBtn: "bg-[#ff79c6] text-[#282a36] font-extrabold shadow-sm",
+          inactiveTabBtn: "text-[#6272a4] hover:text-[#f8f8f2]",
+          footerBg: "bg-[#21222c] border-[#44475a] text-[#6272a4]",
+          dotColor: "bg-[#ff79c6]",
+        };
+    }
+  };
+
+  const currentTheme = getThemeStyles();
+
   return (
-    <section id="showcase" className="py-16 md:py-24 bg-muted/30 border-y border-border/50 relative">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section id="showcase" className="relative w-full border-b border-border/40 bg-background overflow-hidden">
+      <div className="mx-auto max-w-7xl border-x border-border/40 py-16 md:py-24">
+        
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-1.5 rounded-md bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary mb-3">
-            <Layers className="size-3.5" />
-            <span>Interactive ERD & Code Engine</span>
-          </div>
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            From Visual Nodes to Production Drizzle Code
+        <div className="text-center max-w-3xl mx-auto mb-16 px-4">
+          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
+            Design in visual flow. Output in instant code.
           </h2>
-          <p className="mt-3 text-muted-foreground text-sm sm:text-base">
-            Try the live interactive builder below. Click tables, toggle settings, and watch your Drizzle ORM schema update in real-time.
+          <p className="mt-4 text-muted-foreground text-sm sm:text-base">
+            Drag tables, link relationships, and watch your Drizzle ORM models compile instantly in side-by-side sync.
           </p>
         </div>
 
-        {/* Showcase Grid Box */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        {/* 2-Column Framed Grid Showcase */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-border/40 border-t border-border/40">
           
-          {/* Left: Interactive Visual Canvas Mockup */}
-          <div className="lg:col-span-6 flex flex-col rounded-2xl border border-border/80 bg-card p-5 shadow-xl shadow-black/5 relative overflow-hidden">
+          {/* Left Canvas Panel */}
+          <div className="lg:col-span-6 p-6 sm:p-8 flex flex-col justify-between space-y-4">
             
             {/* Control Bar */}
-            <div className="flex items-center justify-between border-b pb-4 mb-4">
+            <div className="flex items-center justify-between border-b border-border/40 pb-4">
               <div className="flex items-center gap-2">
                 <div className="size-3 rounded-full bg-rose-500/80" />
                 <div className="size-3 rounded-full bg-amber-500/80" />
                 <div className="size-3 rounded-full bg-emerald-500/80" />
-                <span className="ml-2 font-mono text-xs font-medium text-muted-foreground">Canvas: Ecommerce DB</span>
+                <span className="ml-2 font-mono text-xs font-semibold text-foreground">Canvas: Ecommerce DB</span>
               </div>
               <button 
                 onClick={() => setAutoTimestamps(!autoTimestamps)}
-                className={`text-xs px-2.5 py-1 rounded-md font-medium transition-all cursor-pointer ${
-                  autoTimestamps ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/80"
+                className={`text-xs px-3 py-1 rounded-full font-semibold transition-all cursor-pointer ${
+                  autoTimestamps ? "bg-foreground text-background font-bold shadow-xs" : "bg-muted text-muted-foreground hover:bg-muted/80"
                 }`}
               >
                 {autoTimestamps ? "✓ Timestamps Enabled" : "+ Enable Timestamps"}
@@ -180,73 +195,58 @@ await db.insert(users).values({
             </div>
 
             {/* Simulated ERD Canvas Area */}
-            <div className="relative flex-1 min-h-95 bg-slate-950/90 dark:bg-black/90 rounded-xl p-4 border border-white/10 overflow-hidden font-sans">
+            <div className="relative flex-1 min-h-95 bg-black rounded-2xl p-4 border border-zinc-800 overflow-hidden font-sans shadow-2xl">
               
               {/* Background Grid Pattern */}
-              <div className="absolute inset-0 bg-[radial-gradient(#334155_1px,transparent_1px)] bg-size-[16px_16px] opacity-40 pointer-events-none" />
+              <div className="absolute inset-0 bg-[radial-gradient(#27272a_1px,transparent_1px)] bg-size-[16px_16px] opacity-60 pointer-events-none" />
 
-              {/* Connecting Relation SVG Line */}
+              {/* Connecting Line SVG */}
               <svg className="absolute inset-0 size-full pointer-events-none z-10">
-                <defs>
-                  <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.8" />
-                    <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.8" />
-                  </linearGradient>
-                </defs>
                 <path 
                   d="M 185 130 C 230 130, 230 230, 275 230" 
                   fill="none" 
-                  stroke="url(#lineGrad)" 
-                  strokeWidth="2.5" 
+                  stroke="#ffffff" 
+                  strokeWidth="2" 
                   strokeDasharray="4 2"
-                  className="animate-pulse"
+                  className="animate-pulse opacity-75"
                 />
               </svg>
 
               <div className="relative z-20 grid grid-cols-1 sm:grid-cols-2 gap-4 h-full">
                 
-                {/* Table Node 1: users */}
+                {/* Table Node 1 */}
                 <div 
                   role="button"
                   tabIndex={0}
-                  aria-label="Select demo table users"
                   onClick={() => setSelectedTable("users")}
-                  onKeyDown={e => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      setSelectedTable("users");
-                    }
-                  }}
-                  className={`rounded-lg border bg-slate-900/90 p-3 shadow-lg transition-all cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary ${
-                    selectedTable === "users" ? "border-primary ring-2 ring-primary/30 scale-[1.02]" : "border-slate-800 hover:border-slate-700 opacity-90"
+                  onKeyDown={e => { if (e.key === "Enter") setSelectedTable("users"); }}
+                  className={`rounded-xl border bg-zinc-950 p-3.5 shadow-xl transition-all cursor-pointer ${
+                    selectedTable === "users" ? "border-white ring-2 ring-white/20 scale-[1.02]" : "border-zinc-800 opacity-90"
                   }`}
                 >
-                  <div className="flex items-center justify-between border-b border-slate-800 pb-2 mb-2">
+                  <div className="flex items-center justify-between border-b border-zinc-800 pb-2 mb-2">
                     <div className="flex items-center gap-2">
-                      <div className="size-2 rounded-full bg-emerald-400" />
-                      <span className="font-mono text-xs font-bold text-slate-100">users</span>
+                      <div className="size-2 rounded-full bg-white" />
+                      <span className="font-mono text-xs font-bold text-white">users</span>
                     </div>
-                    <Badge variant="outline" className="text-[10px] font-mono border-slate-700 text-slate-400">SQLite</Badge>
+                    <Badge variant="outline" className="text-[10px] font-mono border-zinc-700 text-zinc-400">SQLite</Badge>
                   </div>
                   
                   <div className="space-y-1.5 text-[11px] font-mono">
-                    <div className="flex items-center justify-between text-amber-400">
-                      <span className="flex items-center gap-1"><Key className="size-3" /> id</span>
-                      <span className="text-slate-500">TEXT</span>
+                    <div className="flex items-center justify-between text-white font-bold">
+                      <span className="flex items-center gap-1"><Key className="size-3 text-zinc-400" /> id</span>
+                      <span className="text-zinc-500">TEXT</span>
                     </div>
-                    <div className="flex items-center justify-between text-slate-300">
+                    <div className="flex items-center justify-between text-zinc-300">
                       <span>name</span>
-                      <span className="text-slate-500">TEXT</span>
+                      <span className="text-zinc-500">TEXT</span>
                     </div>
-                    <div className="flex items-center justify-between text-slate-300">
+                    <div className="flex items-center justify-between text-zinc-300">
                       <span>email</span>
-                      <span className="text-slate-500">TEXT (UNIQUE)</span>
-                    </div>
-                    <div className="flex items-center justify-between text-slate-400">
-                      <span>role</span>
-                      <span className="text-slate-500">TEXT</span>
+                      <span className="text-zinc-500">UNIQUE</span>
                     </div>
                     {autoTimestamps && (
-                      <div className="flex items-center justify-between text-slate-500 border-t border-slate-800/80 pt-1">
+                      <div className="flex items-center justify-between text-zinc-500 border-t border-zinc-800/80 pt-1">
                         <span>created_at</span>
                         <span>TEXT</span>
                       </div>
@@ -254,48 +254,39 @@ await db.insert(users).values({
                   </div>
                 </div>
 
-                {/* Table Node 2: posts */}
+                {/* Table Node 2 */}
                 <div 
                   role="button"
                   tabIndex={0}
-                  aria-label="Select demo table posts"
                   onClick={() => setSelectedTable("posts")}
-                  onKeyDown={e => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      setSelectedTable("posts");
-                    }
-                  }}
-                  className={`rounded-lg border bg-slate-900/90 p-3 shadow-lg transition-all cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary ${
-                    selectedTable === "posts" ? "border-primary ring-2 ring-primary/30 scale-[1.02]" : "border-slate-800 hover:border-slate-700 opacity-90"
+                  onKeyDown={e => { if (e.key === "Enter") setSelectedTable("posts"); }}
+                  className={`rounded-xl border bg-zinc-950 p-3.5 shadow-xl transition-all cursor-pointer ${
+                    selectedTable === "posts" ? "border-white ring-2 ring-white/20 scale-[1.02]" : "border-zinc-800 opacity-90"
                   }`}
                 >
-                  <div className="flex items-center justify-between border-b border-slate-800 pb-2 mb-2">
+                  <div className="flex items-center justify-between border-b border-zinc-800 pb-2 mb-2">
                     <div className="flex items-center gap-2">
-                      <div className="size-2 rounded-full bg-sky-400" />
-                      <span className="font-mono text-xs font-bold text-slate-100">posts</span>
+                      <div className="size-2 rounded-full bg-zinc-400" />
+                      <span className="font-mono text-xs font-bold text-white">posts</span>
                     </div>
-                    <Badge variant="outline" className="text-[10px] font-mono border-slate-700 text-slate-400">1:N FK</Badge>
+                    <Badge variant="outline" className="text-[10px] font-mono border-zinc-700 text-zinc-400">1:N FK</Badge>
                   </div>
 
                   <div className="space-y-1.5 text-[11px] font-mono">
-                    <div className="flex items-center justify-between text-amber-400">
-                      <span className="flex items-center gap-1"><Key className="size-3" /> id</span>
-                      <span className="text-slate-500">TEXT</span>
+                    <div className="flex items-center justify-between text-white font-bold">
+                      <span className="flex items-center gap-1"><Key className="size-3 text-zinc-400" /> id</span>
+                      <span className="text-zinc-500">TEXT</span>
                     </div>
-                    <div className="flex items-center justify-between text-sky-400 font-bold">
-                      <span className="flex items-center gap-1"><Link2 className="size-3" /> user_id</span>
-                      <span className="text-slate-500">FK users.id</span>
+                    <div className="flex items-center justify-between text-white font-bold">
+                      <span className="flex items-center gap-1"><Link2 className="size-3 text-zinc-400" /> user_id</span>
+                      <span className="text-zinc-500">FK users.id</span>
                     </div>
-                    <div className="flex items-center justify-between text-slate-300">
+                    <div className="flex items-center justify-between text-zinc-300">
                       <span>title</span>
-                      <span className="text-slate-500">TEXT</span>
-                    </div>
-                    <div className="flex items-center justify-between text-slate-300">
-                      <span>published</span>
-                      <span className="text-slate-500">INTEGER</span>
+                      <span className="text-zinc-500">TEXT</span>
                     </div>
                     {autoTimestamps && (
-                      <div className="flex items-center justify-between text-slate-500 border-t border-slate-800/80 pt-1">
+                      <div className="flex items-center justify-between text-zinc-500 border-t border-zinc-800/80 pt-1">
                         <span>created_at</span>
                         <span>TEXT</span>
                       </div>
@@ -305,27 +296,27 @@ await db.insert(users).values({
 
               </div>
 
-              {/* Bottom Canvas Toast Info */}
-              <div className="absolute bottom-3 left-3 right-3 bg-slate-900/90 border border-slate-800 rounded-lg p-2.5 flex items-center justify-between text-xs text-slate-300 backdrop-blur-md">
+              {/* Bottom Canvas Toast */}
+              <div className="absolute bottom-3 left-3 right-3 bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 flex items-center justify-between text-xs text-white backdrop-blur-md">
                 <span className="flex items-center gap-2">
-                  <Sparkles className="size-3.5 text-amber-400" />
+                  <Sparkles className="size-3.5 text-zinc-400" />
                   <span>Selected: <strong>{selectedTable}</strong> table</span>
                 </span>
-                <span className="text-[10px] text-slate-500 font-mono">Auto-Syncing AST</span>
+                <span className="text-[10px] text-zinc-500 font-mono">Monochrome AST</span>
               </div>
             </div>
           </div>
 
-          {/* Right: Real-time Drizzle & SQL Code Generator */}
-          <div className="lg:col-span-6 flex flex-col rounded-2xl border border-border/80 bg-slate-950 text-slate-100 shadow-xl overflow-hidden font-mono text-xs">
+          {/* Right Code Generator Panel — High Contrast Black & White Theme */}
+          <div className={`lg:col-span-6 p-6 sm:p-8 flex flex-col justify-between transition-colors duration-300 font-mono text-xs ${currentTheme.containerBg}`}>
             
-            {/* Header Tabs */}
-            <div className="flex items-center justify-between border-b border-slate-800 bg-slate-900/60 px-4 py-3">
-              <div className="flex items-center gap-1 overflow-x-auto">
+            {/* Header Controls (Tabs + Theme Switcher + Copy) */}
+            <div className={`flex flex-wrap items-center justify-between border-b pb-3.5 gap-2 ${currentTheme.headerBg}`}>
+              <div className="flex items-center gap-1.5 overflow-x-auto">
                 <button
                   onClick={() => setActiveTab("drizzle")}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md font-sans text-xs font-semibold transition-all cursor-pointer ${
-                    activeTab === "drizzle" ? "bg-primary text-primary-foreground" : "text-slate-400 hover:text-slate-200"
+                  className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full font-sans text-xs font-bold transition-all cursor-pointer ${
+                    activeTab === "drizzle" ? currentTheme.activeTabBtn : currentTheme.inactiveTabBtn
                   }`}
                 >
                   <FileCode className="size-3.5" />
@@ -333,8 +324,8 @@ await db.insert(users).values({
                 </button>
                 <button
                   onClick={() => setActiveTab("postgres")}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md font-sans text-xs font-semibold transition-all cursor-pointer ${
-                    activeTab === "postgres" ? "bg-primary text-primary-foreground" : "text-slate-400 hover:text-slate-200"
+                  className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full font-sans text-xs font-bold transition-all cursor-pointer ${
+                    activeTab === "postgres" ? currentTheme.activeTabBtn : currentTheme.inactiveTabBtn
                   }`}
                 >
                   <Database className="size-3.5" />
@@ -342,46 +333,63 @@ await db.insert(users).values({
                 </button>
                 <button
                   onClick={() => setActiveTab("mysql")}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md font-sans text-xs font-semibold transition-all cursor-pointer ${
-                    activeTab === "mysql" ? "bg-primary text-primary-foreground" : "text-slate-400 hover:text-slate-200"
+                  className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full font-sans text-xs font-bold transition-all cursor-pointer ${
+                    activeTab === "mysql" ? currentTheme.activeTabBtn : currentTheme.inactiveTabBtn
                   }`}
                 >
                   <Database className="size-3.5" />
                   <span>MySQL</span>
                 </button>
-                <button
-                  onClick={() => setActiveTab("query")}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md font-sans text-xs font-semibold transition-all cursor-pointer ${
-                    activeTab === "query" ? "bg-primary text-primary-foreground" : "text-slate-400 hover:text-slate-200"
-                  }`}
-                >
-                  <Terminal className="size-3.5" />
-                  <span>Queries</span>
-                </button>
               </div>
 
-              {/* Copy Button */}
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={handleCopy}
-                className="h-8 text-slate-300 hover:bg-slate-800 hover:text-white cursor-pointer"
-              >
-                {copied ? <Check className="size-3.5 text-emerald-400" /> : <Copy className="size-3.5" />}
-                <span className="ml-1.5 font-sans text-xs">{copied ? "Copied" : "Copy"}</span>
-              </Button>
+              {/* Theme Switcher Dots */}
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1 rounded-full border border-zinc-800 p-1 bg-black/40">
+                  <button
+                    onClick={() => setCodeTheme("monochrome-dark")}
+                    title="Monochrome Dark (Black & White)"
+                    className={`size-4.5 rounded-full bg-black border border-white transition-transform ${codeTheme === "monochrome-dark" ? "scale-125 ring-2 ring-white" : "opacity-70"}`}
+                  />
+                  <button
+                    onClick={() => setCodeTheme("monochrome-light")}
+                    title="Monochrome Light (White & Black)"
+                    className={`size-4.5 rounded-full bg-white border border-black transition-transform ${codeTheme === "monochrome-light" ? "scale-125 ring-2 ring-black" : "opacity-70"}`}
+                  />
+                  <button
+                    onClick={() => setCodeTheme("tokyo-night")}
+                    title="Tokyo Night Theme"
+                    className={`size-4.5 rounded-full bg-[#1a1b26] border border-sky-400 transition-transform ${codeTheme === "tokyo-night" ? "scale-125 ring-2 ring-sky-400" : "opacity-70"}`}
+                  />
+                  <button
+                    onClick={() => setCodeTheme("dracula")}
+                    title="Dracula Theme"
+                    className={`size-4.5 rounded-full bg-[#282a36] border border-pink-500 transition-transform ${codeTheme === "dracula" ? "scale-125 ring-2 ring-pink-500" : "opacity-70"}`}
+                  />
+                </div>
+
+                {/* Copy Button */}
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={handleCopy}
+                  className="h-8 cursor-pointer rounded-full font-sans text-xs border border-zinc-800 hover:bg-zinc-800"
+                >
+                  {copied ? <Check className="size-3.5 text-white" /> : <Copy className="size-3.5 text-white" />}
+                  <span className="ml-1 text-xs">{copied ? "Copied" : "Copy"}</span>
+                </Button>
+              </div>
             </div>
 
             {/* Code Block Container */}
-            <div className="flex-1 p-4 overflow-y-auto max-h-105 bg-slate-950 text-slate-200 leading-relaxed font-mono">
-              <pre className="whitespace-pre-wrap">{getCurrentCode()}</pre>
+            <div className="flex-1 py-4 overflow-y-auto max-h-105 leading-relaxed font-mono">
+              <pre className="whitespace-pre-wrap font-mono tracking-tight text-xs">{getCurrentCode()}</pre>
             </div>
 
             {/* Footer Bar */}
-            <div className="border-t border-slate-800 bg-slate-900/40 px-4 py-2.5 flex items-center justify-between text-[11px] text-slate-400 font-sans">
+            <div className={`border-t pt-3 flex items-center justify-between text-[11px] font-sans ${currentTheme.footerBg}`}>
               <span className="flex items-center gap-1.5">
-                <div className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span>Generated via Schema AST Transformer</span>
+                <div className={`size-2 rounded-full ${currentTheme.dotColor}`} />
+                <span className="capitalize font-extrabold">{codeTheme.replace("-", " ")}</span>
               </span>
               <span>100% Type-Safe TypeScript</span>
             </div>
@@ -389,6 +397,42 @@ await db.insert(users).values({
           </div>
 
         </div>
+
+        {/* Bottom Feature Matrix Highlights */}
+        <div className="grid grid-cols-1 md:grid-cols-3 border-t border-border/40">
+          
+          <div className="p-6 sm:p-8 space-y-2 border-b md:border-b-0 border-r border-border/40">
+            <div className="flex items-center gap-2 font-bold text-sm text-foreground">
+              <Zap className="size-4 text-primary" />
+              <span>Zero-Latency AST Engine</span>
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Schema changes compile to code in under 10ms without page reloads or web worker lag.
+            </p>
+          </div>
+
+          <div className="p-6 sm:p-8 space-y-2 border-b md:border-b-0 border-r border-border/40">
+            <div className="flex items-center gap-2 font-bold text-sm text-foreground">
+              <ShieldCheck className="size-4 text-primary" />
+              <span>Type-Safe Autocomplete</span>
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Production-ready Drizzle ORM TypeScript models out of the box for immediate database queries.
+            </p>
+          </div>
+
+          <div className="p-6 sm:p-8 space-y-2">
+            <div className="flex items-center gap-2 font-bold text-sm text-foreground">
+              <RefreshCw className="size-4 text-primary" />
+              <span>Universal Multi-Dialect</span>
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Instant 1-click conversion between SQLite, PostgreSQL & MySQL DDLs.
+            </p>
+          </div>
+
+        </div>
+
       </div>
     </section>
   );

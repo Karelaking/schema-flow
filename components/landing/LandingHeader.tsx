@@ -14,37 +14,34 @@ export function LandingHeader(): React.JSX.Element {
   const { isSignedIn } = useUser();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md backdrop-saturate-150 transition-all">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur-md transition-all">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 border-x border-border/40">
         {/* Brand Logo */}
-        <Link href="/" className="flex items-center gap-2.5 group transition-opacity hover:opacity-90">
-          <div className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground font-bold shadow-md shadow-primary/20 group-hover:scale-105 transition-transform duration-200">
-            <Database className="size-5" />
+        <Link href="/" className="flex items-center gap-2 group transition-opacity hover:opacity-90">
+          <div className="flex size-8 items-center justify-center rounded-full bg-foreground text-background font-bold shadow-xs transition-transform group-hover:scale-105">
+            <span className="text-xs font-mono font-black tracking-tighter">sf.</span>
           </div>
-          <div className="flex flex-col">
-            <span className="font-extrabold text-base tracking-tight leading-none bg-linear-to-r from-foreground via-foreground to-muted-foreground bg-clip-text text-transparent">
-              Schema Flow
-            </span>
-            <span className="text-[10px] font-medium text-primary tracking-wider uppercase font-mono mt-0.5">
-              Drizzle ORM Ready
-            </span>
-          </div>
+          <span className="font-extrabold text-lg tracking-tight text-foreground">
+            schemaflow<span className="text-primary font-black">.</span>
+          </span>
         </Link>
 
         {/* Desktop Navigation Links */}
-        <nav aria-label="Main navigation" className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
+        <nav aria-label="Main navigation" className="hidden md:flex items-center gap-7 text-xs font-semibold text-muted-foreground">
           <a href="#features" className="transition-colors hover:text-foreground">
             Features
           </a>
-          <a href="#pricing" className="transition-colors hover:text-foreground">
-            Pricing
+          <a href="#showcase" className="transition-colors hover:text-foreground">
+            Integration
           </a>
-          <a href="#drizzle" className="flex items-center gap-1.5 transition-colors hover:text-foreground">
-            <Sparkles className="size-3.5 text-amber-500" />
-            <span>Drizzle ORM</span>
+          <a href="#drizzle" className="transition-colors hover:text-foreground">
+            Support
           </a>
           <a href="#code" className="transition-colors hover:text-foreground">
-            Code Output
+            Docs
+          </a>
+          <a href="#pricing" className="transition-colors hover:text-foreground">
+            Pricing
           </a>
         </nav>
 
@@ -62,9 +59,9 @@ export function LandingHeader(): React.JSX.Element {
             </SignInButton>
           )}
 
-          <Link href="/workspace" className={buttonVariants({ size: "sm", className: "font-semibold shadow-md shadow-primary/20 hover:scale-102 transition-all cursor-pointer hidden sm:inline-flex" })}>
+          <Link href="/workspace" className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-border/80 bg-background px-4 py-2 text-xs font-semibold text-foreground shadow-xs hover:bg-muted transition-all cursor-pointer">
             <span>Launch Workspace</span>
-            <ArrowRight className="size-4" data-icon="inline-end" />
+            <ArrowRight className="size-3.5" />
           </Link>
 
           {/* Mobile Nav Trigger */}
@@ -85,19 +82,21 @@ export function LandingHeader(): React.JSX.Element {
                     Features
                   </a>
                   <a href="#showcase" onClick={() => setMobileNavOpen(false)} className="transition-colors hover:text-foreground py-1">
-                    Live Preview
+                    Integration
                   </a>
-                  <a href="#drizzle" onClick={() => setMobileNavOpen(false)} className="flex items-center gap-1.5 transition-colors hover:text-foreground py-1">
-                    <Sparkles className="size-4 text-amber-500" />
-                    <span>Drizzle ORM</span>
+                  <a href="#drizzle" onClick={() => setMobileNavOpen(false)} className="transition-colors hover:text-foreground py-1">
+                    Support
                   </a>
                   <a href="#code" onClick={() => setMobileNavOpen(false)} className="transition-colors hover:text-foreground py-1">
-                    Code Output
+                    Docs
+                  </a>
+                  <a href="#pricing" onClick={() => setMobileNavOpen(false)} className="transition-colors hover:text-foreground py-1">
+                    Pricing
                   </a>
                 </nav>
-                <Link href="/workspace" onClick={() => setMobileNavOpen(false)} className={buttonVariants({ size: "default", className: "w-full font-semibold mt-4 gap-2" })}>
+                <Link href="/workspace" onClick={() => setMobileNavOpen(false)} className={buttonVariants({ size: "default", className: "w-full font-semibold mt-4 gap-2 rounded-full" })}>
                   <span>Launch Workspace</span>
-                  <ArrowRight className="size-4" data-icon="inline-end" />
+                  <ArrowRight className="size-4" />
                 </Link>
               </SheetContent>
             </Sheet>

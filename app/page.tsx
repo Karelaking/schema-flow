@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { HeroSection } from "@/components/landing/HeroSection";
+import { LogoCloudSection } from "@/components/landing/LogoCloudSection";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
 import { PricingSection } from "@/components/landing/PricingSection";
 import { DrizzleSection } from "@/components/landing/DrizzleSection";
@@ -12,8 +13,10 @@ const InteractiveCanvasDemo = dynamic(
   () => import("@/components/landing/InteractiveCanvasDemo").then(mod => mod.InteractiveCanvasDemo),
   {
     loading: () => (
-      <div className="container mx-auto px-4 py-8">
-        <Skeleton className="w-full h-112.5 rounded-xl border border-border/40" />
+      <div className="w-full bg-background border-b border-border/40 py-16 md:py-24">
+        <div className="mx-auto max-w-7xl border-x border-border/40 px-4 sm:px-6 lg:px-8">
+          <Skeleton className="w-full h-112.5 rounded-xl border border-border/40" />
+        </div>
       </div>
     ),
   }
@@ -57,6 +60,7 @@ export default function HomePage() {
       <LandingHeader />
       <main className="flex-1">
         <HeroSection />
+        <LogoCloudSection />
         <InteractiveCanvasDemo />
         <FeaturesSection />
         <PricingSection />

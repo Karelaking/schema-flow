@@ -1,70 +1,61 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
-import { Sparkles, ArrowRight, Terminal, CheckCircle2} from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
+import { ArrowRight, Terminal, CheckCircle2 } from "lucide-react";
 
+/**
+ * Drizzle ORM integration section styled in Hero grid theme.
+ */
 export function DrizzleSection(): React.JSX.Element {
   return (
-    <section id="drizzle" className="py-16 md:py-24 bg-linear-to-b from-background via-primary/5 to-background relative overflow-hidden">
-      
-      {/* Glow Blur */}
-      <div className="pointer-events-none absolute top-1/2 left-1/2 -z-10 h-112.5 w-162.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-500/10 blur-3xl" />
-
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+    <section id="drizzle" className="relative w-full border-b border-border/40 bg-background overflow-hidden">
+      <div className="mx-auto max-w-7xl border-x border-border/40 py-16 md:py-24">
+        <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-border/40">
           
           {/* Left Column Text */}
-          <div className="lg:col-span-6 space-y-6">
-            <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/10 border border-amber-500/20 px-3 py-1 text-xs font-semibold text-amber-600 dark:text-amber-400">
-              <Sparkles className="size-3.5" />
-              <span>Built for Drizzle ORM Developers</span>
+          <div className="lg:col-span-6 p-8 sm:p-12 lg:p-16 flex flex-col justify-between space-y-6">
+            <div>
+              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground leading-tight mb-6">
+                Type-Safe Data Modeling with Drizzle ORM & Drizzle Kit
+              </h2>
+
+              <p className="text-muted-foreground text-sm sm:text-base leading-relaxed mb-6">
+                Schema Flow integrates directly with Drizzle ORM (`drizzle-orm/libsql`). Define your tables visually and immediately run migrations or push updates with standard Drizzle CLI tools.
+              </p>
+
+              <ul className="space-y-3 text-xs sm:text-sm text-foreground font-medium">
+                <li className="flex items-center gap-2.5">
+                  <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
+                  <span>Zero-overhead TypeScript models with `sqliteTable`, `pgTable`, `mysqlTable`</span>
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
+                  <span>Seamless Drizzle Kit CLI migrations via `pnpm run db:push` and `db:studio`</span>
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
+                  <span>Automatic 1:1, 1:N, and N:M `relations` mapping for relational queries</span>
+                </li>
+              </ul>
             </div>
 
-            <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl leading-tight">
-              Type-Safe Data Modeling with Drizzle ORM & Drizzle Kit
-            </h2>
-
-            <p className="text-muted-foreground text-base leading-relaxed">
-              Schema Flow integrates directly with Drizzle ORM (`drizzle-orm/libsql`). Define your tables visually and immediately run migrations or push updates with standard Drizzle CLI tools.
-            </p>
-
-            <ul className="space-y-3 text-sm text-foreground">
-              <li className="flex items-center gap-2.5">
-                <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
-                <span>Zero-overhead TypeScript models with `sqliteTable`, `pgTable`, `mysqlTable`</span>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
-                <span>Seamless Drizzle Kit CLI migrations via `pnpm run db:push` and `db:studio`</span>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
-                <span>Automatic 1:1, 1:N, and N:M `relations` mapping for relational queries</span>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
-                <span>Full compatibility with Turso Cloud Edge and local SQLite database files</span>
-              </li>
-            </ul>
-
-            <div className="pt-4">
-              <Link href="/workspace" className={buttonVariants({ size: "lg", className: "font-semibold shadow-lg shadow-primary/20 cursor-pointer" })}>
-                <span>Start Building with Drizzle ORM</span>
-                <ArrowRight className="size-4" data-icon="inline-end" />
-              </Link>
-            </div>
+            <Link href="/workspace" className="inline-flex items-center justify-center gap-2 rounded-full bg-foreground text-background font-bold px-7 py-3 text-xs sm:text-sm shadow-md hover:opacity-90 transition-all cursor-pointer w-fit">
+              <span>Start Building with Drizzle ORM</span>
+              <ArrowRight className="size-3.5" />
+            </Link>
           </div>
 
-          {/* Right Column: Code Window */}
-          <div className="lg:col-span-6">
-            <div className="rounded-2xl border border-border/80 bg-slate-950 text-slate-100 p-5 shadow-2xl font-mono text-xs space-y-4">
+          {/* Right Column: Terminal Window */}
+          <div className="lg:col-span-6 p-8 sm:p-12 lg:p-16 flex items-center justify-center bg-muted/5">
+            <div className="w-full max-w-lg rounded-2xl border border-border/80 bg-slate-950 text-slate-100 p-5 shadow-2xl font-mono text-xs space-y-4">
               
               <div className="flex items-center justify-between border-b border-slate-800 pb-3 font-sans">
                 <div className="flex items-center gap-2">
                   <Terminal className="size-4 text-amber-400" />
                   <span className="font-semibold text-slate-200">Terminal & Drizzle CLI</span>
                 </div>
-                <span className="text-[11px] text-slate-400">drizzle-kit v0.31</span>
+                <span className="text-[11px] text-slate-400 font-mono">drizzle-kit v0.31</span>
               </div>
 
               <div className="space-y-2 text-slate-300">
