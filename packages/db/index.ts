@@ -20,9 +20,9 @@ export class DatabaseService {
     public db: LibSQLDatabase<typeof schema>;
     private initialized: boolean = false;
 
-    constructor(customUrl?: string) {
+    constructor(customUrl?: string, customAuthToken?: string) {
         const rawUrl = customUrl || process.env.TURSO_DATABASE_URL || process.env.DATABASE_URL || process.env.DATABASE_PATH;
-        const envToken = process.env.TURSO_AUTH_TOKEN || process.env.TURSO_TOKEN || process.env.DATABASE_AUTH_TOKEN;
+        const envToken = customAuthToken || process.env.TURSO_AUTH_TOKEN || process.env.TURSO_TOKEN || process.env.DATABASE_AUTH_TOKEN;
 
         let url = rawUrl && rawUrl.trim() !== "" ? rawUrl.trim() : "file:./data/schema-flow.db";
         let authToken: string | undefined = envToken && envToken.trim() !== "" ? envToken.trim() : undefined;

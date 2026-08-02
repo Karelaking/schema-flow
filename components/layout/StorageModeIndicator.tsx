@@ -62,7 +62,6 @@ export const StorageModeIndicator: React.FC<StorageModeIndicatorProps> = ({ clas
                         >
                             <Cloud className="size-3" />
                             <span>Cloud Synced</span>
-                            {isProSubscribed && <span className="text-[9px] font-bold uppercase tracking-wider text-amber-400">Pro</span>}
                         </Badge>
                     } />
                     <TooltipContent align="start" className="text-xs">

@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
+import { PricingSection } from "@/components/landing/PricingSection";
 import { DrizzleSection } from "@/components/landing/DrizzleSection";
 import { Footer } from "@/components/landing/Footer";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -58,6 +59,7 @@ export default function HomePage() {
         <HeroSection />
         <InteractiveCanvasDemo />
         <FeaturesSection />
+        <PricingSection />
         <DrizzleSection />
       </main>
       <Footer />

@@ -30,6 +30,8 @@ import {
     Lock,
     Share2,
     RefreshCw,
+    Server,
+    Key,
 } from "lucide-react";
 
 import { useStore } from "@/lib/store";
@@ -43,6 +45,7 @@ import { ProjectSettingsDialog } from "@/components/modals/ProjectSettingsDialog
 import { DeleteProjectDialog } from "@/components/modals/DeleteProjectDialog";
 import { SaveLotusDialog } from "@/components/modals/SaveLotusDialog";
 import { OpenLotusDialog } from "@/components/modals/OpenLotusDialog";
+import { CustomDbConnectionDialog } from "@/components/modals/CustomDbConnectionDialog";
 import { StorageModeIndicator } from "@/components/layout/StorageModeIndicator";
 import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
@@ -104,6 +107,7 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
     const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | undefined>(undefined);
     const [saveLotusOpen, setSaveLotusOpen] = useState<boolean>(false);
     const [openLotusOpen, setOpenLotusOpen] = useState<boolean>(false);
+    const [customDbOpen, setCustomDbOpen] = useState<boolean>(false);
 
     const saveLotusFile = useStore(state => state.saveLotusFile);
     const saveLotusPortable = useStore(state => state.saveLotusPortable);
@@ -224,6 +228,14 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                             >
                                 <Settings className="size-3.5 text-muted-foreground" />
                                 <span>Project Settings</span>
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem
+                                onClick={() => setCustomDbOpen(true)}
+                                className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs font-medium text-primary"
+                            >
+                                <Server className="size-3.5 text-primary" />
+                                <span>Database Credentials (BYO Key)</span>
                             </DropdownMenuItem>
 
                             <DropdownMenuSeparator />
@@ -749,6 +761,9 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                 )}
                 {openLotusOpen && (
                     <OpenLotusDialog open={openLotusOpen} onOpenChange={setOpenLotusOpen} />
+                )}
+                {customDbOpen && (
+                    <CustomDbConnectionDialog open={customDbOpen} onOpenChange={setCustomDbOpen} />
                 )}
             </React.Suspense>
         </div>

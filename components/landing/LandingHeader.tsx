@@ -7,8 +7,11 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Sheet, SheetTrigger, SheetContent, SheetTitle } from "@/components/ui/sheet";
 
+import { SignInButton, UserButton, useUser } from "@clerk/nextjs";
+
 export function LandingHeader(): React.JSX.Element {
   const [mobileNavOpen, setMobileNavOpen] = useState<boolean>(false);
+  const { isSignedIn } = useUser();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md backdrop-saturate-150 transition-all">
@@ -33,8 +36,8 @@ export function LandingHeader(): React.JSX.Element {
           <a href="#features" className="transition-colors hover:text-foreground">
             Features
           </a>
-          <a href="#showcase" className="transition-colors hover:text-foreground">
-            Live Preview
+          <a href="#pricing" className="transition-colors hover:text-foreground">
+            Pricing
           </a>
           <a href="#drizzle" className="flex items-center gap-1.5 transition-colors hover:text-foreground">
             <Sparkles className="size-3.5 text-amber-500" />
@@ -48,6 +51,17 @@ export function LandingHeader(): React.JSX.Element {
         {/* Right Controls */}
         <div className="flex items-center gap-3">
           <ThemeToggle />
+
+          {isSignedIn ? (
+            <UserButton afterSignOutUrl="/" />
+          ) : (
+            <SignInButton mode="modal">
+              <Button variant="ghost" size="sm" className="text-xs font-semibold cursor-pointer">
+                Sign In
+              </Button>
+            </SignInButton>
+          )}
+
           <Link href="/workspace" className={buttonVariants({ size: "sm", className: "font-semibold shadow-md shadow-primary/20 hover:scale-102 transition-all cursor-pointer hidden sm:inline-flex" })}>
             <span>Launch Workspace</span>
             <ArrowRight className="size-4" data-icon="inline-end" />

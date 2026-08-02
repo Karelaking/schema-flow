@@ -109,11 +109,8 @@ export const useStore = create<ProjectStore>((set, get) => ({
         const blob = new Blob([jsonString], { type: "application/x-lotus" });
 
         const handle = await saveToDisk(blob, projectName, projectId, seq, lotusFileHandle);
-        if (handle) {
-            set({ lotusFileHandle: handle, lotusUnsavedChanges: false, lotusFileVersion: nextVersion });
-        }
-        else {
-            set({ lotusUnsavedChanges: false, lotusFileVersion: nextVersion });
+        if (handle || lotusFileHandle) {
+            set({ lotusFileHandle: handle || lotusFileHandle, lotusUnsavedChanges: false, lotusFileVersion: nextVersion });
         }
     },
 

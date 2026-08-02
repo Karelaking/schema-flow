@@ -84,6 +84,7 @@ export const metadata: Metadata = {
 };
 
 import { Toaster } from "@/components/ui/sonner";
+import { ClerkProvider } from "@clerk/nextjs";
 
 export default function RootLayout({
   children,
@@ -91,23 +92,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }>): React.ReactElement {
   return (
-    <html
-      lang="en"
-      className={`${interSans.variable} ${jetbrainsMono.variable} h-full antialiased`}
-      suppressHydrationWarning
-    >
-      <body className="min-h-full flex flex-col bg-background text-foreground antialiased">
-        <ThemeProvider>
-          <ShortcutProvider>
-            <TooltipProvider delay={400}>
-              {children}
-              <CommandMenu />
-              <GlobalCreateTableDialog />
-              <Toaster position="bottom-right" richColors />
-            </TooltipProvider>
-          </ShortcutProvider>
-        </ThemeProvider>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html
+        lang="en"
+        className={`${interSans.variable} ${jetbrainsMono.variable} h-full antialiased`}
+        suppressHydrationWarning
+      >
+        <body className="min-h-full flex flex-col bg-background text-foreground antialiased">
+          <ThemeProvider>
+            <ShortcutProvider>
+              <TooltipProvider delay={400}>
+                {children}
+                <CommandMenu />
+                <GlobalCreateTableDialog />
+                <Toaster position="bottom-right" richColors />
+              </TooltipProvider>
+            </ShortcutProvider>
+          </ThemeProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

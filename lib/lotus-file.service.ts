@@ -151,19 +151,27 @@ export async function saveToDisk(
             }
 
             const safeName = `${projectName.toLowerCase().replace(/\s+/g, "_")}.lotus`;
-            handle = await window.showSaveFilePicker({
-                suggestedName: safeName,
-                types: [
-                    {
-                        description: "Schema Flow Encrypted Project",
-                        accept: {
-                            "application/x-lotus": [".lotus"],
+            try {
+                handle = await window.showSaveFilePicker({
+                    suggestedName: safeName,
+                    types: [
+                        {
+                            description: "Schema Flow Encrypted Project",
+                            accept: {
+                                "application/x-lotus": [".lotus"],
+                            },
                         },
-                    },
-                ],
-            });
-            if (handle) {
-                await persistHandle(projectId, handle);
+                    ],
+                });
+                if (handle) {
+                    await persistHandle(projectId, handle);
+                }
+            }
+            catch (err: unknown) {
+                if (err instanceof Error && err.name === "AbortError") {
+                    return undefined;
+                }
+                throw err;
             }
         }
 

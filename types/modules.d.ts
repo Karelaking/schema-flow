@@ -73,4 +73,31 @@ interface FileSystemHandle {
     requestPermission?: (descriptor?: FileSystemHandlePermissionDescriptor) => Promise<PermissionState>;
 }
 
+declare module "@clerk/nextjs" {
+    import * as React from "react";
+    export const ClerkProvider: React.FC<{ children: React.ReactNode }>;
+    export const SignInButton: React.FC<{ children?: React.ReactNode; mode?: string }>;
+    export const SignUpButton: React.FC<{ children?: React.ReactNode; mode?: string }>;
+    export const UserButton: React.FC<any>;
+    export const SignIn: React.FC<any>;
+    export const SignUp: React.FC<any>;
+    export function useUser(): { isLoaded: boolean; isSignedIn?: boolean; user?: any };
+    export function useAuth(): { isLoaded: boolean; isSignedIn?: boolean; userId?: string | null };
+}
+
+declare module "@clerk/nextjs/server" {
+    export function clerkMiddleware(handler?: any): any;
+    export function createRouteMatcher(patterns: string[]): (req: any) => boolean;
+    export function auth(): Promise<{ userId: string | null; sessionClaims?: any }>;
+    export const clerkClient: {
+        users: {
+            updateUserMetadata: (userId: string, metadata: { publicMetadata?: any; privateMetadata?: any }) => Promise<any>;
+            getUser: (userId: string) => Promise<any>;
+        };
+    };
+}
+
+}
+
+
 
