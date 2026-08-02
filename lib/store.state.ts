@@ -2,8 +2,24 @@ import { create } from "zustand";
 import { Table, Relation, Column, Index, IndexColumn, DatabaseDialect, SchemaAST, EnumDefinition, ProjectMetadata } from "@/packages/schema-core";
 import { CanvasHistoryState, ProjectStore } from "@/types/store.type";
 import { getLayoutedElements, LayoutDirection } from "@/lib/auto-layout";
+import { encrypt, decrypt, encryptPortable } from "@/packages/lotus-crypto";
+import { getMasterKey } from "@/lib/lotus-key-manager.service";
+import { saveToDisk, openFromDisk, incrementSaveSequence, downloadFallback } from "@/lib/lotus-file.service";
+import { saveProjectAction } from "@/app/actions/projects";
 
 const nextCrudVersion = (v: number): number => (v % 1_000_000) + 1;
+
+const getDeviceId = (): string => {
+    if (typeof window === "undefined") {
+        return "server-device";
+    }
+    let devId = localStorage.getItem("schema-flow:device-id");
+    if (!devId) {
+        devId = `dev_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
+        localStorage.setItem("schema-flow:device-id", devId);
+    }
+    return devId;
+};
 
 /**
  * Zustand hook for global project state management.
@@ -18,6 +34,212 @@ export const useStore = create<ProjectStore>((set, get) => ({
     theme: "dark",
     autoAddId: true,
     autoAddTimestamps: true,
+
+    // Lotus storage state initial values
+    storageMode: "database",
+    lotusFileHandle: undefined,
+    isProSubscribed: false,
+    lotusUnsavedChanges: false,
+    lotusFileVersion: 1,
+    lotusDeviceId: typeof window !== "undefined" ? getDeviceId() : "server-device",
+    cloudStorageUsedBytes: 0,
+
+    setStorageMode: (storageMode: "database" | "lotus-local" | "lotus-cloud"): void => set({ storageMode }),
+    setLotusFileHandle: (lotusFileHandle?: FileSystemFileHandle): void => set({ lotusFileHandle }),
+    setProSubscribed: (isProSubscribed: boolean): void => set({ isProSubscribed }),
+    setLotusUnsavedChanges: (lotusUnsavedChanges: boolean): void => set({ lotusUnsavedChanges }),
+    incrementLotusFileVersion: (): number => {
+        const nextVersion = get().lotusFileVersion + 1;
+        set({ lotusFileVersion: nextVersion, lotusUnsavedChanges: true });
+        return nextVersion;
+    },
+
+    saveLotusFile: async (): Promise<void> => {
+        const {
+            projectId,
+            projectName,
+            projectDescription,
+            dialect,
+            theme,
+            autoAddId,
+            autoAddTimestamps,
+            tables,
+            relations,
+            enums,
+            lotusFileVersion,
+            lotusDeviceId,
+            lotusFileHandle,
+            storageMode,
+        } = get();
+        if (!projectId) {
+            return;
+        }
+
+        const seq = incrementSaveSequence();
+        const masterKey = await getMasterKey();
+        const nextVersion = lotusFileVersion + 1;
+
+        const ast: SchemaAST = {
+            project: {
+                id: projectId,
+                name: projectName,
+                description: projectDescription,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+            },
+            settings: {
+                dialect,
+                theme,
+                autoAddId,
+                autoAddTimestamps,
+                storageMode,
+                lotusFileVersion: nextVersion,
+            },
+            tables,
+            relations,
+            enums,
+        };
+
+        const payload = await encrypt(ast, masterKey, {
+            fileVersion: nextVersion,
+            lastModifiedBy: lotusDeviceId,
+        });
+
+        const jsonString = JSON.stringify(payload, undefined, 2);
+        const blob = new Blob([jsonString], { type: "application/x-lotus" });
+
+        const handle = await saveToDisk(blob, projectName, projectId, seq, lotusFileHandle);
+        if (handle) {
+            set({ lotusFileHandle: handle, lotusUnsavedChanges: false, lotusFileVersion: nextVersion });
+        }
+        else {
+            set({ lotusUnsavedChanges: false, lotusFileVersion: nextVersion });
+        }
+    },
+
+    openLotusFile: async (): Promise<void> => {
+        const result = await openFromDisk();
+        if (!result) {
+            return;
+        }
+
+        const decoder = new TextDecoder();
+        const text = decoder.decode(result.buffer);
+        const parsed = JSON.parse(text);
+
+        const masterKey = await getMasterKey();
+        const decrypted = await decrypt(parsed, masterKey);
+
+        set({
+            storageMode: "lotus-local",
+            lotusFileHandle: result.handle,
+            lotusFileVersion: decrypted.fileVersion,
+            lotusUnsavedChanges: false,
+        });
+
+        get().loadProject(decrypted.ast);
+    },
+
+    saveLotusPortable: async (): Promise<void> => {
+        const {
+            projectId,
+            projectName,
+            projectDescription,
+            dialect,
+            theme,
+            autoAddId,
+            autoAddTimestamps,
+            tables,
+            relations,
+            enums,
+            lotusFileVersion,
+            lotusDeviceId,
+            storageMode,
+        } = get();
+        if (!projectId) {
+            return;
+        }
+
+        const nextVersion = lotusFileVersion + 1;
+
+        const ast: SchemaAST = {
+            project: {
+                id: projectId,
+                name: projectName,
+                description: projectDescription,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+            },
+            settings: {
+                dialect,
+                theme,
+                autoAddId,
+                autoAddTimestamps,
+                storageMode,
+                lotusFileVersion: nextVersion,
+            },
+            tables,
+            relations,
+            enums,
+        };
+
+        const payload = await encryptPortable(ast, {
+            fileVersion: nextVersion,
+            lastModifiedBy: lotusDeviceId,
+        });
+
+        const jsonString = JSON.stringify(payload, undefined, 2);
+        const blob = new Blob([jsonString], { type: "application/x-lotus" });
+        const safeName = `${projectName.toLowerCase().replace(/\s+/g, "_")}_portable.lotus`;
+        downloadFallback(blob, safeName);
+    },
+
+    convertToLotus: async (): Promise<void> => {
+        set({ storageMode: "lotus-local", lotusFileHandle: undefined });
+        await get().saveLotusFile();
+    },
+
+    importLotusToDatabase: async (): Promise<void> => {
+        const {
+            projectId,
+            projectName,
+            projectDescription,
+            dialect,
+            theme,
+            autoAddId,
+            autoAddTimestamps,
+            tables,
+            relations,
+            enums,
+        } = get();
+        if (!projectId) {
+            return;
+        }
+
+        const ast: SchemaAST = {
+            project: {
+                id: projectId,
+                name: projectName,
+                description: projectDescription,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+            },
+            settings: {
+                dialect,
+                theme,
+                autoAddId,
+                autoAddTimestamps,
+                storageMode: "database",
+            },
+            tables,
+            relations,
+            enums,
+        };
+
+        await saveProjectAction(projectId, ast);
+        set({ storageMode: "database", lotusFileHandle: undefined });
+    },
+
     projectsList: [],
     tables: {},
     relations: {},
@@ -66,6 +288,9 @@ export const useStore = create<ProjectStore>((set, get) => ({
             theme: ast.settings.theme,
             autoAddId: ast.settings.autoAddId ?? true,
             autoAddTimestamps: ast.settings.autoAddTimestamps ?? true,
+            storageMode: ast.settings.storageMode || "database",
+            lotusFileVersion: ast.settings.lotusFileVersion || 1,
+            lotusUnsavedChanges: false,
             tables: ast.tables || {},
             relations: ast.relations || {},
             enums: ast.enums || {},

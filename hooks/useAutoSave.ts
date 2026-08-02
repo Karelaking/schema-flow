@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useStore } from "@/lib/store";
 import { SchemaAST } from "@/packages/schema-core";
 import { saveProjectAction } from "@/app/actions/projects";
+import { isFileSystemAccessSupported } from "@/lib/lotus-file.service";
 
 /**
  * Custom Hook: Debounces and saves project database state when crudVersion changes.
@@ -18,6 +19,9 @@ export function useAutoSave(isLoaded: boolean): void {
     const relations = useStore(state => state.relations);
     const enums = useStore(state => state.enums);
     const crudVersion = useStore(state => state.crudVersion);
+    const storageMode = useStore(state => state.storageMode);
+    const lotusFileVersion = useStore(state => state.lotusFileVersion);
+    const saveLotusFile = useStore(state => state.saveLotusFile);
 
     useEffect(() => {
         if (!isLoaded || !projectId || crudVersion === 0) {
@@ -26,25 +30,34 @@ export function useAutoSave(isLoaded: boolean): void {
 
         const timer = setTimeout(async () => {
             try {
-                const ast: SchemaAST = {
-                    project: {
-                        id: projectId,
-                        name: projectName,
-                        description: projectDescription,
-                        createdAt: new Date().toISOString(),
-                        updatedAt: new Date().toISOString(),
-                    },
-                    settings: {
-                        dialect,
-                        theme,
-                        autoAddId,
-                        autoAddTimestamps,
-                    },
-                    tables,
-                    relations,
-                    enums,
-                };
-                await saveProjectAction(projectId, ast);
+                if (storageMode === "database") {
+                    const ast: SchemaAST = {
+                        project: {
+                            id: projectId,
+                            name: projectName,
+                            description: projectDescription,
+                            createdAt: new Date().toISOString(),
+                            updatedAt: new Date().toISOString(),
+                        },
+                        settings: {
+                            dialect,
+                            theme,
+                            autoAddId,
+                            autoAddTimestamps,
+                            storageMode,
+                            lotusFileVersion,
+                        },
+                        tables,
+                        relations,
+                        enums,
+                    };
+                    await saveProjectAction(projectId, ast);
+                }
+                else if (storageMode === "lotus-local" || storageMode === "lotus-cloud") {
+                    if (isFileSystemAccessSupported()) {
+                        await saveLotusFile();
+                    }
+                }
             }
             catch (err: unknown) {
                 console.warn("[useAutoSave] Auto-save background sync postponed:", err);
@@ -52,5 +65,5 @@ export function useAutoSave(isLoaded: boolean): void {
         }, 1500);
 
         return () => clearTimeout(timer);
-    }, [projectId, crudVersion, isLoaded]);
+    }, [projectId, crudVersion, isLoaded, storageMode, projectName, projectDescription, dialect, theme, autoAddId, autoAddTimestamps, tables, relations, enums, lotusFileVersion, saveLotusFile]);
 }

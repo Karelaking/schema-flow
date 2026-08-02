@@ -22,6 +22,10 @@ export interface ProjectSettings {
     theme: "dark" | "light";
     autoAddId?: boolean;
     autoAddTimestamps?: boolean;
+    storageMode?: "database" | "lotus-local" | "lotus-cloud";
+    lotusFileHint?: string;
+    lastCloudSync?: string;
+    lotusFileVersion?: number;
 }
 
 /**

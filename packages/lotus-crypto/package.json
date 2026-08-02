@@ -1,0 +1,14 @@
+{
+  "name": "@schema-flow/lotus-crypto",
+  "version": "0.1.0",
+  "private": true,
+  "sideEffects": false,
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "dependencies": {
+    "@schema-flow/schema-core": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

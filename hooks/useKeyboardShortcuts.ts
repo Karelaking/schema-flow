@@ -15,6 +15,9 @@ export const useKeyboardShortcuts = (): void => {
     const deleteRelation = useStore(state => state.deleteRelation);
     const autoLayoutTables = useStore(state => state.autoLayoutTables);
 
+    const saveLotusFile = useStore(state => state.saveLotusFile);
+    const openLotusFile = useStore(state => state.openLotusFile);
+
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent): void => {
             // Do not trigger shortcuts when user is typing inside an input, textarea, or contentEditable element
@@ -31,6 +34,20 @@ export const useKeyboardShortcuts = (): void => {
 
             const isMac = typeof navigator !== "undefined" && navigator.platform.toUpperCase().includes("MAC");
             const modifierKey = isMac ? event.metaKey : event.ctrlKey;
+
+            // Save to Disk (.lotus): Cmd+Shift+S or Ctrl+Shift+S
+            if (modifierKey && event.shiftKey && event.key.toLowerCase() === "s") {
+                event.preventDefault();
+                saveLotusFile();
+                return;
+            }
+
+            // Open from Disk (.lotus): Cmd+Shift+O or Ctrl+Shift+O
+            if (modifierKey && event.shiftKey && event.key.toLowerCase() === "o") {
+                event.preventDefault();
+                openLotusFile();
+                return;
+            }
 
             // Undo: Cmd+Z or Ctrl+Z
             if (modifierKey && !event.shiftKey && event.key.toLowerCase() === "z") {

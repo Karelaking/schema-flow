@@ -26,6 +26,10 @@ import {
     Eye,
     Wrench,
     Table,
+    HardDrive,
+    Lock,
+    Share2,
+    RefreshCw,
 } from "lucide-react";
 
 import { useStore } from "@/lib/store";
@@ -37,6 +41,9 @@ import { exportCanvasToPng } from "@/lib/export-image";
 import { CreateProjectDialog } from "@/components/modals/CreateProjectDialog";
 import { ProjectSettingsDialog } from "@/components/modals/ProjectSettingsDialog";
 import { DeleteProjectDialog } from "@/components/modals/DeleteProjectDialog";
+import { SaveLotusDialog } from "@/components/modals/SaveLotusDialog";
+import { OpenLotusDialog } from "@/components/modals/OpenLotusDialog";
+import { StorageModeIndicator } from "@/components/layout/StorageModeIndicator";
 import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
 import {
@@ -95,6 +102,14 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
     const [createProjectOpen, setCreateProjectOpen] = useState<boolean>(false);
     const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
     const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | undefined>(undefined);
+    const [saveLotusOpen, setSaveLotusOpen] = useState<boolean>(false);
+    const [openLotusOpen, setOpenLotusOpen] = useState<boolean>(false);
+
+    const saveLotusFile = useStore(state => state.saveLotusFile);
+    const saveLotusPortable = useStore(state => state.saveLotusPortable);
+    const convertToLotus = useStore(state => state.convertToLotus);
+    const importLotusToDatabase = useStore(state => state.importLotusToDatabase);
+    const storageMode = useStore(state => state.storageMode);
 
     const handleProjectDeleted = async (deletedId: string): Promise<void> => {
         setDeleteTarget(undefined);
@@ -210,6 +225,54 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                                 <Settings className="size-3.5 text-muted-foreground" />
                                 <span>Project Settings</span>
                             </DropdownMenuItem>
+
+                            <DropdownMenuSeparator />
+
+                            <DropdownMenuItem
+                                onClick={() => setSaveLotusOpen(true)}
+                                className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs font-medium"
+                            >
+                                <HardDrive className="size-3.5 text-emerald-500" />
+                                <span>Save to Disk (.lotus)</span>
+                                <DropdownMenuShortcut><Kbd>Ctrl+Shift+S</Kbd></DropdownMenuShortcut>
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem
+                                onClick={() => setOpenLotusOpen(true)}
+                                className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs font-medium"
+                            >
+                                <FolderOpen className="size-3.5 text-emerald-500" />
+                                <span>Open from Disk (.lotus)</span>
+                                <DropdownMenuShortcut><Kbd>Ctrl+Shift+O</Kbd></DropdownMenuShortcut>
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem
+                                onClick={saveLotusPortable}
+                                className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
+                            >
+                                <Share2 className="size-3.5 text-muted-foreground" />
+                                <span>Export Portable .lotus</span>
+                            </DropdownMenuItem>
+
+                            <DropdownMenuSeparator />
+
+                            {storageMode === "database" ? (
+                                <DropdownMenuItem
+                                    onClick={convertToLotus}
+                                    className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
+                                >
+                                    <RefreshCw className="size-3.5 text-muted-foreground" />
+                                    <span>Convert to .lotus File Mode</span>
+                                </DropdownMenuItem>
+                            ) : (
+                                <DropdownMenuItem
+                                    onClick={importLotusToDatabase}
+                                    className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
+                                >
+                                    <RefreshCw className="size-3.5 text-muted-foreground" />
+                                    <span>Import to SQLite Database</span>
+                                </DropdownMenuItem>
+                            )}
 
                             <DropdownMenuSeparator />
 
@@ -657,6 +720,8 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                 </DropdownMenu>
             </div>
 
+            <StorageModeIndicator className="hidden sm:flex" />
+
             <React.Suspense fallback={null}>
                 {createProjectOpen && (
                     <CreateProjectDialog open={createProjectOpen} onOpenChange={setCreateProjectOpen} />
@@ -678,6 +743,12 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                         }}
                         onDeleted={handleProjectDeleted}
                     />
+                )}
+                {saveLotusOpen && (
+                    <SaveLotusDialog open={saveLotusOpen} onOpenChange={setSaveLotusOpen} />
+                )}
+                {openLotusOpen && (
+                    <OpenLotusDialog open={openLotusOpen} onOpenChange={setOpenLotusOpen} />
                 )}
             </React.Suspense>
         </div>

@@ -32,6 +32,27 @@ export interface ProjectStore {
     autoAddId: boolean;
     autoAddTimestamps: boolean;
 
+    // Lotus storage state
+    storageMode: "database" | "lotus-local" | "lotus-cloud";
+    lotusFileHandle?: FileSystemFileHandle;
+    isProSubscribed: boolean;
+    lotusUnsavedChanges: boolean;
+    lotusFileVersion: number;
+    lotusDeviceId: string;
+    cloudStorageUsedBytes: number;
+
+    // Lotus storage actions
+    setStorageMode: (mode: "database" | "lotus-local" | "lotus-cloud") => void;
+    setLotusFileHandle: (handle?: FileSystemFileHandle) => void;
+    setProSubscribed: (subscribed: boolean) => void;
+    setLotusUnsavedChanges: (unsaved: boolean) => void;
+    incrementLotusFileVersion: () => number;
+    saveLotusFile: () => Promise<void>;
+    openLotusFile: () => Promise<void>;
+    saveLotusPortable: () => Promise<void>;
+    convertToLotus: () => Promise<void>;
+    importLotusToDatabase: () => Promise<void>;
+
     // Schema state
     projectsList: ProjectMetadata[];
     tables: Record<string, Table>;

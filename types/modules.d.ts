@@ -50,3 +50,27 @@ declare module "sonner" {
         dismiss: (id?: string | number) => void;
     };
 }
+
+declare module "idb-keyval" {
+    export function get<T = any>(key: IDBValidKey): Promise<T | undefined>;
+    export function set(key: IDBValidKey, val: any): Promise<void>;
+    export function del(key: IDBValidKey): Promise<void>;
+    export function keys(): Promise<IDBValidKey[]>;
+    export function clear(): Promise<void>;
+}
+
+interface Window {
+    showSaveFilePicker?: (options?: any) => Promise<FileSystemFileHandle>;
+    showOpenFilePicker?: (options?: any) => Promise<FileSystemFileHandle[]>;
+}
+
+interface FileSystemHandlePermissionDescriptor {
+    mode?: "read" | "readwrite";
+}
+
+interface FileSystemHandle {
+    queryPermission?: (descriptor?: FileSystemHandlePermissionDescriptor) => Promise<PermissionState>;
+    requestPermission?: (descriptor?: FileSystemHandlePermissionDescriptor) => Promise<PermissionState>;
+}
+
+
