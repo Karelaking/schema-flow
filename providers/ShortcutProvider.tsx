@@ -13,11 +13,50 @@ export interface ShortcutProviderProps {
 }
 
 /**
+ * Hook for safe dark-mode keyboard shortcut ('d' key or Cmd+Shift+D / Ctrl+Shift+D).
+ * Ignores interactive form elements (input, textarea, select, contenteditable).
+ */
+export function useThemeHotkey(toggleTheme: () => void): void {
+    useEffect(() => {
+        const handleThemeKeyDown = (e: KeyboardEvent): void => {
+            const target = e.target as HTMLElement | null;
+            if (
+                target &&
+                (target.tagName === "INPUT" ||
+                    target.tagName === "TEXTAREA" ||
+                    target.tagName === "SELECT" ||
+                    target.isContentEditable ||
+                    Boolean(target.closest && target.closest("input, textarea, select, [contenteditable='true']")))
+            ) {
+                return;
+            }
+
+            const keyLower = e.key ? e.key.toLowerCase() : "";
+            const isControl = e.metaKey || e.ctrlKey;
+            const isThemeHotkey =
+                (keyLower === "d" || e.key === "d" || e.key === "D" || e.code === "KeyD") &&
+                ((isControl && e.shiftKey) || (!isControl && !e.altKey && !e.shiftKey));
+
+            if (isThemeHotkey) {
+                e.preventDefault();
+                toggleTheme();
+            }
+        };
+
+        window.addEventListener("keydown", handleThemeKeyDown, { capture: true });
+        return () => window.removeEventListener("keydown", handleThemeKeyDown, { capture: true });
+    }, [toggleTheme]);
+}
+
+/**
  * Global Keyboard Shortcut Provider.
  * Listens for app-wide keyboard shortcuts (Ctrl+Z / Cmd+Z for Undo, Ctrl+Y / Cmd+Y / Ctrl+Shift+Z for Redo).
  */
 export function ShortcutProvider({ children }: ShortcutProviderProps): React.ReactElement {
     const { toggleTheme } = useTheme();
+
+    // Register safe dark-mode keyboard shortcut
+    useThemeHotkey(toggleTheme);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent): void => {
@@ -119,16 +158,6 @@ export function ShortcutProvider({ children }: ShortcutProviderProps): React.Rea
                 return;
             }
 
-            // Toggle Theme: D key (standalone) or Cmd+Shift+D / Ctrl+Shift+D
-            if (
-                (e.key === "d" || e.key === "D" || e.code === "KeyD") &&
-                (((e.metaKey || e.ctrlKey) && e.shiftKey) || (!e.metaKey && !e.ctrlKey && !e.altKey && !e.shiftKey))
-            ) {
-                e.preventDefault();
-                toggleTheme();
-                return;
-            }
-
             // Toggle Left Sidebar (Explorer): Ctrl+V or Cmd+V
             const isToggleLeftSidebar = isControl && !e.shiftKey && !e.altKey && (code === "KeyV" || keyLower === "v");
             if (isToggleLeftSidebar) {
@@ -148,7 +177,7 @@ export function ShortcutProvider({ children }: ShortcutProviderProps): React.Rea
 
         window.addEventListener("keydown", handleKeyDown, { capture: true });
         return () => window.removeEventListener("keydown", handleKeyDown, { capture: true });
-    }, [toggleTheme]);
+    }, []);
 
     return <>{children}</>;
 }

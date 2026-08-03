@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Database, Key, Check, Info, Server, ExternalLink } from "lucide-react";
+import { Database, Key, Check, Info, Server, ExternalLink, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -120,6 +120,7 @@ export const CustomDbConnectionDialog: React.FC<CustomDbConnectionDialogProps> =
                         <Input
                             id="custom-db-token"
                             type="password"
+                            autoComplete="current-password"
                             placeholder="ey..."
                             value={authToken}
                             onChange={e => setAuthToken(e.target.value)}
@@ -151,8 +152,9 @@ export const CustomDbConnectionDialog: React.FC<CustomDbConnectionDialogProps> =
                         <Button variant="outline" size="sm" onClick={() => onOpenChange(false)} className="text-xs">
                             Cancel
                         </Button>
-                        <Button size="sm" onClick={handleSaveConnection} disabled={isSaving} className="text-xs font-semibold">
-                            {isSaving ? "Saving..." : "Save Connection"}
+                        <Button size="sm" onClick={handleSaveConnection} disabled={isSaving} className="text-xs font-semibold gap-1.5">
+                            {isSaving && <Loader2 className="size-3.5 animate-spin" data-icon="inline-start" />}
+                            <span>{isSaving ? "Saving..." : "Save Connection"}</span>
                         </Button>
                     </div>
                 </DialogFooter>

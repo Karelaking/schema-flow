@@ -35,9 +35,9 @@ export function ThemeToggle({ className, showKbd = true }: ThemeToggleProps = {}
             data-slot="button"
           >
             {theme === "dark" ? (
-              <Sun className="size-4 text-amber-400 transition-all" data-slot="icon" aria-hidden="true" />
+              <Sun className="size-4 text-amber-400 transition-all" data-slot="icon" data-icon="inline-start" aria-hidden="true" />
             ) : (
-              <Moon className="size-4 text-slate-700 transition-all" data-slot="icon" aria-hidden="true" />
+              <Moon className="size-4 text-slate-700 transition-all" data-slot="icon" data-icon="inline-start" aria-hidden="true" />
             )}
             {showKbd && (
               <Kbd className="h-4 px-1 text-[9px] font-mono leading-none shadow-2xs">

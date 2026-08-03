@@ -66,7 +66,7 @@ const CommandInput = React.forwardRef<HTMLInputElement, CommandInputProps>(
                 ref={ref}
                 data-slot="command-input"
                 className={cn(
-                    "flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 text-foreground font-medium",
+                    "flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 text-foreground font-medium",
                     className
                 )}
                 {...props}
@@ -165,7 +165,7 @@ const CommandItem = React.forwardRef<HTMLDivElement, CommandItemProps>(
                 }
             }}
             className={cn(
-                "relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 text-foreground transition-colors",
+                "relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:bg-accent hover:bg-accent hover:text-accent-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 text-foreground transition-colors",
                 className
             )}
             {...props}

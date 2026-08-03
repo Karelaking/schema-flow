@@ -32,6 +32,7 @@ export const metadata: Metadata = {
     template: "%s | Schema Flow",
   },
   description: "Visually design database architectures, auto-generate Drizzle ORM models & migrations, export production-ready SQL, and generate TypeScript types in real-time.",
+  applicationName: "Schema Flow",
   keywords: [
     "visual database designer",
     "ERD tool",

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Table, Palette, Check, Settings } from "lucide-react";
+import { Table, Palette, Check, Settings, Loader2 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -52,6 +52,7 @@ export const EditTableInfoDialog: React.FC<EditTableInfoDialogProps> = ({
 
     const isOpen = open !== undefined ? open : isEditTableInfoOpen;
     const handleClose = (newOpen: boolean): void => {
+        if (isSubmitting) return;
         if (onOpenChange) {
             onOpenChange(newOpen);
         } else {
@@ -65,6 +66,7 @@ export const EditTableInfoDialog: React.FC<EditTableInfoDialogProps> = ({
     const [description, setDescription] = useState<string>("");
     const [color, setColor] = useState<string>("#3b82f6");
     const [error, setError] = useState<string | undefined>(undefined);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         if (isOpen && targetTable) {
@@ -72,12 +74,13 @@ export const EditTableInfoDialog: React.FC<EditTableInfoDialogProps> = ({
             setDescription(targetTable.description || "");
             setColor(targetTable.color || "#3b82f6");
             setError(undefined);
+            setIsSubmitting(false);
         }
     }, [isOpen, targetTable]);
 
-    const handleSubmit = (e: React.FormEvent): void => {
+    const handleSubmit = async (e: React.FormEvent): Promise<void> => {
         e.preventDefault();
-        if (!editTableInfoTargetId || !targetTable) {
+        if (!editTableInfoTargetId || !targetTable || isSubmitting) {
             handleClose(false);
             return;
         }
@@ -98,14 +101,19 @@ export const EditTableInfoDialog: React.FC<EditTableInfoDialogProps> = ({
             return;
         }
 
-        pushHistory();
-        updateTable(editTableInfoTargetId, {
-            name: trimmedName,
-            description: description.trim() ? description.trim() : undefined,
-            color,
-        });
+        setIsSubmitting(true);
+        try {
+            pushHistory();
+            updateTable(editTableInfoTargetId, {
+                name: trimmedName,
+                description: description.trim() ? description.trim() : undefined,
+                color,
+            });
 
-        handleClose(false);
+            handleClose(false);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -205,6 +213,7 @@ export const EditTableInfoDialog: React.FC<EditTableInfoDialogProps> = ({
                             type="button"
                             variant="outline"
                             size="sm"
+                            disabled={isSubmitting}
                             onClick={() => handleClose(false)}
                             className="cursor-pointer"
                         >
@@ -213,10 +222,11 @@ export const EditTableInfoDialog: React.FC<EditTableInfoDialogProps> = ({
                         <Button
                             type="submit"
                             size="sm"
-                            disabled={!name.trim()}
-                            className="cursor-pointer font-semibold"
+                            disabled={!name.trim() || isSubmitting}
+                            className="cursor-pointer font-semibold gap-1.5"
                         >
-                            Save Changes
+                            {isSubmitting && <Loader2 className="size-3.5 animate-spin" data-icon="inline-start" />}
+                            <span>{isSubmitting ? "Saving..." : "Save Changes"}</span>
                         </Button>
                     </DialogFooter>
                 </form>

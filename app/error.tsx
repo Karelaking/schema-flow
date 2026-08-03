@@ -21,18 +21,18 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-6 text-center">
-      <div className="size-16 rounded-2xl bg-amber-500/15 flex items-center justify-center mb-6">
-        <AlertTriangle className="size-8 text-amber-500" />
+    <main className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-6 text-center">
+      <div className="size-16 rounded-2xl bg-destructive/15 flex items-center justify-center mb-6">
+        <AlertTriangle className="size-8 text-destructive" />
       </div>
       <h1 className="text-2xl font-bold tracking-tight mb-2">Something went wrong!</h1>
       <p className="text-muted-foreground text-sm max-w-md mb-6 leading-relaxed">
-        {error.message || "An unexpected application error occurred."}
+        {error?.message || "An unexpected application error occurred."}
       </p>
-      <Button variant="default" onClick={reset} className="gap-2">
+      <Button variant="default" size="lg" onClick={() => reset()} className="gap-2 h-10 min-w-32 cursor-pointer font-semibold">
         <RefreshCw className="size-4" data-icon="inline-start" />
-        Try Again
+        <span>Try Again</span>
       </Button>
-    </div>
+    </main>
   );
 }

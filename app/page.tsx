@@ -23,8 +23,20 @@ const InteractiveCanvasDemo = dynamic(
 );
 
 export const metadata: Metadata = {
-  title: "Schema Flow - Visual Database Schema builder",
-  description: "Visually design database architectures, export raw SQL, and sync with Turso Edge Cloud.",
+  title: "Schema Flow - Visual Database Schema Builder & Drizzle ORM Designer",
+  description: "Visually design database architectures, auto-generate Drizzle ORM models & migrations, export raw SQL, and sync with Turso Edge Cloud.",
+  openGraph: {
+    title: "Schema Flow - Visual Database Schema Builder",
+    description: "Visually design database architectures, auto-generate Drizzle ORM models & migrations, export raw SQL, and sync with Turso Edge Cloud.",
+    url: "https://schemaflow.dev",
+    siteName: "Schema Flow",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Schema Flow - Visual Database Schema Builder",
+    description: "Visually design database architectures, auto-generate Drizzle ORM models & migrations, export raw SQL.",
+  },
 };
 
 const jsonLd = {

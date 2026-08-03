@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createProjectSchema, CreateProjectInput } from "@/lib/schemas";
@@ -152,8 +153,9 @@ export const CreateProjectDialog: React.FC<CreateProjectDialogProps> = ({ open, 
                         <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={isSubmitting} className="cursor-pointer">
-                            {isSubmitting ? "Creating..." : "Create Project"}
+                        <Button type="submit" disabled={isSubmitting} className="cursor-pointer font-semibold gap-1.5">
+                            {isSubmitting && <Loader2 className="size-3.5 animate-spin" data-icon="inline-start" />}
+                            <span>{isSubmitting ? "Creating..." : "Create Project"}</span>
                         </Button>
                     </DialogFooter>
                 </form>

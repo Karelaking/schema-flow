@@ -192,13 +192,15 @@ export function OpenWorkspaceFolderModal({ open, onOpenChange }: OpenWorkspaceFo
             <TabsContent value="files" className="space-y-4 pt-4">
               <div className="flex items-center gap-2">
                 <Input
+                  id="new-workspace-file-name"
+                  aria-label="New file name"
                   placeholder="New file name (e.g. ecommerce.lotus)"
                   value={newFileName}
                   onChange={(e) => setNewFileName(e.target.value)}
                   className="h-8 text-xs font-mono"
                 />
                 <Button size="sm" onClick={handleCreateNewFile} className="h-8 text-xs font-bold gap-1 rounded-full cursor-pointer">
-                  <Plus className="size-3.5" />
+                  <Plus className="size-3.5" data-icon="inline-start" />
                   <span>Create File</span>
                 </Button>
               </div>
@@ -229,16 +231,20 @@ export function OpenWorkspaceFolderModal({ open, onOpenChange }: OpenWorkspaceFo
                 <div className="space-y-3 text-xs">
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <Label className="text-xs font-bold">Workspace Name</Label>
+                      <Label htmlFor="workspace-config-name" className="text-xs font-bold">Workspace Name</Label>
                       <Input
+                        id="workspace-config-name"
+                        aria-label="Workspace Name"
                         value={yamlConfig.name}
                         onChange={(e) => setYamlConfig({ ...yamlConfig, name: e.target.value })}
                         className="h-8 text-xs font-mono"
                       />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs font-bold">Default Dialect</Label>
+                      <Label htmlFor="workspace-config-dialect" className="text-xs font-bold">Default Dialect</Label>
                       <Input
+                        id="workspace-config-dialect"
+                        aria-label="Default Dialect"
                         value={yamlConfig.settings?.dialect || "sqlite"}
                         onChange={(e) => setYamlConfig({ ...yamlConfig, settings: { ...yamlConfig.settings, dialect: e.target.value } })}
                         className="h-8 text-xs font-mono"
@@ -248,19 +254,25 @@ export function OpenWorkspaceFolderModal({ open, onOpenChange }: OpenWorkspaceFo
 
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <Label className="text-xs font-bold flex items-center gap-1">
+                      <Label htmlFor="workspace-config-user-name" className="text-xs font-bold flex items-center gap-1">
                         <User className="size-3 text-muted-foreground" />
                         <span>Developer Name</span>
                       </Label>
                       <Input
+                        id="workspace-config-user-name"
+                        aria-label="Developer Name"
+                        autoComplete="name"
                         value={yamlConfig.user?.name || ""}
                         onChange={(e) => setYamlConfig({ ...yamlConfig, user: { ...yamlConfig.user, name: e.target.value } })}
                         className="h-8 text-xs font-mono"
                       />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs font-bold">Developer Email</Label>
+                      <Label htmlFor="workspace-config-user-email" className="text-xs font-bold">Developer Email</Label>
                       <Input
+                        id="workspace-config-user-email"
+                        aria-label="Developer Email"
+                        autoComplete="email"
                         value={yamlConfig.user?.email || ""}
                         onChange={(e) => setYamlConfig({ ...yamlConfig, user: { ...yamlConfig.user, email: e.target.value } })}
                         className="h-8 text-xs font-mono"
@@ -270,7 +282,7 @@ export function OpenWorkspaceFolderModal({ open, onOpenChange }: OpenWorkspaceFo
 
                   <div className="pt-2 flex justify-end">
                     <Button size="sm" onClick={handleSaveYamlConfig} disabled={savingYaml} className="h-8 text-xs font-bold gap-1 rounded-full cursor-pointer">
-                      <Save className="size-3.5" />
+                      <Save className="size-3.5" data-icon="inline-start" />
                       <span>{savingYaml ? "Saving..." : "Save workspace.yaml"}</span>
                     </Button>
                   </div>

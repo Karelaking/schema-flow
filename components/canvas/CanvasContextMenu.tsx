@@ -151,6 +151,7 @@ export const CanvasContextMenu: React.FC<CanvasContextMenuProps> = ({
 
     const handleDeleteAction = (): void => {
         onClose();
+        pushHistory();
         if (targetType === "node" && targetId) {
             deleteTable(targetId);
         } else if (targetType === "edge" && targetId) {

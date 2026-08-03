@@ -331,7 +331,7 @@ export const TableInspector: React.FC<TableInspectorProps> = ({ selectedTable, s
                                     }
                                 }}
                             >
-                                <SelectTrigger className="h-8 text-xs font-mono">
+                                <SelectTrigger aria-label="Column data type" className="h-8 text-xs font-mono">
                                     <SelectValue placeholder="Select type">
                                         {selectedColEnum ? (
                                             <span className="flex items-center gap-1.5 text-violet-500 font-semibold">

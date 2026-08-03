@@ -8,6 +8,7 @@
 // =============================================================================
 
 import { create } from "zustand";
+import { toast } from "@/components/ui/sonner";
 import type {
   AIProvider,
   ChatMessage,
@@ -405,6 +406,7 @@ export const useAIStore = create<AIStore>((set, get) => ({
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+      toast.error(errorMessage);
       set({
         error: errorMessage,
         isGenerating: false,

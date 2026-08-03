@@ -513,19 +513,21 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                                         <span>Switch Project</span>
                                     </DropdownMenuSubTrigger>
                                     <DropdownMenuSubContent className="w-56 bg-card border shadow-md p-1 rounded-md text-foreground max-h-80 overflow-y-auto z-50">
-                                        {projectsList.map(p => (
-                                            <DropdownMenuItem
-                                                key={p.id}
-                                                onClick={() => switchProject(p.id)}
-                                                className="flex items-center justify-between cursor-pointer p-2 hover:bg-muted text-xs rounded-sm group"
-                                            >
-                                                <div className="flex flex-col min-w-0 flex-1 pr-2">
-                                                    <span className="font-medium truncate">{p.name}</span>
-                                                    <span className="text-[8px] text-muted-foreground uppercase">{p.dialect}</span>
-                                                </div>
-                                                {p.id === projectId && <Check className="size-3.5 text-primary" />}
-                                            </DropdownMenuItem>
-                                        ))}
+                                        <DropdownMenuGroup aria-label="Projects list">
+                                            {projectsList.map(p => (
+                                                <DropdownMenuItem
+                                                    key={p.id}
+                                                    onClick={() => switchProject(p.id)}
+                                                    className="flex items-center justify-between cursor-pointer p-2 hover:bg-muted text-xs rounded-sm group"
+                                                >
+                                                    <div className="flex flex-col min-w-0 flex-1 pr-2">
+                                                        <span className="font-medium truncate">{p.name}</span>
+                                                        <span className="text-[8px] text-muted-foreground uppercase">{p.dialect}</span>
+                                                    </div>
+                                                    {p.id === projectId && <Check className="size-3.5 text-primary" />}
+                                                </DropdownMenuItem>
+                                            ))}
+                                        </DropdownMenuGroup>
                                     </DropdownMenuSubContent>
                                 </DropdownMenuSub>
 

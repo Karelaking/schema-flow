@@ -114,7 +114,7 @@ export async function POST(request: NextRequest): Promise<Response> {
       }
 
       return Response.json(
-        { error: errorMessage },
+        { error: errorMessage, statusMessage: errorMessage },
         { status: upstreamResponse.status }
       );
     }
@@ -122,7 +122,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     // Stream the response back to the client
     if (!upstreamResponse.body) {
       return Response.json(
-        { error: "No response body from provider" },
+        { error: "No response body from provider", statusMessage: "No response body from provider" },
         { status: 502 }
       );
     }

@@ -6,11 +6,12 @@ import { ArrowUpRight, AlignJustify } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -115,7 +116,7 @@ export const Navbar = (): React.JSX.Element => {
         "sticky top-0 z-50 w-full border-b border-border/40 transition-all duration-300",
         sticky
           ? "bg-background/95 backdrop-blur-md shadow-xs"
-          : "bg-background/80 backdrop-blur-xs"
+          : "bg-background/60 backdrop-blur-xs"
       )}
     >
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 border-x border-border/40">
@@ -131,7 +132,7 @@ export const Navbar = (): React.JSX.Element => {
 
         {/* Desktop Navigation Links */}
         <div className="hidden md:flex items-center">
-          <NavigationMenu className="bg-muted/50 p-1 rounded-full border border-border/40 shadow-2xs">
+          <NavigationMenu aria-label="Main Navigation" className="bg-muted/50 p-1 rounded-full border border-border/40 shadow-2xs">
             <NavigationMenuList className="flex gap-1">
               {navigationData.map(navItem => (
                 <NavigationMenuItem key={navItem.title}>
@@ -154,35 +155,36 @@ export const Navbar = (): React.JSX.Element => {
 
         {/* Mobile Controls */}
         <div className="md:hidden flex items-center gap-2">
-          <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
-            <DropdownMenuTrigger className="rounded-full bg-background border border-border p-2 outline-none flex items-center justify-center cursor-pointer transition-colors hover:bg-muted">
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <SheetTrigger
+              aria-label="Toggle Navigation Menu"
+              className="rounded-full bg-background border border-border p-2 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 flex items-center justify-center cursor-pointer transition-colors hover:bg-muted"
+            >
               <AlignJustify size={18} />
               <span className="sr-only">Toggle Navigation Menu</span>
-            </DropdownMenuTrigger>
+            </SheetTrigger>
 
-            <DropdownMenuContent
-              align="end"
-              sideOffset={8}
-              className="w-[calc(100vw-2rem)] max-w-[calc(1280px-2rem)] p-3 bg-card/95 backdrop-blur-md border border-border/60 shadow-xl rounded-2xl"
-            >
-              <div className="flex flex-col gap-1">
+            <SheetContent side="right" className="w-80 p-6 bg-card border-l border-border shadow-xl">
+              <SheetHeader className="pb-4 border-b border-border/40 mb-4 text-left">
+                <SheetTitle className="text-base font-bold">Navigation</SheetTitle>
+              </SheetHeader>
+              <nav aria-label="Mobile Navigation Menu" className="flex flex-col gap-2">
                 {navigationData.map(item => (
-                  <DropdownMenuItem
+                  <a
                     key={item.title}
-                    onClick={(): void => setIsOpen(false)}
-                    className="w-full cursor-pointer text-sm font-medium py-2.5 px-3 rounded-lg hover:bg-muted transition-colors"
+                    href={item.href}
+                    onClick={() => setIsOpen(false)}
+                    className="w-full cursor-pointer text-sm font-medium py-2.5 px-3 rounded-lg hover:bg-muted transition-colors text-foreground block"
                   >
-                    <a href={item.href} className="w-full block">
-                      {item.title}
-                    </a>
-                  </DropdownMenuItem>
+                    {item.title}
+                  </a>
                 ))}
-              </div>
-              <div className="pt-3 border-t border-border/50 mt-2">
+              </nav>
+              <div className="pt-6 border-t border-border/50 mt-6">
                 <CollaborateButton className="w-full h-11" />
               </div>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
     </header>

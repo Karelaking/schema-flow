@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { FolderOpen, FileCheck, AlertCircle } from "lucide-react";
+import { FolderOpen, FileCheck, AlertCircle, Loader2 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { toast } from "@/components/ui/sonner";
 import { Button } from "@/components/ui/button";
@@ -72,9 +72,10 @@ export const OpenLotusDialog: React.FC<OpenLotusDialogProps> = ({ open, onOpenCh
                             type="button"
                             onClick={handleOpen}
                             disabled={isLoading}
-                            className="mt-2 text-xs font-medium cursor-pointer"
+                            className="mt-2 text-xs font-semibold cursor-pointer gap-1.5"
                         >
-                            {isLoading ? "Decrypting..." : "Choose File..."}
+                            {isLoading && <Loader2 className="size-3.5 animate-spin" data-icon="inline-start" />}
+                            <span>{isLoading ? "Decrypting..." : "Choose File..."}</span>
                         </Button>
                     </div>
                 </div>

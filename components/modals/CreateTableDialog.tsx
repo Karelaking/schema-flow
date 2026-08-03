@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Table, Palette, Check } from "lucide-react";
+import { Table, Palette, Check, Loader2 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -198,9 +198,10 @@ export const CreateTableDialog: React.FC<CreateTableDialogProps> = ({
                             type="submit"
                             size="sm"
                             disabled={isSubmitting || !name.trim()}
-                            className="cursor-pointer font-semibold"
+                            className="cursor-pointer font-semibold gap-1.5"
                         >
-                            {isSubmitting ? "Creating..." : "Create Table"}
+                            {isSubmitting && <Loader2 className="size-3.5 animate-spin" data-icon="inline-start" />}
+                            <span>{isSubmitting ? "Creating..." : "Create Table"}</span>
                         </Button>
                     </DialogFooter>
                 </form>

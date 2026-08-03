@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { Loader2 } from "lucide-react";
 import { deleteProjectAction } from "@/app/actions/projects";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -104,9 +105,10 @@ export const DeleteProjectDialog: React.FC<DeleteProjectDialogProps> = ({ target
                         variant="destructive"
                         onClick={handleDelete}
                         disabled={isDeleting || !isMatch}
-                        className="cursor-pointer"
+                        className="cursor-pointer font-semibold gap-1.5"
                     >
-                        {isDeleting ? "Deleting..." : "Permanently Delete"}
+                        {isDeleting && <Loader2 className="size-3.5 animate-spin" data-icon="inline-start" />}
+                        <span>{isDeleting ? "Deleting..." : "Permanently Delete"}</span>
                     </Button>
                 </DialogFooter>
             </DialogContent>
