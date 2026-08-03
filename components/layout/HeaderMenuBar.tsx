@@ -32,6 +32,7 @@ import {
     RefreshCw,
     Server,
     Key,
+    GitBranch,
 } from "lucide-react";
 
 import { useStore } from "@/lib/store";
@@ -46,6 +47,7 @@ import { DeleteProjectDialog } from "@/components/modals/DeleteProjectDialog";
 import { SaveLotusDialog } from "@/components/modals/SaveLotusDialog";
 import { OpenLotusDialog } from "@/components/modals/OpenLotusDialog";
 import { CustomDbConnectionDialog } from "@/components/modals/CustomDbConnectionDialog";
+import { OpenWorkspaceFolderModal } from "@/components/modals/OpenWorkspaceFolderModal";
 import { StorageModeIndicator } from "@/components/layout/StorageModeIndicator";
 import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
@@ -108,6 +110,7 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
     const [saveLotusOpen, setSaveLotusOpen] = useState<boolean>(false);
     const [openLotusOpen, setOpenLotusOpen] = useState<boolean>(false);
     const [customDbOpen, setCustomDbOpen] = useState<boolean>(false);
+    const [workspaceFolderModalOpen, setWorkspaceFolderModalOpen] = useState<boolean>(false);
 
     const saveLotusFile = useStore(state => state.saveLotusFile);
     const saveLotusPortable = useStore(state => state.saveLotusPortable);
@@ -245,7 +248,7 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                                 className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs font-medium"
                             >
                                 <HardDrive className="size-3.5 text-emerald-500" />
-                                <span>Save to Disk (.lotus)</span>
+                                <span>Save to Disk</span>
                                 <DropdownMenuShortcut><Kbd>Ctrl+Shift+S</Kbd></DropdownMenuShortcut>
                             </DropdownMenuItem>
 
@@ -254,8 +257,16 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                                 className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs font-medium"
                             >
                                 <FolderOpen className="size-3.5 text-emerald-500" />
-                                <span>Open from Disk (.lotus)</span>
+                                <span>Open File from Disk</span>
                                 <DropdownMenuShortcut><Kbd>Ctrl+Shift+O</Kbd></DropdownMenuShortcut>
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem
+                                onClick={() => setWorkspaceFolderModalOpen(true)}
+                                className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs font-semibold text-emerald-500"
+                            >
+                                <Folder className="size-3.5 text-emerald-500" />
+                                <span>Open Workspace</span>
                             </DropdownMenuItem>
 
                             <DropdownMenuItem
@@ -764,6 +775,9 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                 )}
                 {customDbOpen && (
                     <CustomDbConnectionDialog open={customDbOpen} onOpenChange={setCustomDbOpen} />
+                )}
+                {workspaceFolderModalOpen && (
+                    <OpenWorkspaceFolderModal open={workspaceFolderModalOpen} onOpenChange={setWorkspaceFolderModalOpen} />
                 )}
             </React.Suspense>
         </div>

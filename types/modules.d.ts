@@ -106,3 +106,13 @@ declare module "gsap/ScrollTrigger" {
     export const ScrollTrigger: any;
     export default ScrollTrigger;
 }
+
+declare module "yaml" {
+    export function parse(text: string): any;
+    export function stringify(value: any): string;
+    const YAML: {
+        parse: (text: string) => any;
+        stringify: (value: any) => string;
+    };
+    export default YAML;
+}

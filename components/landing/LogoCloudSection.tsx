@@ -75,7 +75,7 @@ export function LogoCloudSection(): React.JSX.Element {
           <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-linear-to-l from-background to-transparent z-10" />
 
           {/* Marquee Track */}
-          <div className="flex w-max animate-[marquee_30s_linear_infinite] hover:[animation-play-state:paused] gap-12 sm:gap-16 items-center">
+          <div className="flex w-max animate-[marquee_30s_linear_infinite] hover:paused gap-12 sm:gap-16 items-center">
             {/* Set 1 */}
             {logos.map((logo, idx) => (
               <React.Fragment key={`logo-1-${idx}`}>

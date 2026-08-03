@@ -110,7 +110,7 @@ export function FeaturesSection(): React.JSX.Element {
             return (
               <div 
                 key={idx}
-                className="p-8 sm:p-10 flex flex-col justify-between space-y-6 border-b border-border/40 border-r border-border/40 hover:bg-muted/10 transition-colors group"
+                className="p-8 sm:p-10 flex flex-col justify-between space-y-6 border-b border-r border-border/40 hover:bg-muted/10 transition-colors group"
               >
                 <div>
                   <div className="flex items-center justify-between mb-6">

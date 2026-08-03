@@ -172,7 +172,7 @@ export const HeroSection: React.FC = (): React.ReactElement => {
                     </div>
 
                     {/* Metric 2 */}
-                    <div className="p-6 sm:p-8 space-y-1 border-r lg:border-r border-border/40 border-b lg:border-b-0 lg:[&:nth-child(2n)]:border-r">
+                    <div className="p-6 sm:p-8 space-y-1 border-r lg:border-r border-border/40 border-b lg:border-b-0 lg:nth-[2n]:border-r">
                         <div className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground font-mono">
                             <AnimatedCounter targetValue={389} suffix="+" duration={1800} delay={250} />
                         </div>
