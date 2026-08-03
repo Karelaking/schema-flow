@@ -531,29 +531,31 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
                                     </DropdownMenuSubContent>
                                 </DropdownMenuSub>
 
-                                <DropdownMenuItem
-                                    onClick={() => setCreateProjectOpen(true)}
-                                    className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
-                                >
-                                    <Plus className="size-3.5 text-muted-foreground" />
-                                    <span>New Project</span>
-                                </DropdownMenuItem>
+                                <DropdownMenuGroup aria-label="File management actions">
+                                    <DropdownMenuItem
+                                        onClick={() => setCreateProjectOpen(true)}
+                                        className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
+                                    >
+                                        <Plus className="size-3.5 text-muted-foreground" />
+                                        <span>New Project</span>
+                                    </DropdownMenuItem>
 
-                                <DropdownMenuItem
-                                    onClick={handleAddTable}
-                                    className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs font-medium text-primary"
-                                >
-                                    <Table className="size-3.5 text-primary" />
-                                    <span>Create New Table</span>
-                                </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        onClick={handleAddTable}
+                                        className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs font-medium text-primary"
+                                    >
+                                        <Table className="size-3.5 text-primary" />
+                                        <span>Create New Table</span>
+                                    </DropdownMenuItem>
 
-                                <DropdownMenuItem
-                                    onClick={() => setSettingsOpen(true)}
-                                    className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
-                                >
-                                    <Settings className="size-3.5 text-muted-foreground" />
-                                    <span>Project Settings</span>
-                                </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        onClick={() => setSettingsOpen(true)}
+                                        className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
+                                    >
+                                        <Settings className="size-3.5 text-muted-foreground" />
+                                        <span>Project Settings</span>
+                                    </DropdownMenuItem>
+                                </DropdownMenuGroup>
 
                                 <DropdownMenuSeparator />
 

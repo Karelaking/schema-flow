@@ -170,7 +170,7 @@ export function OpenWorkspaceFolderModal({ open, onOpenChange }: OpenWorkspaceFo
             </div>
           </div>
           <Button size="sm" onClick={handlePickDirectory} className="rounded-full text-xs font-bold gap-1.5 cursor-pointer">
-            <FolderOpen className="size-3.5" />
+            <FolderOpen className="size-3.5" data-icon="inline-start" />
             <span>{dirHandle ? "Change Folder" : "Select Folder"}</span>
           </Button>
         </div>

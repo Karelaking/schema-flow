@@ -44,7 +44,7 @@ export async function POST(request: NextRequest): Promise<Response> {
         ? "Free models still require an OpenRouter API key (it's free to create). Go to openrouter.ai/keys to get one, then add it in AI Settings (⚙️ icon)."
         : "Add your API key in AI Settings (⚙️ icon in the chat header).";
       return Response.json(
-        { error: `API key required. ${hint}` },
+        { error: `API key required. ${hint}`, statusMessage: `API key required. ${hint}` },
         { status: 401 }
       );
     }
@@ -138,6 +138,6 @@ export async function POST(request: NextRequest): Promise<Response> {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal server error";
-    return Response.json({ error: message }, { status: 500 });
+    return Response.json({ error: message, statusMessage: message }, { status: 500 });
   }
 }
