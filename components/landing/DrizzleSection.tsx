@@ -10,7 +10,12 @@ import { ArrowRight, Terminal, CheckCircle2 } from "lucide-react";
 export function DrizzleSection(): React.JSX.Element {
   return (
     <section id="drizzle" className="relative w-full border-b border-border/40 bg-background overflow-hidden">
-      <div className="mx-auto max-w-7xl border-x border-border/40 py-16 md:py-24">
+      {/* Background Ambient Radial Glow */}
+      <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+        <div className="size-125 rounded-full bg-linear-to-tr from-sky-600/10 via-indigo-500/10 to-blue-500/10 blur-3xl" />
+      </div>
+
+      <div className="mx-auto max-w-7xl border-x border-border/40 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-border/40">
           
           {/* Left Column Text */}
@@ -47,43 +52,43 @@ export function DrizzleSection(): React.JSX.Element {
           </div>
 
           {/* Right Column: Terminal Window */}
-          <div className="lg:col-span-6 p-8 sm:p-12 lg:p-16 flex items-center justify-center bg-muted/5">
-            <div className="w-full max-w-lg rounded-2xl border border-border/80 bg-slate-950 text-slate-100 p-5 shadow-2xl font-mono text-xs space-y-4">
+          <div className="lg:col-span-6 p-8 sm:p-12 lg:p-16 flex items-center justify-center bg-card/40 backdrop-blur-md">
+            <div className="w-full max-w-lg rounded-2xl border border-border/80 bg-background/95 text-foreground p-5 shadow-2xl font-mono text-xs space-y-4">
               
-              <div className="flex items-center justify-between border-b border-slate-800 pb-3 font-sans">
+              <div className="flex items-center justify-between border-b border-border/60 pb-3 font-sans">
                 <div className="flex items-center gap-2">
-                  <Terminal className="size-4 text-amber-400" />
-                  <span className="font-semibold text-slate-200">Terminal & Drizzle CLI</span>
+                  <Terminal className="size-4 text-sky-400" />
+                  <span className="font-semibold text-foreground">Terminal & Drizzle CLI</span>
                 </div>
-                <span className="text-[11px] text-slate-400 font-mono">drizzle-kit v0.31</span>
+                <span className="text-[11px] text-muted-foreground font-mono">drizzle-kit v0.31</span>
               </div>
 
-              <div className="space-y-2 text-slate-300">
+              <div className="space-y-2 text-muted-foreground">
                 <div className="flex items-center gap-2 text-emerald-400">
                   <span>$</span>
-                  <span className="text-slate-100">pnpm run db:push</span>
+                  <span className="text-foreground font-semibold">pnpm run db:push</span>
                 </div>
-                <p className="text-slate-500 text-[11px]">
+                <p className="text-muted-foreground/80 text-[11px]">
                   [drizzle-kit] Reading schema file: ./packages/db/schema.ts <br />
                   [drizzle-kit] Connecting to Turso database: libsql://schema-flow... <br />
-                  <span className="text-emerald-400">✓ Database schema is up to date!</span>
+                  <span className="text-emerald-400 font-semibold">✓ Database schema is up to date!</span>
                 </p>
 
                 <div className="flex items-center gap-2 text-emerald-400 pt-3">
                   <span>$</span>
-                  <span className="text-slate-100">pnpm run db:studio</span>
+                  <span className="text-foreground font-semibold">pnpm run db:studio</span>
                 </div>
-                <p className="text-slate-500 text-[11px]">
+                <p className="text-muted-foreground/80 text-[11px]">
                   [drizzle-studio] Drizzle Studio is running on <span className="text-sky-400 underline">https://local.drizzle.team</span>
                 </p>
               </div>
 
               {/* Code Snippet */}
-              <div className="border-t border-slate-800 pt-4 space-y-1 text-slate-400">
-                <div className="text-amber-400">// Query using Drizzle ORM Relational API</div>
-                <div><span className="text-purple-400">const</span> project = <span className="text-purple-400">await</span> db.query.projects.findFirst(&#123;</div>
-                <div className="pl-4">where: eq(projects.id, <span className="text-amber-300">"proj-1"</span>),</div>
-                <div className="pl-4">with: &#123; tables: &#123; with: &#123; columns: <span className="text-purple-400">true</span> &#125; &#125; &#125;,</div>
+              <div className="border-t border-border/40 pt-4 space-y-1 text-muted-foreground">
+                <div className="text-muted-foreground/60">// Query using Drizzle ORM Relational API</div>
+                <div><span className="text-sky-400">const</span> project = <span className="text-sky-400">await</span> db.query.projects.findFirst(&#123;</div>
+                <div className="pl-4">where: eq(projects.id, <span className="text-amber-400">"proj-1"</span>),</div>
+                <div className="pl-4">with: &#123; tables: &#123; with: &#123; columns: <span className="text-sky-400">true</span> &#125; &#125; &#125;,</div>
                 <div>&#125;);</div>
               </div>
 

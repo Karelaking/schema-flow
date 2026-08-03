@@ -76,7 +76,6 @@ export default function HomePage() {
         <InteractiveCanvasDemo />
         <FeaturesSection />
         <PricingSection />
-        <DrizzleSection />
       </main>
       <Footer />
     </div>
