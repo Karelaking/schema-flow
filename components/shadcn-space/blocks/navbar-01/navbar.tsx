@@ -126,7 +126,7 @@ export const Navbar = (): React.JSX.Element => {
             <span className="text-xs font-mono font-black tracking-tighter">sf.</span>
           </div>
           <span className="font-extrabold text-lg tracking-tight text-foreground">
-            schemaflow<span className="text-primary font-black">.</span>
+            schemaflow<span className="text-primary font-black">.</span>studio
           </span>
         </Link>
 

@@ -40,7 +40,7 @@ export function PricingSection(): React.JSX.Element {
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-xl font-extrabold text-foreground flex items-center gap-2">
                                     <HardDrive className="size-5 text-sky-400" />
-                                    Local File System (.schema)
+                                    Local File System
                                 </h3>
                                 <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-muted-foreground bg-muted/60 border border-border/60 px-2.5 py-0.5 rounded-full">
                                     100% Private

@@ -55,8 +55,8 @@ export function Footer(): React.JSX.Element {
             <div className="size-6 rounded-full bg-foreground text-background flex items-center justify-center font-mono font-bold text-[10px]">
               sf.
             </div>
-            <span className="font-bold text-foreground">schemaflow.</span>
-            <span>© {new Date().getFullYear()} Schema Flow. Open source & self-hostable.</span>
+            <span className="font-bold text-foreground">schemaflow.studio</span>
+            <span className="text-center">© 2026 Schema Flow.Studio Open source & self-hostable.</span>
           </div>
 
           <div className="flex items-center gap-6">
