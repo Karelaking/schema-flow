@@ -559,40 +559,44 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
 
                                 <DropdownMenuSeparator />
 
-                                <DropdownMenuItem
-                                    onClick={saveProject}
-                                    disabled={isSaving}
-                                    className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs font-medium"
-                                >
-                                    <Save className="size-3.5 text-primary" />
-                                    <span>{isSaving ? "Saving..." : "Save Database"}</span>
-                                </DropdownMenuItem>
+                                <DropdownMenuGroup aria-label="Save actions">
+                                    <DropdownMenuItem
+                                        onClick={saveProject}
+                                        disabled={isSaving}
+                                        className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs font-medium"
+                                    >
+                                        <Save className="size-3.5 text-primary" />
+                                        <span>{isSaving ? "Saving..." : "Save Database"}</span>
+                                    </DropdownMenuItem>
+                                </DropdownMenuGroup>
 
                                 <DropdownMenuSeparator />
 
-                                <DropdownMenuItem
-                                    onClick={triggerImport}
-                                    className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
-                                >
-                                    <Upload className="size-3.5 text-muted-foreground" />
-                                    <span>Import JSON</span>
-                                </DropdownMenuItem>
+                                <DropdownMenuGroup aria-label="Import and Export actions">
+                                    <DropdownMenuItem
+                                        onClick={triggerImport}
+                                        className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
+                                    >
+                                        <Upload className="size-3.5 text-muted-foreground" />
+                                        <span>Import JSON</span>
+                                    </DropdownMenuItem>
 
-                                <DropdownMenuItem
-                                    onClick={exportSchema}
-                                    className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
-                                >
-                                    <Download className="size-3.5 text-muted-foreground" />
-                                    <span>Export JSON</span>
-                                </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        onClick={exportSchema}
+                                        className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
+                                    >
+                                        <Download className="size-3.5 text-muted-foreground" />
+                                        <span>Export JSON</span>
+                                    </DropdownMenuItem>
 
-                                <DropdownMenuItem
-                                    onClick={() => exportCanvasToPng(projectName)}
-                                    className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
-                                >
-                                    <ImageIcon className="size-3.5 text-muted-foreground" aria-hidden="true" />
-                                    <span>Export Diagram (PNG)</span>
-                                </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        onClick={() => exportCanvasToPng(projectName)}
+                                        className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
+                                    >
+                                        <ImageIcon className="size-3.5 text-muted-foreground" aria-hidden="true" />
+                                        <span>Export Diagram (PNG)</span>
+                                    </DropdownMenuItem>
+                                </DropdownMenuGroup>
                             </DropdownMenuSubContent>
                         </DropdownMenuSub>
 
@@ -613,23 +617,25 @@ export const HeaderMenuBar: React.FC<HeaderMenuBarProps> = ({ className = "" }):
 
                                 <DropdownMenuSeparator />
 
-                                <DropdownMenuItem
-                                    onClick={undo}
-                                    disabled={past.length === 0}
-                                    className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
-                                >
-                                    <Undo2 className="size-3.5 text-muted-foreground" />
-                                    <span>Undo</span>
-                                </DropdownMenuItem>
+                                <DropdownMenuGroup aria-label="History actions">
+                                    <DropdownMenuItem
+                                        onClick={undo}
+                                        disabled={past.length === 0}
+                                        className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
+                                    >
+                                        <Undo2 className="size-3.5 text-muted-foreground" />
+                                        <span>Undo</span>
+                                    </DropdownMenuItem>
 
-                                <DropdownMenuItem
-                                    onClick={redo}
-                                    disabled={future.length === 0}
-                                    className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
-                                >
-                                    <Redo2 className="size-3.5 text-muted-foreground" />
-                                    <span>Redo</span>
-                                </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        onClick={redo}
+                                        disabled={future.length === 0}
+                                        className="flex items-center gap-2 cursor-pointer p-2 hover:bg-muted text-xs"
+                                    >
+                                        <Redo2 className="size-3.5 text-muted-foreground" />
+                                        <span>Redo</span>
+                                    </DropdownMenuItem>
+                                </DropdownMenuGroup>
 
                                 <DropdownMenuSeparator />
 
