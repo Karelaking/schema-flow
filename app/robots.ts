@@ -6,6 +6,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
     },
-    sitemap: "https://schemaflow.dev/sitemap.xml",
+    sitemap: "https://schemaflow-studio.vercel.app/sitemap.xml",
   };
 }

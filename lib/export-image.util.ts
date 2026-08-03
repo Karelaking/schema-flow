@@ -1,5 +1,3 @@
-import { toPng } from "html-to-image";
-
 /**
  * Captures the ReactFlow canvas element and downloads it as a PNG image.
  * @param fileName File name for the downloaded PNG image.
@@ -9,6 +7,8 @@ export const exportCanvasToPng = async (fileName: string = "schema-diagram.png")
     if (!flowElement) {
         throw new Error("ReactFlow canvas element not found");
     }
+
+    const { toPng } = await import("html-to-image");
 
     const dataUrl = await toPng(flowElement, {
         backgroundColor: "#0f172a",

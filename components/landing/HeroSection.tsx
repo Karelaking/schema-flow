@@ -3,8 +3,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Database, Layers, ShieldCheck, Cpu, Sparkles, Zap, CheckCircle2 } from "lucide-react";
+import dynamic from "next/dynamic";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const Hero3DModel = dynamic(
+    () => import("@/components/landing/Hero3DModel").then(mod => mod.Hero3DModel),
+    {
+        ssr: false,
+        loading: () => <Skeleton className="w-full h-115 rounded-3xl" />,
+    }
+);
 import { AnimatedCounter } from "@/components/landing/AnimatedCounter";
-import { Hero3DModel } from "@/components/landing/Hero3DModel";
 import { cn } from "@/lib/utils";
 
 const ROTATING_WORDS = ["Architect", "Visualise", "Auto-Generate", "Deploy"] as const;
@@ -55,78 +64,6 @@ export const HeroSection: React.FC = (): React.ReactElement => {
         return () => clearInterval(intervalId);
     }, []);
 
-    useEffect(() => {
-        if (typeof window === "undefined") return;
-
-        // Dynamically load GSAP to ensure smooth execution without dev build module errors
-        import("gsap").then(({ default: gsap }) => {
-            import("gsap/ScrollTrigger").then(({ ScrollTrigger }) => {
-                gsap.registerPlugin(ScrollTrigger);
-
-                const ctx = gsap.context(() => {
-                    if (leftColRef.current) {
-                        const elements = leftColRef.current.querySelectorAll(".gsap-animate");
-                        gsap.fromTo(
-                            elements,
-                            { y: 24, opacity: 0 },
-                            {
-                                y: 0,
-                                opacity: 1,
-                                duration: 0.8,
-                                stagger: 0.1,
-                                ease: "power3.out",
-                            }
-                        );
-                    }
-
-                    if (graphicBlockRef.current) {
-                        gsap.fromTo(
-                            graphicBlockRef.current,
-                            { scale: 0.85, opacity: 0 },
-                            {
-                                scale: 1,
-                                opacity: 1,
-                                duration: 1,
-                                ease: "back.out(1.4)",
-                                delay: 0.2,
-                            }
-                        );
-
-                        gsap.to(graphicBlockRef.current, {
-                            y: -10,
-                            duration: 2.8,
-                            repeat: -1,
-                            yoyo: true,
-                            ease: "sine.easeInOut",
-                        });
-                    }
-
-                    if (statsContainerRef.current) {
-                        const statCards = statsContainerRef.current.children;
-                        gsap.fromTo(
-                            statCards,
-                            { y: 30, opacity: 0 },
-                            {
-                                y: 0,
-                                opacity: 1,
-                                duration: 0.8,
-                                stagger: 0.25,
-                                ease: "power3.out",
-                                scrollTrigger: {
-                                    trigger: statsContainerRef.current,
-                                    start: "top 90%",
-                                    toggleActions: "play none none reverse",
-                                },
-                            }
-                        );
-                    }
-                }, sectionRef);
-
-                return () => ctx.revert();
-            }).catch(() => { });
-        }).catch(() => { });
-    }, []);
-
     return (
         <section ref={sectionRef} className="relative w-full border-b border-border/40 bg-background overflow-hidden">
             {/* Main 2-Column Grid */}
@@ -140,22 +77,19 @@ export const HeroSection: React.FC = (): React.ReactElement => {
                         <div className="absolute bottom-4 right-8 size-72 rounded-full bg-linear-to-tr from-cyan-400/10 via-sky-500/10 to-transparent blur-2xl pointer-events-none" />
 
                         <div className="relative z-10 space-y-6">
-                            {/* Headline with Dynamic Animated Words */}
+                            {/* Headline with Zero Layout Shift Rotating Words */}
                             <div className="gsap-animate">
                                 <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground leading-[1.15]">
-                                    <span className="block mb-1">
-                                        <span className="relative inline-block overflow-hidden h-[1.18em] align-top max-w-full w-[13.5ch]">
-                                            <span
-                                                key={rotatingIndex}
-                                                className="inline-block animate-in slide-in-from-bottom-4 fade-in duration-500 bg-linear-to-r from-blue-600 via-indigo-500 to-cyan-400 dark:from-blue-400 dark:via-indigo-400 dark:to-cyan-300 bg-clip-text text-transparent"
-                                            >
-                                                {ROTATING_WORDS[rotatingIndex]}
-                                            </span>
-                                        </span>{" "}
-                                        Databases
+                                    <span className="block h-[1.2em] overflow-hidden my-0.5 text-transparent bg-linear-to-r from-blue-600 via-indigo-500 to-cyan-400 dark:from-blue-400 dark:via-indigo-400 dark:to-cyan-300 bg-clip-text">
+                                        <span
+                                            key={rotatingIndex}
+                                            className="block animate-in slide-in-from-bottom-4 fade-in duration-500"
+                                        >
+                                            {ROTATING_WORDS[rotatingIndex]}
+                                        </span>
                                     </span>
                                     <span className="block text-foreground">
-                                        at the Speed of Thought.
+                                        Databases at the Speed of Thought.
                                     </span>
                                 </h1>
                             </div>

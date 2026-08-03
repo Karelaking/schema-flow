@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { Header } from "@/components/layout/Header";
-import { Canvas } from "@/components/canvas/Canvas";
 import { EmptyProjectView } from "@/components/layout/EmptyProjectView";
 import { MobileNavigation } from "@/components/layout/MobileNavigation";
 import { useStore } from "@/lib/store";
@@ -14,6 +13,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { usePanelResizing } from "@/hooks/usePanelResizing";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+
+const Canvas = dynamic(
+    () => import("@/components/canvas/Canvas").then(mod => mod.Canvas),
+    {
+        ssr: false,
+        loading: () => <Skeleton className="w-full h-full rounded-none flex-1" />,
+    }
+);
 
 const Explorer = dynamic(
     () => import("@/components/layout/Explorer").then(mod => mod.Explorer),

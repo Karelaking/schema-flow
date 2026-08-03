@@ -1,5 +1,3 @@
-import YAML from "yaml";
-
 export interface WorkspaceYamlConfig {
   name: string;
   version: string;
@@ -53,6 +51,7 @@ export async function openWorkspaceDirectoryPicker(): Promise<FileSystemDirector
  */
 export async function ensureWorkspaceYaml(dirHandle: FileSystemDirectoryHandle): Promise<WorkspaceYamlConfig> {
   try {
+    const YAML = (await import("yaml")).default;
     const fileHandle = await dirHandle.getFileHandle("workspace.yaml", { create: false });
     const file = await fileHandle.getFile();
     const text = await file.text();
@@ -86,6 +85,7 @@ export async function ensureWorkspaceYaml(dirHandle: FileSystemDirectoryHandle):
  * Write updated workspace.yaml configuration.
  */
 export async function writeWorkspaceYaml(dirHandle: FileSystemDirectoryHandle, config: WorkspaceYamlConfig): Promise<void> {
+  const YAML = (await import("yaml")).default;
   config.updated_at = new Date().toISOString();
   const yamlContent = YAML.stringify(config);
   const fileHandle = await dirHandle.getFileHandle("workspace.yaml", { create: true });

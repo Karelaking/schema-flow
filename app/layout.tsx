@@ -26,13 +26,13 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://schemaflow.dev"),
+  metadataBase: new URL("https://schemaflow-studio.vercel.app"),
   title: {
-    default: "Schema Flow - Visual Database Schema & Drizzle ORM Designer",
-    template: "%s | Schema Flow",
+    default: "Schema Flow Studio - Visual Database Schema & Drizzle ORM Designer",
+    template: "%s | Schema Flow Studio",
   },
   description: "Visually design database architectures, auto-generate Drizzle ORM models & migrations, export production-ready SQL, and generate TypeScript types in real-time.",
-  applicationName: "Schema Flow",
+  applicationName: "Schema Flow Studio",
   keywords: [
     "visual database designer",
     "ERD tool",
@@ -44,10 +44,19 @@ export const metadata: Metadata = {
     "SQLite schema builder",
     "TypeScript types generator",
     "database architecture tool",
+    "database diagram",
+    "database design tool",
+    "database visualization tool",
+    "database schema visualization tool",
+    "Export to image",  
+    "local database designer",
+    "cloud database designer",
+    "",
+    
   ],
-  authors: [{ name: "Schema Flow Team" }],
-  creator: "Schema Flow",
-  publisher: "Schema Flow",
+  authors: [{ name: "Schema Flow Studio Team" }],
+  creator: "Schema Flow Studio",
+  publisher: "Schema Flow Studio",
   category: "Developer Tools",
   robots: {
     index: true,
@@ -61,24 +70,24 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Schema Flow - Visual Database Schema & Drizzle ORM Designer",
+    title: "Schema Flow Studio - Visual Database Schema & Drizzle ORM Designer",
     description: "Visually design database architectures, auto-generate Drizzle ORM models & migrations, export production-ready SQL, and generate TypeScript types in real-time.",
-    url: "https://schemaflow.dev",
-    siteName: "Schema Flow",
+    url: "https://schemaflow-studio.vercel.app",
+    siteName: "Schema Flow Studio",
     locale: "en_US",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Schema Flow Visual Database Designer Interface",
+        alt: "Schema Flow Studio Visual Database Designer Interface",
       },
     ],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Schema Flow - Visual Database Schema & Drizzle ORM Designer",
+    title: "Schema Flow Studio - Visual Database Schema & Drizzle ORM Designer",
     description: "Visually design database architectures, auto-generate Drizzle ORM models & migrations, export production-ready SQL, and generate TypeScript types.",
     images: ["/og-image.png"],
   },
@@ -96,9 +105,16 @@ export default function RootLayout({
     <ClerkProvider>
       <html
         lang="en"
-        className={`${interSans.variable} ${jetbrainsMono.variable} h-full antialiased`}
+        className={`dark ${interSans.variable} ${jetbrainsMono.variable} h-full antialiased`}
         suppressHydrationWarning
       >
+        <head>
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `(function(){try{var s=localStorage.getItem("schema-flow-theme");if(s==="light"){document.documentElement.classList.remove("dark");document.documentElement.classList.add("light");}else{document.documentElement.classList.remove("light");document.documentElement.classList.add("dark");}}catch(e){}})();`,
+            }}
+          />
+        </head>
         <body className="min-h-full flex flex-col bg-background text-foreground antialiased">
           <ThemeProvider>
             <ShortcutProvider>

@@ -74,7 +74,7 @@ export const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
     }, [targetValue, duration, delay]);
 
     return (
-        <span ref={elementRef} className={className}>
+        <span ref={elementRef} className={`tabular-nums inline-block ${className}`}>
             {prefix}
             {count.toLocaleString()}
             {suffix}

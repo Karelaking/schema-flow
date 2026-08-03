@@ -22,11 +22,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }): Reac
         if (saved && (saved === "dark" || saved === "light")) {
             setThemeState(saved);
         }
-        else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-            setThemeState("dark");
+        else if (window.matchMedia("(prefers-color-scheme: light)").matches) {
+            setThemeState("light");
         }
         else {
-            setThemeState("light");
+            setThemeState("dark");
         }
     }, []);
 

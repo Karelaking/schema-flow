@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { Copy, Check } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,7 +13,6 @@ import { useStore } from "@/lib/store";
 import { useTheme } from "@/providers/ThemeProvider";
 import { getGeneratorForDialect, createTypescriptGenerator } from "@/packages/generators";
 import { SchemaAST } from "@/packages/schema-core";
-import { format } from "sql-formatter";
 import { Button } from "@/components/ui/button";
 
 /**
@@ -33,6 +32,7 @@ export const CodePreviewTab: React.FC = (): React.ReactElement => {
 
     const [codeType, setCodeType] = useState<"sql" | "typescript">("sql");
     const [copied, setCopied] = useState(false);
+    const [formattedCode, setFormattedCode] = useState<string>("");
 
     const currentAST: SchemaAST = useMemo(() => ({
         project: {
@@ -53,15 +53,11 @@ export const CodePreviewTab: React.FC = (): React.ReactElement => {
         enums,
     }), [projectId, projectName, projectDescription, dialect, theme, autoAddId, autoAddTimestamps, tables, relations, enums]);
 
-    const generatedCode = useMemo(() => {
+    const rawCode = useMemo(() => {
         try {
             if (codeType === "sql") {
                 const generator = getGeneratorForDialect(dialect);
-                const rawSql = generator.generate(currentAST);
-                return format(rawSql, {
-                    language: dialect === "postgres" ? "postgresql" : dialect === "mysql" ? "mysql" : "sqlite",
-                    keywordCase: "upper",
-                });
+                return generator.generate(currentAST);
             }
             else {
                 const generator = createTypescriptGenerator();
@@ -73,8 +69,39 @@ export const CodePreviewTab: React.FC = (): React.ReactElement => {
         }
     }, [currentAST, dialect, codeType]);
 
+    useEffect(() => {
+        if (codeType !== "sql" || !rawCode || rawCode.startsWith("-- Code Generation Error")) {
+            setFormattedCode(rawCode);
+            return;
+        }
+
+        let isMounted = true;
+        setFormattedCode(rawCode);
+
+        import("sql-formatter").then(({ format }) => {
+            if (!isMounted) return;
+            try {
+                const result = format(rawCode, {
+                    language: dialect === "postgres" ? "postgresql" : dialect === "mysql" ? "mysql" : "sqlite",
+                    keywordCase: "upper",
+                });
+                setFormattedCode(result);
+            } catch {
+                setFormattedCode(rawCode);
+            }
+        }).catch(() => {
+            if (isMounted) {
+                setFormattedCode(rawCode);
+            }
+        });
+
+        return () => {
+            isMounted = false;
+        };
+    }, [rawCode, codeType, dialect]);
+
     const handleCopy = (): void => {
-        navigator.clipboard.writeText(generatedCode);
+        navigator.clipboard.writeText(formattedCode);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
@@ -127,7 +154,7 @@ export const CodePreviewTab: React.FC = (): React.ReactElement => {
                 <Editor
                     height="100%"
                     language={codeType === "sql" ? "sql" : "typescript"}
-                    value={generatedCode}
+                    value={formattedCode}
                     theme={theme === "dark" ? "vs-dark" : "light"}
                     options={{
                         readOnly: true,

@@ -2,12 +2,23 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { HeroSection } from "@/components/landing/HeroSection";
-import { LogoCloudSection } from "@/components/landing/LogoCloudSection";
-import { FeaturesSection } from "@/components/landing/FeaturesSection";
-import { PricingSection } from "@/components/landing/PricingSection";
-import { DrizzleSection } from "@/components/landing/DrizzleSection";
-import { Footer } from "@/components/landing/Footer";
 import { Skeleton } from "@/components/ui/skeleton";
+
+const LogoCloudSection = dynamic(
+  () => import("@/components/landing/LogoCloudSection").then(mod => mod.LogoCloudSection)
+);
+
+const FeaturesSection = dynamic(
+  () => import("@/components/landing/FeaturesSection").then(mod => mod.FeaturesSection)
+);
+
+const PricingSection = dynamic(
+  () => import("@/components/landing/PricingSection").then(mod => mod.PricingSection)
+);
+
+const Footer = dynamic(
+  () => import("@/components/landing/Footer").then(mod => mod.Footer)
+);
 
 const InteractiveCanvasDemo = dynamic(
   () => import("@/components/landing/InteractiveCanvasDemo").then(mod => mod.InteractiveCanvasDemo),
@@ -23,18 +34,18 @@ const InteractiveCanvasDemo = dynamic(
 );
 
 export const metadata: Metadata = {
-  title: "Schema Flow - Visual Database Schema Builder & Drizzle ORM Designer",
+  title: "Schema Flow Studio - Visual Database Schema Builder & Drizzle ORM Designer",
   description: "Visually design database architectures, auto-generate Drizzle ORM models & migrations, export raw SQL, and sync with Turso Edge Cloud.",
   openGraph: {
-    title: "Schema Flow - Visual Database Schema Builder",
+    title: "Schema Flow Studio - Visual Database Schema Builder",
     description: "Visually design database architectures, auto-generate Drizzle ORM models & migrations, export raw SQL, and sync with Turso Edge Cloud.",
-    url: "https://schemaflow.dev",
-    siteName: "Schema Flow",
+    url: "https://schemaflow-studio.vercel.app",
+    siteName: "Schema Flow Studio",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Schema Flow - Visual Database Schema Builder",
+    title: "Schema Flow Studio - Visual Database Schema Builder",
     description: "Visually design database architectures, auto-generate Drizzle ORM models & migrations, export raw SQL.",
   },
 };
@@ -42,7 +53,7 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "Schema Flow",
+  "name": "Schema Flow Studio",
   "operatingSystem": "Web",
   "applicationCategory": "DeveloperApplication",
   "offers": {
@@ -51,14 +62,16 @@ const jsonLd = {
     "priceCurrency": "USD",
   },
   "description": "Visually design database architectures, auto-generate Drizzle ORM models & migrations, export raw SQL, and generate TypeScript types in real-time.",
-  "url": "https://schemaflow.dev",
+  "url": "https://schemaflow-studio.vercel.app",
   "featureList": [
     "Visual ERD Database Canvas",
     "SQL query builder",
-    "Type script models",
+    "Type script models and interfaces",
     "JSON schema builder",
     "AI Schema Assistant",
-    "Generate SQL queries"
+    "Generate SQL queries",
+    "Export to image",
+    "Sync with Turso Edge Cloud",
   ],
 };
 

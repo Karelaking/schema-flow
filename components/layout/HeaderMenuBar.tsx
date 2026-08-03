@@ -41,15 +41,38 @@ import { useTheme } from "@/providers/ThemeProvider";
 import { useProjectActions } from "@/hooks/useProjectActions";
 import { exportCanvasToPng } from "@/lib/export-image";
 
-import { CreateProjectDialog } from "@/components/modals/CreateProjectDialog";
-import { ProjectSettingsDialog } from "@/components/modals/ProjectSettingsDialog";
-import { DeleteProjectDialog } from "@/components/modals/DeleteProjectDialog";
-import { SaveLotusDialog } from "@/components/modals/SaveLotusDialog";
-import { OpenLotusDialog } from "@/components/modals/OpenLotusDialog";
-import { CustomDbConnectionDialog } from "@/components/modals/CustomDbConnectionDialog";
-import { OpenWorkspaceFolderModal } from "@/components/modals/OpenWorkspaceFolderModal";
+import dynamic from "next/dynamic";
 import { StorageModeIndicator } from "@/components/layout/StorageModeIndicator";
 import { Button } from "@/components/ui/button";
+
+const CreateProjectDialog = dynamic(
+    () => import("@/components/modals/CreateProjectDialog").then(m => m.CreateProjectDialog),
+    { ssr: false }
+);
+const ProjectSettingsDialog = dynamic(
+    () => import("@/components/modals/ProjectSettingsDialog").then(m => m.ProjectSettingsDialog),
+    { ssr: false }
+);
+const DeleteProjectDialog = dynamic(
+    () => import("@/components/modals/DeleteProjectDialog").then(m => m.DeleteProjectDialog),
+    { ssr: false }
+);
+const SaveLotusDialog = dynamic(
+    () => import("@/components/modals/SaveLotusDialog").then(m => m.SaveLotusDialog),
+    { ssr: false }
+);
+const OpenLotusDialog = dynamic(
+    () => import("@/components/modals/OpenLotusDialog").then(m => m.OpenLotusDialog),
+    { ssr: false }
+);
+const CustomDbConnectionDialog = dynamic(
+    () => import("@/components/modals/CustomDbConnectionDialog").then(m => m.CustomDbConnectionDialog),
+    { ssr: false }
+);
+const OpenWorkspaceFolderModal = dynamic(
+    () => import("@/components/modals/OpenWorkspaceFolderModal").then(m => m.OpenWorkspaceFolderModal),
+    { ssr: false }
+);
 import { Kbd } from "@/components/ui/kbd";
 import {
     DropdownMenu,

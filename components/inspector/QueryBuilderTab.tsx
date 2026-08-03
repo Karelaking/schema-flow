@@ -12,7 +12,6 @@ const Editor = dynamic(() => import("@monaco-editor/react"), {
 import { useStore } from "@/lib/store";
 import { useTheme } from "@/providers/ThemeProvider";
 import { Table } from "@/packages/schema-core";
-import { format } from "sql-formatter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -215,7 +214,7 @@ export const QueryBuilderTab: React.FC = (): React.ReactElement => {
         );
     };
 
-    const generatedQuery = useMemo(() => {
+    const rawQuery = useMemo(() => {
         if (!activeTable) {
             return "-- No active table selected";
         }
@@ -274,12 +273,7 @@ export const QueryBuilderTab: React.FC = (): React.ReactElement => {
                     sql += ` OFFSET ${offset}`;
                 }
 
-                sql += ";";
-
-                return format(sql, {
-                    language: dialect === "postgres" ? "postgresql" : dialect === "mysql" ? "mysql" : "sqlite",
-                    keywordCase: "upper",
-                });
+                return sql + ";";
             }
 
             if (queryType === "INSERT") {
@@ -294,11 +288,7 @@ export const QueryBuilderTab: React.FC = (): React.ReactElement => {
                     return `'sample_${c.name}'`;
                 }).join(", ");
 
-                const sql = `INSERT INTO ${tableName} (${cols})\nVALUES (${valPlaceholders});`;
-                return format(sql, {
-                    language: dialect === "postgres" ? "postgresql" : dialect === "mysql" ? "mysql" : "sqlite",
-                    keywordCase: "upper",
-                });
+                return `INSERT INTO ${tableName} (${cols})\nVALUES (${valPlaceholders});`;
             }
 
             if (queryType === "UPDATE") {
@@ -310,22 +300,14 @@ export const QueryBuilderTab: React.FC = (): React.ReactElement => {
                 const pkCol = activeTable.columns.find(c => c.constraints.isPrimaryKey);
                 const whereClause = pkCol ? `\nWHERE ${quoteIdentifier(pkCol.name)} = 1` : "";
 
-                const sql = `UPDATE ${tableName}\nSET ${setLines}${whereClause};`;
-                return format(sql, {
-                    language: dialect === "postgres" ? "postgresql" : dialect === "mysql" ? "mysql" : "sqlite",
-                    keywordCase: "upper",
-                });
+                return `UPDATE ${tableName}\nSET ${setLines}${whereClause};`;
             }
 
             if (queryType === "DELETE") {
                 const pkCol = activeTable.columns.find(c => c.constraints.isPrimaryKey);
                 const whereClause = pkCol ? `\nWHERE ${quoteIdentifier(pkCol.name)} = 1` : "";
 
-                const sql = `DELETE FROM ${tableName}${whereClause};`;
-                return format(sql, {
-                    language: dialect === "postgres" ? "postgresql" : dialect === "mysql" ? "mysql" : "sqlite",
-                    keywordCase: "upper",
-                });
+                return `DELETE FROM ${tableName}${whereClause};`;
             }
 
             return "";
@@ -335,8 +317,41 @@ export const QueryBuilderTab: React.FC = (): React.ReactElement => {
         }
     }, [activeTable, queryType, selectedColumns, joins, conditions, sortOptions, groupByColumns, limit, offset, dialect]);
 
+    const [formattedQuery, setFormattedQuery] = useState<string>("");
+
+    useEffect(() => {
+        if (!rawQuery || rawQuery.startsWith("--")) {
+            setFormattedQuery(rawQuery);
+            return;
+        }
+
+        let isMounted = true;
+        setFormattedQuery(rawQuery);
+
+        import("sql-formatter").then(({ format }) => {
+            if (!isMounted) return;
+            try {
+                const result = format(rawQuery, {
+                    language: dialect === "postgres" ? "postgresql" : dialect === "mysql" ? "mysql" : "sqlite",
+                    keywordCase: "upper",
+                });
+                setFormattedQuery(result);
+            } catch {
+                setFormattedQuery(rawQuery);
+            }
+        }).catch(() => {
+            if (isMounted) {
+                setFormattedQuery(rawQuery);
+            }
+        });
+
+        return () => {
+            isMounted = false;
+        };
+    }, [rawQuery, dialect]);
+
     const handleCopy = (): void => {
-        navigator.clipboard.writeText(generatedQuery);
+        navigator.clipboard.writeText(formattedQuery);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
@@ -656,7 +671,7 @@ export const QueryBuilderTab: React.FC = (): React.ReactElement => {
                         height="100%"
                         language="sql"
                         theme={theme === "dark" ? "vs-dark" : "light"}
-                        value={generatedQuery}
+                        value={formattedQuery}
                         options={{
                             readOnly: true,
                             minimap: { enabled: false },
