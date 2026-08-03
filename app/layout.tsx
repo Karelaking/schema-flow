@@ -31,9 +31,6 @@ export const metadata: Metadata = {
     default: "Schema Flow Studio - Visual Database Schema & Drizzle ORM Designer",
     template: "%s | Schema Flow Studio",
   },
-  verification: {
-    google: 'x0GYGQzdl-G_UdKBVV5uk8at3zKmdj58GStqNnBOkY4',
-  },
   description: "Visually design database architectures, auto-generate Drizzle ORM models & migrations, export production-ready SQL, and generate TypeScript types in real-time.",
   applicationName: "Schema Flow Studio",
   keywords: [
