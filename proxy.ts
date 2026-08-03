@@ -11,13 +11,15 @@ const isPublicRoute = createRouteMatcher([
 ]);
 
 /**
- * Next.js Middleware enforcing Clerk authentication on protected routes.
+ * Next.js 16 Proxy enforcing Clerk authentication on protected routes.
  */
-export default clerkMiddleware(async (auth: any, req: any) => {
+export const proxy = clerkMiddleware(async (auth: any, req: any) => {
     if (!isPublicRoute(req)) {
         await auth.protect();
     }
 });
+
+export default proxy;
 
 export const config = {
     matcher: [
