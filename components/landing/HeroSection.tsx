@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Database, Layers, ShieldCheck, Cpu, Sparkles, Zap, CheckCircle2 } from "lucide-react";
 import { AnimatedCounter } from "@/components/landing/AnimatedCounter";
+import { Hero3DModel } from "@/components/landing/Hero3DModel";
 import { cn } from "@/lib/utils";
 
 const ROTATING_WORDS = ["Architect", "Visualise", "Auto-Generate", "Deploy"] as const;
@@ -133,13 +134,17 @@ export const HeroSection: React.FC = (): React.ReactElement => {
                 <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-border/40">
 
                     {/* Left Column — Content & Copy */}
-                    <div ref={leftColRef} className="p-6 sm:p-10 lg:p-14 flex flex-col justify-between space-y-8">
-                        <div className="space-y-6">
+                    <div ref={leftColRef} className="relative p-5 sm:p-10 lg:p-14 flex flex-col justify-between space-y-6 sm:space-y-8 overflow-hidden">
+                        {/* Background Ambient Radial Glow */}
+                        <div className="absolute -top-12 -left-12 size-96 rounded-full bg-linear-to-br from-blue-600/15 via-indigo-500/10 to-transparent blur-3xl pointer-events-none" />
+                        <div className="absolute bottom-4 right-8 size-72 rounded-full bg-linear-to-tr from-cyan-400/10 via-sky-500/10 to-transparent blur-2xl pointer-events-none" />
+
+                        <div className="relative z-10 space-y-6">
                             {/* Headline with Dynamic Animated Words */}
                             <div className="gsap-animate">
-                                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground leading-[1.1]">
+                                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground leading-[1.15]">
                                     <span className="block mb-1">
-                                        <span className="relative inline-block overflow-hidden h-[1.18em] align-top min-w-[3.6ch]">
+                                        <span className="relative inline-block overflow-hidden h-[1.18em] align-top max-w-full w-[13.5ch]">
                                             <span
                                                 key={rotatingIndex}
                                                 className="inline-block animate-in slide-in-from-bottom-4 fade-in duration-500 bg-linear-to-r from-blue-600 via-indigo-500 to-cyan-400 dark:from-blue-400 dark:via-indigo-400 dark:to-cyan-300 bg-clip-text text-transparent"
@@ -156,7 +161,7 @@ export const HeroSection: React.FC = (): React.ReactElement => {
                             </div>
 
                             {/* Subheadline Body */}
-                            <p className="gsap-animate text-muted-foreground text-base sm:text-lg leading-relaxed max-w-xl">
+                            <p className="gsap-animate text-muted-foreground text-sm sm:text-base lg:text-lg leading-relaxed max-w-xl">
                                 Transform complex database ideas into interactive visual flows. Auto-generate type-safe Drizzle ORM models, export instant SQL migrations, and sync edge databases seamlessly.
                             </p>
 
@@ -175,89 +180,79 @@ export const HeroSection: React.FC = (): React.ReactElement => {
                         </div>
                     </div>
 
-                    {/* Right Column — 3D Isometric Interactive Graphic */}
-                    <div className="p-8 sm:p-12 lg:p-16 flex items-center justify-center relative bg-muted/5 min-h-95 lg:min-h-130">
+                    {/* Right Column — Interactive 3D Schema & Drizzle Model */}
+                    <div className="p-2 sm:p-8 lg:p-12 flex items-center justify-center relative bg-muted/5 min-h-85 sm:min-h-95 lg:min-h-130 overflow-hidden">
                         {/* Background Grid Pattern */}
                         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[24px_24px]" />
 
-                        {/* 3D Layered Graphic Container */}
-                        <div className="relative w-full max-w-md aspect-square flex items-center justify-center">
-
-                            {/* Outer Perspective Layer 1 */}
-                            <div className="absolute inset-4 rounded-3xl border border-dashed border-border/60 rotate-12 -skew-y-6 opacity-40" />
-
-                            {/* Middle Layer Grid Plane 2 */}
-                            <div className="absolute inset-8 rounded-2xl border border-border/80 bg-background/50 backdrop-blur-xs rotate-12 -skew-y-6 shadow-lg flex items-center justify-center">
-                                <div className="w-full h-full bg-[linear-gradient(to_right,#80808015_1px,transparent_1px),linear-gradient(to_bottom,#80808015_1px,transparent_1px)] bg-size-[16px_16px] rounded-2xl" />
-                            </div>
-
-                            {/* Fluid Glass Blue Core Block */}
-                            <div ref={graphicBlockRef} className="relative size-56 sm:size-64 rounded-3xl bg-linear-to-tr from-blue-600 via-sky-500 to-indigo-600 p-1 shadow-2xl rotate-12 -skew-y-6 transform hover:scale-105 transition-transform duration-500">
-                                <div className="w-full h-full rounded-[22px] bg-linear-to-b from-sky-400/30 to-blue-900/80 backdrop-blur-md relative overflow-hidden flex items-center justify-center border border-white/20">
-
-                                    {/* Swirling Liquid Pattern Simulation */}
-                                    <div className="absolute -inset-10 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.8),transparent_70%)] animate-pulse" />
-                                    <div className="absolute top-1/4 left-1/4 size-32 bg-sky-300/40 rounded-full blur-2xl" />
-
-                                    {/* Top White Core Cap */}
-                                    <div className="absolute top-0 inset-x-0 h-1/2 bg-linear-to-b from-white/90 to-white/40 border-b border-white/40 rounded-t-[22px] flex items-center justify-center shadow-md">
-
-                                        {/* Central Dark Circular Badge */}
-                                        <div className="size-14 rounded-full bg-foreground text-background flex items-center justify-center font-bold text-sm shadow-xl border-2 border-white">
-                                            <span>sf.</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Connecting Line Nodes */}
-                            <div className="absolute top-10 left-10 size-2.5 rounded-full bg-sky-500 shadow-[0_0_12px_rgba(14,165,233,0.8)]" />
-                            <div className="absolute bottom-12 right-12 size-2.5 rounded-full bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.8)]" />
+                        {/* Interactive 3D Model Component */}
+                        <div ref={graphicBlockRef} className="w-full h-full flex items-center justify-center">
+                            <Hero3DModel />
                         </div>
                     </div>
                 </div>
 
-                {/* Bottom Metrics Matrix Bar with Number Counting Animations */}
-                <div ref={statsContainerRef} className="grid grid-cols-2 lg:grid-cols-4 border-t border-border/40">
+                {/* Bottom Feature & Metrics Matrix Bar */}
+                <div ref={statsContainerRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-t border-border/40 divide-y sm:divide-y-0 sm:divide-x divide-border/40">
 
                     {/* Metric 1 */}
-                    <div className="p-6 sm:p-8 space-y-1 border-r border-border/40 border-b lg:border-b-0">
-                        <div className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground font-mono">
-                            <AnimatedCounter targetValue={6} suffix="M+" duration={1600} delay={0} />
+                    <div className="p-6 sm:p-7 space-y-1.5 flex flex-col justify-between">
+                        <div>
+                            <div className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground font-mono">
+                                <AnimatedCounter targetValue={100} suffix="%" duration={1600} delay={0} />
+                            </div>
+                            <div className="text-[11px] font-bold text-foreground uppercase tracking-wider mt-1">
+                                LOCAL & PRIVATE
+                            </div>
                         </div>
-                        <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
-                            USERS
-                        </div>
+                        <p className="text-xs text-muted-foreground leading-relaxed pt-1">
+                            Zero server storage. Schema ASTs and API keys stay strictly in your browser.
+                        </p>
                     </div>
 
                     {/* Metric 2 */}
-                    <div className="p-6 sm:p-8 space-y-1 border-r lg:border-r border-border/40 border-b lg:border-b-0 lg:nth-[2n]:border-r">
-                        <div className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground font-mono">
-                            <AnimatedCounter targetValue={389} suffix="+" duration={1800} delay={250} />
+                    <div className="p-6 sm:p-7 space-y-1.5 flex flex-col justify-between">
+                        <div>
+                            <div className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground font-mono">
+                                <AnimatedCounter targetValue={4} suffix=" Dialects" duration={1600} delay={200} />
+                            </div>
+                            <div className="text-[11px] font-bold text-foreground uppercase tracking-wider mt-1">
+                                NATIVE SQL ENGINES
+                            </div>
                         </div>
-                        <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
-                            INTEGRATIONS
-                        </div>
+                        <p className="text-xs text-muted-foreground leading-relaxed pt-1">
+                            Full syntax & type support for PostgreSQL, MySQL, SQLite, and LibSQL / Turso.
+                        </p>
                     </div>
 
                     {/* Metric 3 */}
-                    <div className="p-6 sm:p-8 space-y-1 border-r border-border/40">
-                        <div className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground font-mono">
-                            <AnimatedCounter targetValue={56} suffix="+" duration={1600} delay={500} />
+                    <div className="p-6 sm:p-7 space-y-1.5 flex flex-col justify-between">
+                        <div>
+                            <div className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground font-mono">
+                                <AnimatedCounter targetValue={10} suffix="x Faster" duration={1600} delay={400} />
+                            </div>
+                            <div className="text-[11px] font-bold text-foreground uppercase tracking-wider mt-1">
+                                VISUAL PROTOTYPING
+                            </div>
                         </div>
-                        <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
-                            EXPERTISE
-                        </div>
+                        <p className="text-xs text-muted-foreground leading-relaxed pt-1">
+                            Instant visual ERD creation with 1-click Drizzle ORM & TypeScript export.
+                        </p>
                     </div>
 
                     {/* Metric 4 */}
-                    <div className="p-6 sm:p-8 space-y-1">
-                        <div className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground font-mono">
-                            <AnimatedCounter targetValue={99} suffix="%" duration={1600} delay={750} />
+                    <div className="p-6 sm:p-7 space-y-1.5 flex flex-col justify-between">
+                        <div>
+                            <div className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground font-mono">
+                                <AnimatedCounter targetValue={100} suffix="% Automated" duration={1600} delay={600} />
+                            </div>
+                            <div className="text-[11px] font-bold text-foreground uppercase tracking-wider mt-1">
+                                AI SCHEMA AUDITING
+                            </div>
                         </div>
-                        <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
-                            SATISFACTION
-                        </div>
+                        <p className="text-xs text-muted-foreground leading-relaxed pt-1">
+                            AI DB Architect scans for missing indexes, normalization, and relation issues.
+                        </p>
                     </div>
 
                 </div>
