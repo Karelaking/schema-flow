@@ -20,24 +20,29 @@ export function useThemeHotkey(toggleTheme: () => void): void {
     useEffect(() => {
         const handleThemeKeyDown = (e: KeyboardEvent): void => {
             const target = e.target as HTMLElement | null;
-            if (
-                target &&
-                (target.tagName === "INPUT" ||
-                    target.tagName === "TEXTAREA" ||
-                    target.tagName === "SELECT" ||
-                    target.isContentEditable ||
-                    Boolean(target.closest && target.closest("input, textarea, select, [contenteditable='true']")))
-            ) {
+            if (!target) {
                 return;
             }
 
-            const keyLower = e.key ? e.key.toLowerCase() : "";
-            const isControl = e.metaKey || e.ctrlKey;
-            const isThemeHotkey =
-                (keyLower === "d" || e.key === "d" || e.key === "D" || e.code === "KeyD") &&
-                ((isControl && e.shiftKey) || (!isControl && !e.altKey && !e.shiftKey));
+            const isInputTarget =
+                target.tagName === "INPUT" ||
+                target.tagName === "TEXTAREA" ||
+                target.tagName === "SELECT" ||
+                target.isContentEditable ||
+                Boolean(target.closest && target.closest("input, textarea, select, [contenteditable='true']"));
 
-            if (isThemeHotkey) {
+            if (isInputTarget) {
+                return;
+            }
+
+            const key = e.key ? e.key.toLowerCase() : "";
+            const isControl = e.metaKey || e.ctrlKey;
+
+            // Safe dark mode shortcut: single 'd' or Cmd+Shift+D / Ctrl+Shift+D
+            const isSingleD = key === "d" && !isControl && !e.altKey && !e.shiftKey;
+            const isCmdShiftD = key === "d" && isControl && e.shiftKey;
+
+            if (isSingleD || isCmdShiftD) {
                 e.preventDefault();
                 toggleTheme();
             }

@@ -193,6 +193,16 @@
   transition: stroke 0.3s ease;
 }
 
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   ::before,

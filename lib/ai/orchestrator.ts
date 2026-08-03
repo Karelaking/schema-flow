@@ -132,7 +132,14 @@ export async function runAutonomousOrchestration(
     const response = await fetch(url, init);
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(`Provider returned ${response.status}: ${errorText.slice(0, 300)}`);
+      let statusMsg = "";
+      try {
+        const jsonErr = JSON.parse(errorText);
+        statusMsg = jsonErr.statusMessage || jsonErr.error || "";
+      } catch {
+        statusMsg = errorText.slice(0, 300);
+      }
+      throw new Error(statusMsg || `Provider returned ${response.status}`);
     }
 
     if (!response.body) throw new Error("No response body received from provider");
