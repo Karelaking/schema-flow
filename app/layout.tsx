@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next"
 import "./globals.css";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { ShortcutProvider } from "@/providers/ShortcutProvider";
@@ -127,6 +128,7 @@ export default function RootLayout({
         <TooltipProvider delay={400}>
           <DevelopmentBanner />
           {children}
+          <Analytics/>
           <CommandMenu />
           <GlobalCreateTableDialog />
           <FloatingThemeToggle />
