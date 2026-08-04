@@ -75,3 +75,5 @@ export function Footer(): React.JSX.Element {
     </footer>
   );
 }
+
+export default Footer;

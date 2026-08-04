@@ -19,20 +19,51 @@ export const Hero3DModel: React.FC<Hero3DModelProps> = ({ className = "" }): Rea
     const [rotateY, setRotateY] = useState<number>(-22);
     const [activeHoverTable, setActiveHoverTable] = useState<string | null>(null);
 
-    const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>): void => {
-        if (!containerRef.current) return;
-        const rect = containerRef.current.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
+    const rectRef = useRef<{ left: number; top: number; width: number; height: number } | null>(null);
+    const rafIdRef = useRef<number | null>(null);
 
-        const percentX = (e.clientX - centerX) / (rect.width / 2);
-        const percentY = (e.clientY - centerY) / (rect.height / 2);
-
-        setRotateX(18 - percentY * 16);
-        setRotateY(-22 + percentX * 18);
+    const updateRect = useCallback((): void => {
+        if (containerRef.current) {
+            const rect = containerRef.current.getBoundingClientRect();
+            rectRef.current = { left: rect.left, top: rect.top, width: rect.width, height: rect.height };
+        }
     }, []);
 
+    const handleMouseEnter = useCallback((): void => {
+        updateRect();
+    }, [updateRect]);
+
+    const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>): void => {
+        if (!rectRef.current) {
+            updateRect();
+        }
+        const rect = rectRef.current;
+        if (!rect || rect.width === 0 || rect.height === 0) return;
+
+        const clientX = e.clientX;
+        const clientY = e.clientY;
+
+        if (rafIdRef.current) {
+            cancelAnimationFrame(rafIdRef.current);
+        }
+
+        rafIdRef.current = requestAnimationFrame(() => {
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            const percentX = (clientX - centerX) / (rect.width / 2);
+            const percentY = (clientY - centerY) / (rect.height / 2);
+
+            setRotateX(18 - percentY * 16);
+            setRotateY(-22 + percentX * 18);
+        });
+    }, [updateRect]);
+
     const handleMouseLeave = useCallback((): void => {
+        if (rafIdRef.current) {
+            cancelAnimationFrame(rafIdRef.current);
+        }
+        rectRef.current = null;
         setRotateX(18);
         setRotateY(-22);
         setActiveHoverTable(null);
@@ -48,6 +79,7 @@ export const Hero3DModel: React.FC<Hero3DModelProps> = ({ className = "" }): Rea
     return (
         <div
             ref={containerRef}
+            onMouseEnter={handleMouseEnter}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             className={cn(

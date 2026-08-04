@@ -84,25 +84,33 @@ export const LandingHeader = (): React.JSX.Element => {
   const [sticky, setSticky] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const handleScroll = useCallback((): void => {
-    setSticky(window.scrollY >= 20);
-  }, []);
-
-  const handleResize = useCallback((): void => {
-    if (window.innerWidth >= 768) {
-      setIsOpen(false);
-    }
-  }, []);
-
   useEffect((): (() => void) => {
-    window.addEventListener("scroll", handleScroll);
-    window.addEventListener("resize", handleResize);
+    let ticking = false;
+
+    const onScroll = (): void => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          setSticky(window.scrollY >= 20);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    const onResize = (): void => {
+      if (window.innerWidth >= 768) {
+        setIsOpen(false);
+      }
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize, { passive: true });
 
     return (): void => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
     };
-  }, [handleScroll, handleResize]);
+  }, []);
 
   return (
     <header

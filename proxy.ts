@@ -5,20 +5,23 @@ import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
  */
 const isPublicRoute = createRouteMatcher([
     "/",
+    "/cookies(.*)",
+    "/workspace(.*)",
     "/sign-in(.*)",
     "/sign-up(.*)",
-    "/api/lotus-key",
+    "/api/(.*)",
+    "/sitemap.xml",
+    "/robots.txt",
+    "/favicon.ico",
+    "/og-image.png",
 ]);
 
 /**
- * Next.js 16 Proxy enforcing Clerk authentication on protected routes.
+ * Next.js Proxy enforcing Clerk authentication on protected routes without redirect loops.
  */
 export const proxy = clerkMiddleware(async (auth: any, req: any) => {
     if (!isPublicRoute(req)) {
-        const signInUrl = new URL("/sign-in", req.url).toString();
-        await auth.protect({
-            unauthenticatedUrl: signInUrl,
-        });
+        await auth.protect();
     }
 });
 
@@ -26,9 +29,7 @@ export default proxy;
 
 export const config = {
     matcher: [
-        // Skip Next.js internals and all static files, unless found in search params
         "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|json|png|jpg|jpeg|webp|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-        // Always run for API routes
         "/(api|trpc)(.*)",
     ],
 };
