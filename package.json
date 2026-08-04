@@ -17,6 +17,12 @@
   },
   "dependencies": {
     "@schema-flow/components": "workspace:*",
+    "@schema-flow/datatypes": "workspace:*",
+    "@schema-flow/db": "workspace:*",
+    "@schema-flow/generators": "workspace:*",
+    "@schema-flow/lotus-crypto": "workspace:*",
+    "@schema-flow/schema-core": "workspace:*",
+    "@schema-flow/validation": "workspace:*",
     "@base-ui/react": "^1.6.0",
     "@hookform/resolvers": "^5.4.0",
     "@libsql/client": "^0.17.4",
