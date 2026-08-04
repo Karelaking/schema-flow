@@ -7,8 +7,11 @@ import { SchemaAST } from "@/packages/schema-core";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-    title: "Workspace",
-    description: "Visual ERD canvas workspace for designing database tables, relationships, Drizzle ORM models, and exporting SQL.",
+    title: "Visual ERD Canvas & Schema Workspace | Schema Flow Studio",
+    description: "Interactive visual ERD canvas workspace for designing database tables, defining relational constraints, generating type-safe Drizzle ORM schemas, and exporting production SQL DDL.",
+    alternates: {
+        canonical: "/workspace",
+    },
 };
 
 const getCachedProjectsList = cache(async () => {

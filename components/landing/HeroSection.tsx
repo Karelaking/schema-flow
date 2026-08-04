@@ -65,7 +65,7 @@ export const HeroSection: React.FC = (): React.ReactElement => {
     }, []);
 
     return (
-        <section ref={sectionRef} className="relative w-full border-b border-border/40 bg-background overflow-hidden">
+        <section ref={sectionRef} id="hero" aria-label="Hero Introduction" className="relative w-full border-b border-border/40 bg-background overflow-hidden">
             {/* Main 2-Column Grid */}
             <div className="mx-auto max-w-7xl border-x border-border/40">
                 <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-border/40">
@@ -76,7 +76,7 @@ export const HeroSection: React.FC = (): React.ReactElement => {
                         <div className="absolute -top-12 -left-12 size-96 rounded-full bg-linear-to-br from-blue-600/15 via-indigo-500/10 to-transparent blur-3xl pointer-events-none" />
                         <div className="absolute bottom-4 right-8 size-72 rounded-full bg-linear-to-tr from-cyan-400/10 via-sky-500/10 to-transparent blur-2xl pointer-events-none" />
 
-                        <div className="relative z-10 space-y-6">
+                        <header className="relative z-10 space-y-6">
                             {/* Headline with Zero Layout Shift Rotating Words */}
                             <div className="gsap-animate">
                                 <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground leading-[1.15]">
@@ -96,7 +96,7 @@ export const HeroSection: React.FC = (): React.ReactElement => {
 
                             {/* Subheadline Body */}
                             <p className="gsap-animate text-muted-foreground text-sm sm:text-base lg:text-lg leading-relaxed max-w-xl">
-                                Transform complex database ideas into interactive visual flows. Auto-generate type-safe Drizzle ORM models, export instant SQL migrations, and sync edge databases seamlessly.
+                                Transform complex database ideas into interactive visual ERDs. Auto-generate type-safe Drizzle ORM models, export instant multi-dialect SQL DDL migrations, and sync edge databases seamlessly.
                             </p>
 
                             {/* CTA Cluster */}
@@ -105,13 +105,14 @@ export const HeroSection: React.FC = (): React.ReactElement => {
 
                                 <Link
                                     href="/workspace"
+                                    aria-label="Launch interactive schema workspace"
                                     className="inline-flex items-center justify-center gap-2 rounded-full border border-border/60 bg-background/80 hover:bg-muted/50 text-foreground font-semibold px-6 py-3.5 text-xs sm:text-sm backdrop-blur-xs transition-all hover:border-foreground/20 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
                                 >
-                                    <Layers className="size-4 text-muted-foreground" />
-                                    <span>Explore Demo</span>
+                                    <Layers className="size-4 text-muted-foreground" aria-hidden="true" />
+                                    <span>Launch Workspace</span>
                                 </Link>
                             </div>
-                        </div>
+                        </header>
                     </div>
 
                     {/* Right Column — Interactive 3D Schema & Drizzle Model */}
@@ -130,64 +131,64 @@ export const HeroSection: React.FC = (): React.ReactElement => {
                 <div ref={statsContainerRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-t border-border/40 divide-y sm:divide-y-0 sm:divide-x divide-border/40">
 
                     {/* Metric 1 */}
-                    <div className="p-6 sm:p-7 space-y-1.5 flex flex-col justify-between">
+                    <article className="p-6 sm:p-7 space-y-1.5 flex flex-col justify-between">
                         <div>
                             <div className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground font-mono">
                                 <AnimatedCounter targetValue={100} suffix="%" duration={1600} delay={0} />
                             </div>
-                            <div className="text-[11px] font-bold text-foreground uppercase tracking-wider mt-1">
+                            <h2 className="text-[11px] font-bold text-foreground uppercase tracking-wider mt-1">
                                 LOCAL & PRIVATE
-                            </div>
+                            </h2>
                         </div>
                         <p className="text-xs text-muted-foreground leading-relaxed pt-1">
-                            Zero server storage. Schema ASTs and API keys stay strictly in your browser.
+                            Zero server storage. Schema ASTs and API keys stay strictly in your local browser storage.
                         </p>
-                    </div>
+                    </article>
 
                     {/* Metric 2 */}
-                    <div className="p-6 sm:p-7 space-y-1.5 flex flex-col justify-between">
+                    <article className="p-6 sm:p-7 space-y-1.5 flex flex-col justify-between">
                         <div>
                             <div className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground font-mono">
                                 <AnimatedCounter targetValue={4} suffix=" Dialects" duration={1600} delay={200} />
                             </div>
-                            <div className="text-[11px] font-bold text-foreground uppercase tracking-wider mt-1">
+                            <h2 className="text-[11px] font-bold text-foreground uppercase tracking-wider mt-1">
                                 NATIVE SQL ENGINES
-                            </div>
+                            </h2>
                         </div>
                         <p className="text-xs text-muted-foreground leading-relaxed pt-1">
                             Full syntax & type support for PostgreSQL, MySQL, SQLite, and LibSQL / Turso.
                         </p>
-                    </div>
+                    </article>
 
                     {/* Metric 3 */}
-                    <div className="p-6 sm:p-7 space-y-1.5 flex flex-col justify-between">
+                    <article className="p-6 sm:p-7 space-y-1.5 flex flex-col justify-between">
                         <div>
                             <div className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground font-mono">
                                 <AnimatedCounter targetValue={10} suffix="x Faster" duration={1600} delay={400} />
                             </div>
-                            <div className="text-[11px] font-bold text-foreground uppercase tracking-wider mt-1">
+                            <h2 className="text-[11px] font-bold text-foreground uppercase tracking-wider mt-1">
                                 VISUAL PROTOTYPING
-                            </div>
+                            </h2>
                         </div>
                         <p className="text-xs text-muted-foreground leading-relaxed pt-1">
-                            Instant visual ERD creation with 1-click Drizzle ORM & TypeScript export.
+                            Instant visual ERD creation with 1-click Drizzle ORM & TypeScript code export.
                         </p>
-                    </div>
+                    </article>
 
                     {/* Metric 4 */}
-                    <div className="p-6 sm:p-7 space-y-1.5 flex flex-col justify-between">
+                    <article className="p-6 sm:p-7 space-y-1.5 flex flex-col justify-between">
                         <div>
                             <div className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground font-mono">
                                 <AnimatedCounter targetValue={100} suffix="% Automated" duration={1600} delay={600} />
                             </div>
-                            <div className="text-[11px] font-bold text-foreground uppercase tracking-wider mt-1">
-                                AI SCHEMA AUDITING
-                            </div>
+                            <h2 className="text-[11px] font-bold text-foreground uppercase tracking-wider mt-1">
+                                REAL-TIME AST VALIDATION
+                            </h2>
                         </div>
                         <p className="text-xs text-muted-foreground leading-relaxed pt-1">
-                            AI DB Architect scans for missing indexes, normalization, and relation issues.
+                            Automatic background checks scan for missing indexes, foreign key constraints, and relation issues.
                         </p>
-                    </div>
+                    </article>
 
                 </div>
             </div>

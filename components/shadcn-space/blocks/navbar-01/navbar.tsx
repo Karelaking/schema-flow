@@ -37,19 +37,15 @@ const navigationData: NavigationSection[] = [
     href: "#features",
   },
   {
-    title: "Integration",
+    title: "Interactive ERD",
     href: "#showcase",
   },
   {
-    title: "Support",
+    title: "Drizzle ORM",
     href: "#drizzle",
   },
   {
-    title: "Docs",
-    href: "#code",
-  },
-  {
-    title: "Pricing",
+    title: "Storage & Pricing",
     href: "#pricing",
   },
 ];

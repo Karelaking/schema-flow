@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
+import Link from "next/link";
 import { 
   Zap, 
   Code2, 
@@ -102,7 +103,7 @@ export function FeaturesSection(): React.JSX.Element {
   ];
 
   return (
-    <section ref={sectionRef} id="features" className="relative w-full border-b border-border/40 bg-background overflow-hidden">
+    <section ref={sectionRef} id="features" aria-label="Key Features" className="relative w-full border-b border-border/40 bg-background overflow-hidden">
       {/* Background Ambient Radial Glow */}
       <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
         <div className="size-125 rounded-full bg-linear-to-tr from-blue-600/10 via-indigo-500/10 to-cyan-400/10 blur-3xl" />
@@ -111,21 +112,21 @@ export function FeaturesSection(): React.JSX.Element {
       <div className="mx-auto max-w-7xl border-x border-border/40 relative z-10">
         
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto pt-16 md:pt-24 pb-14 px-4 space-y-4">
+        <header className="text-center max-w-3xl mx-auto pt-16 md:pt-24 pb-14 px-4 space-y-4">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-foreground leading-tight">
             Everything You Need for Modern Database Architecture
           </h2>
           <p className="text-muted-foreground text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
-            Built from the ground up to empower developers, database administrators, and software architects with visual, type-safe tools.
+            Built from the ground up to empower developers, database administrators, and software architects with visual, type-safe schema design tools.
           </p>
-        </div>
+        </header>
 
         {/* 6-Grid Framed Card Matrix with Perfect Grid Borders & Micro-Animations */}
         <div ref={cardsGridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 border-t border-border/40">
           {features.map((feat, idx) => {
             const Icon = feat.icon;
             return (
-              <div 
+              <article 
                 key={idx}
                 className="relative px-6 sm:px-8 py-5 sm:py-6 flex flex-col justify-between space-y-4 border-b border-r border-border/40 lg:nth-[3n]:border-r-0 md:max-lg:nth-[2n]:border-r-0 lg:nth-[n+4]:border-b-0 bg-card/30 hover:bg-card/75 transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl hover:shadow-sky-500/5 group overflow-hidden"
               >
@@ -136,7 +137,7 @@ export function FeaturesSection(): React.JSX.Element {
                   <div className="flex items-center justify-between mb-3.5">
                     {/* Micro-Animation: Icon Container Scale & Rotate */}
                     <div className={`size-10 rounded-xl border flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 group-hover:shadow-md ${feat.iconBg}`}>
-                      <Icon className={`size-4.5 transition-transform duration-300 group-hover:scale-110 ${feat.iconColor}`} />
+                      <Icon className={`size-4.5 transition-transform duration-300 group-hover:scale-110 ${feat.iconColor}`} aria-hidden="true" />
                     </div>
 
                     {/* Micro-Animation: Badge Hover Transition */}
@@ -157,17 +158,21 @@ export function FeaturesSection(): React.JSX.Element {
 
                 {/* Micro-Animation: Full-Width High-Contrast Action CTA Bar */}
                 <div className="relative z-10 pt-3 border-t border-border/40">
-                  <div className="w-full flex items-center justify-between px-3.5 py-2 rounded-lg bg-muted/40 group-hover:bg-foreground group-hover:text-background border border-border/60 group-hover:border-foreground transition-all duration-300 text-xs font-bold cursor-pointer shadow-xs">
+                  <Link
+                    href="/workspace"
+                    className="w-full flex items-center justify-between px-3.5 py-2 rounded-lg bg-muted/40 group-hover:bg-foreground group-hover:text-background border border-border/60 group-hover:border-foreground transition-all duration-300 text-xs font-bold cursor-pointer shadow-xs"
+                    aria-label={`Explore ${feat.title}`}
+                  >
                     <span>Explore Feature</span>
                     <div className="size-5 rounded bg-background group-hover:bg-background/20 flex items-center justify-center shrink-0 border border-border/60 group-hover:border-background/30 transition-colors">
-                      <ArrowRight className="size-3 text-foreground group-hover:text-background group-hover:translate-x-0.5 transition-all duration-300" />
+                      <ArrowRight className="size-3 text-foreground group-hover:text-background group-hover:translate-x-0.5 transition-all duration-300" aria-hidden="true" />
                     </div>
-                  </div>
+                  </Link>
                 </div>
 
                 {/* Micro-Animation: Expandable Bottom Laser Line Beam */}
                 <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-r from-sky-400 via-indigo-400 to-cyan-300 scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
-              </div>
+              </article>
             );
           })}
         </div>

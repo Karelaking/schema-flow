@@ -35,45 +35,79 @@ const InteractiveCanvasDemo = dynamic(
 
 export const metadata: Metadata = {
   title: "Schema Flow Studio - Visual Database Schema Builder & Drizzle ORM Designer",
-  description: "Visually design database architectures, auto-generate Drizzle ORM models & migrations, export raw SQL, and sync with Turso Edge Cloud.",
+  description: "Visually design database architectures, auto-generate Drizzle ORM models & migrations, export raw SQL DDL, and sync with Turso Edge Cloud.",
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
-    title: "Schema Flow Studio - Visual Database Schema Builder",
-    description: "Visually design database architectures, auto-generate Drizzle ORM models & migrations, export raw SQL, and sync with Turso Edge Cloud.",
+    title: "Schema Flow Studio - Visual Database Schema Builder & Drizzle ORM Designer",
+    description: "Visually design database architectures, auto-generate type-safe Drizzle ORM models & migrations, export production-ready SQL DDL, and sync with Turso Edge Cloud.",
     url: "https://schemaflow-studio.vercel.app",
     siteName: "Schema Flow Studio",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Schema Flow Studio - Visual Database Schema Builder",
-    description: "Visually design database architectures, auto-generate Drizzle ORM models & migrations, export raw SQL.",
+    title: "Schema Flow Studio - Visual Database Schema Builder & Drizzle ORM Designer",
+    description: "Visually design database architectures, auto-generate Drizzle ORM models & migrations, export raw SQL DDL.",
   },
 };
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "name": "Schema Flow Studio",
-  "operatingSystem": "Web",
-  "applicationCategory": "DeveloperApplication",
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "USD",
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Schema Flow Studio",
+    "operatingSystem": "Web",
+    "applicationCategory": "DeveloperApplication",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD",
+    },
+    "description": "Visually design database architectures, auto-generate Drizzle ORM models & migrations, export raw SQL DDL, and generate TypeScript types in real-time.",
+    "url": "https://schemaflow-studio.vercel.app",
+    "author": {
+      "@type": "Person",
+      "name": "MRADUL KUMAR Katiyar",
+      "url": "https://mk-katiyar.in"
+    },
+    "featureList": [
+      "Visual ERD Database Canvas",
+      "Type-safe Drizzle ORM Schema Generator",
+      "Multi-Dialect SQL DDL Generator (PostgreSQL, MySQL, SQLite)",
+      "TypeScript Models & Interface Export",
+      "Visual SQL Query Builder",
+      "Real-time AST Schema Validator",
+      "Export Diagram to Image",
+      "Sync with Turso Edge Cloud & LibSQL",
+    ],
   },
-  "description": "Visually design database architectures, auto-generate Drizzle ORM models & migrations, export raw SQL, and generate TypeScript types in real-time.",
-  "url": "https://schemaflow-studio.vercel.app",
-  "featureList": [
-    "Visual ERD Database Canvas",
-    "SQL query builder",
-    "Type script models and interfaces",
-    "JSON schema builder",
-    "AI Schema Assistant",
-    "Generate SQL queries",
-    "Export to image",
-    "Sync with Turso Edge Cloud",
-  ],
-};
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Schema Flow Studio",
+    "url": "https://schemaflow-studio.vercel.app",
+    "description": "Visual Database Schema Builder & Drizzle ORM Designer",
+    "author": {
+      "@type": "Person",
+      "name": "MRADUL KUMAR Katiyar",
+      "url": "https://mk-katiyar.in"
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Schema Flow Studio",
+    "url": "https://schemaflow-studio.vercel.app",
+    "logo": "https://schemaflow-studio.vercel.app/og-image.png",
+    "founder": {
+      "@type": "Person",
+      "name": "MRADUL KUMAR Katiyar",
+      "url": "https://mk-katiyar.in"
+    }
+  },
+];
 
 export default function HomePage() {
   return (
@@ -83,7 +117,7 @@ export default function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <LandingHeader />
-      <main className="flex-1">
+      <main className="flex-1" id="main-content">
         <HeroSection />
         <LogoCloudSection />
         <InteractiveCanvasDemo />
