@@ -1,5 +1,5 @@
 {
-  "name": "@schema-flow/generators",
+  "name": "@schema-flow/db",
   "version": "0.1.0",
   "private": true,
   "sideEffects": false,
@@ -8,15 +8,14 @@
   "scripts": {
     "build": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint .",
-    "test": "vitest run"
+    "lint": "eslint ."
   },
   "dependencies": {
+    "@libsql/client": "^0.17.4",
     "@schema-flow/schema-core": "workspace:*",
-    "sql-formatter": "^15.4.0"
+    "drizzle-orm": "^0.45.2"
   },
   "devDependencies": {
-    "typescript": "^5.0.0",
-    "vitest": "^2.0.0"
+    "typescript": "^5.0.0"
   }
 }

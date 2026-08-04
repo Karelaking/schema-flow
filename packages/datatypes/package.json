@@ -1,5 +1,5 @@
 {
-  "name": "@schema-flow/generators",
+  "name": "@schema-flow/datatypes",
   "version": "0.1.0",
   "private": true,
   "sideEffects": false,
@@ -8,15 +8,12 @@
   "scripts": {
     "build": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint .",
-    "test": "vitest run"
+    "lint": "eslint ."
   },
   "dependencies": {
-    "@schema-flow/schema-core": "workspace:*",
-    "sql-formatter": "^15.4.0"
+    "@schema-flow/schema-core": "workspace:*"
   },
   "devDependencies": {
-    "typescript": "^5.0.0",
-    "vitest": "^2.0.0"
+    "typescript": "^5.0.0"
   }
 }
