@@ -15,9 +15,9 @@
   "menuColor": "default",
   "menuAccent": "subtle",
   "aliases": {
-    "components": "@/components",
-    "utils": "@/lib/utils",
-    "ui": "@/components/ui",
+    "components": "@schema-flow/components",
+    "utils": "@schema-flow/components/lib/utils",
+    "ui": "@schema-flow/components/ui",
     "lib": "@/lib",
     "hooks": "@/hooks"
   },

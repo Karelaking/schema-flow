@@ -6,8 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Trash2, Loader2 } from "lucide-react";
 import { projectSettingsSchema, ProjectSettingsInput } from "@/lib/schemas";
 import { useStore } from "@/lib/store";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
+import { Button } from "@schema-flow/components/ui/button";
+import { Switch } from "@schema-flow/components/ui/switch";
 import {
     Dialog,
     DialogContent,
@@ -15,7 +15,7 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from "@/components/ui/dialog";
+} from "@schema-flow/components/ui/dialog";
 import {
     Select,
     SelectContent,
@@ -23,10 +23,10 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+} from "@schema-flow/components/ui/select";
+import { Input } from "@schema-flow/components/ui/input";
+import { Label } from "@schema-flow/components/ui/label";
+import { Textarea } from "@schema-flow/components/ui/textarea";
 
 /**
  * Props for ProjectSettingsDialog component.

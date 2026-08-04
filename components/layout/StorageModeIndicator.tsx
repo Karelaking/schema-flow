@@ -4,8 +4,8 @@ import React from "react";
 import { HardDrive, Database, Cloud, AlertCircle } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { isFileSystemAccessSupported } from "@/lib/lotus-file.service";
-import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Badge } from "@schema-flow/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@schema-flow/components/ui/tooltip";
 
 /**
  * Props for StorageModeIndicator component.

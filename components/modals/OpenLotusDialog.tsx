@@ -3,8 +3,8 @@
 import React, { useState } from "react";
 import { FolderOpen, FileCheck, AlertCircle, Loader2 } from "lucide-react";
 import { useStore } from "@/lib/store";
-import { toast } from "@/components/ui/sonner";
-import { Button } from "@/components/ui/button";
+import { toast } from "@schema-flow/components/ui/sonner";
+import { Button } from "@schema-flow/components/ui/button";
 import {
     Dialog,
     DialogContent,
@@ -12,7 +12,7 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from "@/components/ui/dialog";
+} from "@schema-flow/components/ui/dialog";
 
 /**
  * Props for OpenLotusDialog component.

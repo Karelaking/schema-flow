@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Plus, Database } from "lucide-react";
 import { DatabaseDialect } from "@/packages/schema-core";
 import { useStore } from "@/lib/store";
-import { Button } from "@/components/ui/button";
+import { Button } from "@schema-flow/components/ui/button";
 import {
     Dialog,
     DialogContent,
@@ -12,7 +12,7 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from "@/components/ui/dialog";
+} from "@schema-flow/components/ui/dialog";
 import {
     Select,
     SelectContent,
@@ -20,10 +20,10 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+} from "@schema-flow/components/ui/select";
+import { Input } from "@schema-flow/components/ui/input";
+import { Label } from "@schema-flow/components/ui/label";
+import { Textarea } from "@schema-flow/components/ui/textarea";
 
 /**
  * Props for EmptyProjectView component.

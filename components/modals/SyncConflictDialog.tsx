@@ -2,7 +2,7 @@
 
 import React from "react";
 import { AlertTriangle, HardDrive, Cloud } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@schema-flow/components/ui/button";
 import {
     Dialog,
     DialogContent,
@@ -10,7 +10,7 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from "@/components/ui/dialog";
+} from "@schema-flow/components/ui/dialog";
 
 /**
  * Conflict item data interface.

@@ -3,8 +3,8 @@
 import React, { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { deleteProjectAction } from "@/app/actions/projects";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@schema-flow/components/ui/button";
+import { Input } from "@schema-flow/components/ui/input";
 import {
     Dialog,
     DialogContent,
@@ -12,7 +12,7 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from "@/components/ui/dialog";
+} from "@schema-flow/components/ui/dialog";
 
 /**
  * Props for DeleteProjectDialog component.

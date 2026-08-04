@@ -3,7 +3,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { ShortcutProvider } from "@/providers/ShortcutProvider";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { TooltipProvider } from "@schema-flow/components/ui/tooltip";
 import { CommandMenu } from "@/components/layout/CommandMenu";
 import { GlobalCreateTableDialog } from "@/components/modals/GlobalCreateTableDialog";
 
@@ -95,11 +95,11 @@ export const metadata: Metadata = {
   },
 };
 
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster } from "@schema-flow/components/ui/sonner";
 import { ClerkProvider } from "@clerk/nextjs";
-import { DevelopmentBanner } from "@/components/ui/developmentBanner";
-import { FloatingThemeToggle } from "@/components/ui/floatingThemeToggle";
-import { CookieConsent } from "@/components/ui/cookieConsent";
+import { DevelopmentBanner } from "@schema-flow/components/ui/developmentBanner";
+import { FloatingThemeToggle } from "@schema-flow/components/ui/floatingThemeToggle";
+import { CookieConsent } from "@schema-flow/components/ui/cookieConsent";
 
 export default function RootLayout({
   children,

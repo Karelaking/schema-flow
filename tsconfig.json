@@ -20,6 +20,8 @@
     ],
     "paths": {
       "@/*": ["./*"],
+      "@schema-flow/components": ["./packages/components/index.ts"],
+      "@schema-flow/components/*": ["./packages/components/src/*"],
       "@schema-flow/schema-core": ["./packages/schema-core/index.ts"],
       "@schema-flow/generators": ["./packages/generators/index.ts"],
       "@schema-flow/validation": ["./packages/validation/index.ts"],

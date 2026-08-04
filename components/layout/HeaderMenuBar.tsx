@@ -43,7 +43,20 @@ import { exportCanvasToPng } from "@/lib/export-image";
 
 import dynamic from "next/dynamic";
 import { StorageModeIndicator } from "@/components/layout/StorageModeIndicator";
-import { Button } from "@/components/ui/button";
+import { Button } from "@schema-flow/components/ui/button";
+import { Kbd } from "@schema-flow/components/ui/kbd";
+import {
+    DropdownMenu,
+    DropdownMenuTrigger,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuSub,
+    DropdownMenuSubTrigger,
+    DropdownMenuSubContent,
+    DropdownMenuShortcut,
+} from "@schema-flow/components/ui/dropdown-menu";
 
 const CreateProjectDialog = dynamic(
     () => import("@/components/modals/CreateProjectDialog").then(m => m.CreateProjectDialog),
@@ -73,19 +86,6 @@ const OpenWorkspaceFolderModal = dynamic(
     () => import("@/components/modals/OpenWorkspaceFolderModal").then(m => m.OpenWorkspaceFolderModal),
     { ssr: false }
 );
-import { Kbd } from "@/components/ui/kbd";
-import {
-    DropdownMenu,
-    DropdownMenuTrigger,
-    DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuSub,
-    DropdownMenuSubTrigger,
-    DropdownMenuSubContent,
-    DropdownMenuShortcut,
-} from "@/components/ui/dropdown-menu";
 
 /**
  * Props for HeaderMenuBar component.

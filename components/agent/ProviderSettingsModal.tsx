@@ -4,9 +4,9 @@ import React, { useState, useEffect } from "react";
 import { Settings, Eye, EyeOff, CheckCircle2, Zap, Crown, Loader2, RefreshCw, Search } from "lucide-react";
 import { useAIStore } from "@/lib/ai-store";
 import type { AIProvider, LiveModel } from "@/lib/ai/types";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@schema-flow/components/ui/button";
+import { Input } from "@schema-flow/components/ui/input";
+import { Label } from "@schema-flow/components/ui/label";
 import {
     Dialog,
     DialogContent,
@@ -14,7 +14,7 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from "@/components/ui/dialog";
+} from "@schema-flow/components/ui/dialog";
 import {
     Select,
     SelectContent,
@@ -22,7 +22,7 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select";
+} from "@schema-flow/components/ui/select";
 
 const PROVIDER_OPTIONS: Array<{ value: AIProvider; label: string; description: string }> = [
     { value: "openrouter", label: "OpenRouter", description: "Multi-model gateway — free & paid models" },

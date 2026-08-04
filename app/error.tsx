@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import { AlertTriangle, RefreshCw } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@schema-flow/components/ui/button";
 
 export interface ErrorPageProps {
   error: Error & { digest?: string };

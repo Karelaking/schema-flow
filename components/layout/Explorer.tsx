@@ -3,8 +3,8 @@
 import React, { useState } from "react";
 import { Plus, Search, TableProperties, SlidersHorizontal, Key, Clock, Check, Eye, RefreshCw, PanelLeftClose, List, Trash2, X, Pencil } from "lucide-react";
 import { useStore } from "@/lib/store";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@schema-flow/components/ui/button";
+import { Input } from "@schema-flow/components/ui/input";
 import {
     DropdownMenu,
     DropdownMenuTrigger,
@@ -12,11 +12,11 @@ import {
     DropdownMenuGroup,
     DropdownMenuLabel,
     DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
+} from "@schema-flow/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { ExplorerProps } from "@/types";
 import { useAIStore } from "@/lib/ai-store";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@schema-flow/components/ui/badge";
 
 /**
  * Explorer sidebar component rendering tables and enums lists.

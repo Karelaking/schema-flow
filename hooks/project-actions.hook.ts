@@ -2,7 +2,7 @@ import { useState, useCallback, ChangeEvent } from "react";
 import { useStore } from "@/lib/store";
 import { SchemaAST, ProjectMetadata } from "@/packages/schema-core";
 import { saveProjectAction, listProjectsAction, getProjectAction } from "@/app/actions/projects";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "@schema-flow/components/ui/sonner";
 
 /**
  * Return type interface for useProjectActions hook.

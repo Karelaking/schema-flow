@@ -1,5 +1,5 @@
 import React from "react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@schema-flow/components/ui/skeleton";
 
 /**
  * Full-page Workspace Skeleton fallback UI rendered inside React Suspense boundary.

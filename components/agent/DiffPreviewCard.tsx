@@ -4,7 +4,7 @@ import React from "react";
 import { Check, X, RotateCcw, Plus, Minus, Pencil, Table2, Columns3, Link2, Hash } from "lucide-react";
 import { useAIStore } from "@/lib/ai-store";
 import type { DiffItem } from "@/lib/ai/types";
-import { Button } from "@/components/ui/button";
+import { Button } from "@schema-flow/components/ui/button";
 
 /**
  * Returns icon representation for a diff item entity.

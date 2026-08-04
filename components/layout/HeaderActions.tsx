@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useProjectActions } from "@/hooks/useProjectActions";
-import { Button } from "@/components/ui/button";
+import { Button } from "@schema-flow/components/ui/button";
 import { Save } from "lucide-react";
 
 export interface HeaderActionsProps {

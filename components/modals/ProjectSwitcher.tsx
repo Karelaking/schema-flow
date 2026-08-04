@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { ChevronDown, Check, Trash2, Plus, Settings } from "lucide-react";
 
 import { useStore } from "@/lib/store";
@@ -8,14 +8,14 @@ import { useProjectActions } from "@/hooks/useProjectActions";
 import { CreateProjectDialog } from "@/components/modals/CreateProjectDialog";
 import { ProjectSettingsDialog } from "@/components/modals/ProjectSettingsDialog";
 import { DeleteProjectDialog } from "@/components/modals/DeleteProjectDialog";
-import { Button } from "@/components/ui/button";
+import { Button } from "@schema-flow/components/ui/button";
 import {
     DropdownMenu,
     DropdownMenuTrigger,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
+} from "@schema-flow/components/ui/dropdown-menu";
 
 /**
  * Props for ProjectSwitcher component.

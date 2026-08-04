@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { HeroSection } from "@/components/landing/HeroSection";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@schema-flow/components/ui/skeleton";
 
 const LogoCloudSection = dynamic(
   () => import("@/components/landing/LogoCloudSection").then(mod => mod.LogoCloudSection)

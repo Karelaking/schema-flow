@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { Button } from "@schema-flow/components/ui/button";
 import {
     Select,
     SelectContent,
@@ -19,9 +19,9 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select";
+} from "@schema-flow/components/ui/select";
 import dynamic from "next/dynamic";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@schema-flow/components/ui/skeleton";
 import { TableInspector } from "@/components/inspector/TableInspector";
 import { RelationInspector } from "@/components/inspector/RelationInspector";
 

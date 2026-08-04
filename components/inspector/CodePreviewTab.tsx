@@ -3,17 +3,17 @@
 import React, { useMemo, useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { Copy, Check } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@schema-flow/components/ui/skeleton";
+import { Button } from "@schema-flow/components/ui/button";
+import { useStore } from "@/lib/store";
+import { useTheme } from "@/providers/ThemeProvider";
+import { getGeneratorForDialect, createTypescriptGenerator } from "@/packages/generators";
+import { SchemaAST } from "@/packages/schema-core";
 
 const Editor = dynamic(() => import("@monaco-editor/react"), {
     ssr: false,
     loading: () => <Skeleton className="w-full h-full min-h-75" />,
 });
-import { useStore } from "@/lib/store";
-import { useTheme } from "@/providers/ThemeProvider";
-import { getGeneratorForDialect, createTypescriptGenerator } from "@/packages/generators";
-import { SchemaAST } from "@/packages/schema-core";
-import { Button } from "@/components/ui/button";
 
 /**
  * Renders live SQL DDL and TypeScript type code generation via Monaco Editor.

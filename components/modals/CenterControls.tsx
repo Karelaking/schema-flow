@@ -3,8 +3,8 @@
 import React from "react";
 import { Undo2, Redo2, LayoutGrid, PanelLeft, PanelRight } from "lucide-react";
 import { useStore } from "@/lib/store";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+import { Button } from "@schema-flow/components/ui/button";
+import { Separator } from "@schema-flow/components/ui/separator";
 
 /**
  * Props for CenterControls component.

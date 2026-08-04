@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import { ProjectMetadata, SchemaAST } from "@/packages/schema-core";
 import dynamic from "next/dynamic";
 import { useAIStore } from "@/lib/ai-store";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@schema-flow/components/ui/skeleton";
 import { usePanelResizing } from "@/hooks/usePanelResizing";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";

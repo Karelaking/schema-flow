@@ -14,8 +14,8 @@ import {
   RefreshCw,
   Code2,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@schema-flow/components/ui/button";
+import { Badge } from "@schema-flow/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 type DialectTab = "postgres" | "mysql" | "query";

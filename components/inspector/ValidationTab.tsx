@@ -5,7 +5,7 @@ import { AlertTriangle, AlertCircle, CheckCircle2 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { SchemaAST } from "@/packages/schema-core";
 import { validateSchema } from "@/packages/validation";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@schema-flow/components/ui/card";
 
 /**
  * Displays schema validation diagnostics, warnings, and error reports.

@@ -8,7 +8,7 @@
 // =============================================================================
 
 import { create } from "zustand";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "@schema-flow/components/ui/sonner";
 import type {
   AIProvider,
   ChatMessage,

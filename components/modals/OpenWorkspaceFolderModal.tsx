@@ -6,7 +6,7 @@ import {
   FileCode, 
   Save, 
   Folder, 
-  User, 
+  User,
   Database,
   Plus
 } from "lucide-react";
@@ -17,11 +17,11 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+} from "@schema-flow/components/ui/dialog";
+import { Button } from "@schema-flow/components/ui/button";
+import { Input } from "@schema-flow/components/ui/input";
+import { Label } from "@schema-flow/components/ui/label";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@schema-flow/components/ui/tabs";
 import {
   openWorkspaceDirectoryPicker,
   getActiveWorkspaceDirectoryHandle,

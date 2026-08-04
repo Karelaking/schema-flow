@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import { Database, Key, Check, Info, Server, ExternalLink, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { toast } from "@/components/ui/sonner";
+import { Button } from "@schema-flow/components/ui/button";
+import { Input } from "@schema-flow/components/ui/input";
+import { Label } from "@schema-flow/components/ui/label";
+import { toast } from "@schema-flow/components/ui/sonner";
 import {
     Dialog,
     DialogContent,
@@ -13,7 +13,7 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from "@/components/ui/dialog";
+} from "@schema-flow/components/ui/dialog";
 
 const LS_CUSTOM_DB_URL = "schema-flow:custom-db-url";
 const LS_CUSTOM_DB_TOKEN = "schema-flow:custom-db-token";

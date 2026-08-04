@@ -3,10 +3,10 @@
 import React, { useState, useEffect } from "react";
 import { Table, Palette, Check, Settings, Loader2 } from "lucide-react";
 import { useStore } from "@/lib/store";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@schema-flow/components/ui/button";
+import { Input } from "@schema-flow/components/ui/input";
+import { Label } from "@schema-flow/components/ui/label";
+import { Textarea } from "@schema-flow/components/ui/textarea";
 import {
     Dialog,
     DialogContent,
@@ -14,7 +14,7 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from "@/components/ui/dialog";
+} from "@schema-flow/components/ui/dialog";
 
 const PRESET_COLORS: { name: string; value: string }[] = [
     { name: "Blue", value: "#3b82f6" },

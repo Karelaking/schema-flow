@@ -4,12 +4,12 @@ import React, { useState } from "react";
 import { Plus, Trash2, ArrowUp, ArrowDown, GripVertical, BookmarkPlus, List } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { TableInspectorProps } from "@/types";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@schema-flow/components/ui/button";
+import { Input } from "@schema-flow/components/ui/input";
+import { Label } from "@schema-flow/components/ui/label";
+import { Switch } from "@schema-flow/components/ui/switch";
+import { Separator } from "@schema-flow/components/ui/separator";
+import { Badge } from "@schema-flow/components/ui/badge";
 import {
     Select,
     SelectContent,
@@ -18,9 +18,9 @@ import {
     SelectLabel,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select";
-import { Card, CardContent } from "@/components/ui/card";
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
+} from "@schema-flow/components/ui/select";
+import { Card, CardContent } from "@schema-flow/components/ui/card";
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@schema-flow/components/ui/tooltip";
 import { useDialectDataTypes } from "@/hooks/useDialectDataTypes";
 import { cn } from "@/lib/utils";
 

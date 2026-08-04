@@ -3,10 +3,10 @@
 import React, { useState, useEffect } from "react";
 import { MessageSquarePlus, FileText, Trash2, Check, X } from "lucide-react";
 import { useStore } from "@/lib/store";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@schema-flow/components/ui/dialog";
+import { Button } from "@schema-flow/components/ui/button";
+import { Textarea } from "@schema-flow/components/ui/textarea";
+import { Label } from "@schema-flow/components/ui/label";
 import { resolveRelationFK } from "@/lib/react-flow-utils";
 
 /**

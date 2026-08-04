@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { Copy, Check, Terminal, Plus, Trash2, Layers, Filter, ArrowUpDown } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+
 
 const Editor = dynamic(() => import("@monaco-editor/react"), {
     ssr: false,
@@ -12,10 +12,11 @@ const Editor = dynamic(() => import("@monaco-editor/react"), {
 import { useStore } from "@/lib/store";
 import { useTheme } from "@/providers/ThemeProvider";
 import { Table } from "@/packages/schema-core";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@schema-flow/components/ui/skeleton";
+import { Button } from "@schema-flow/components/ui/button";
+import { Input } from "@schema-flow/components/ui/input";
+import { Label } from "@schema-flow/components/ui/label";
+import { Badge } from "@schema-flow/components/ui/badge";
 import {
     Select,
     SelectContent,
@@ -23,7 +24,7 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select";
+} from "@schema-flow/components/ui/select";
 
 /**
  * Filter condition item interface for query builder.

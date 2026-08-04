@@ -21,9 +21,9 @@ import {
     CommandGroup,
     CommandItem,
     CommandShortcut,
-} from "@/components/ui/command";
-import { Kbd } from "@/components/ui/kbd";
-import { toast } from "@/components/ui/sonner";
+} from "@schema-flow/components/ui/command";
+import { Kbd } from "@schema-flow/components/ui/kbd";
+import { toast } from "@schema-flow/components/ui/sonner";
 
 export interface CommandMenuProps {
     /** Optional open override */

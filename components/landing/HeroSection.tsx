@@ -2,9 +2,9 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Database, Layers, ShieldCheck, Cpu, Sparkles, Zap, CheckCircle2 } from "lucide-react";
+import { ArrowUpRight, Layers } from "lucide-react";
 import dynamic from "next/dynamic";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@schema-flow/components/ui/skeleton";
 
 const Hero3DModel = dynamic(
     () => import("@/components/landing/Hero3DModel").then(mod => mod.Hero3DModel),

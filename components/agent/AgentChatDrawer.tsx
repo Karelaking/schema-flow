@@ -19,13 +19,14 @@ import { cn } from "@/lib/utils";
 import { useAIStore } from "@/lib/ai-store";
 import { useStore } from "@/lib/store";
 import type { ChatMessage } from "@/lib/ai/types";
-import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Button } from "@schema-flow/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@schema-flow/components/ui/tooltip";
 import { ProviderSettingsModal } from "./ProviderSettingsModal";
 import { CustomRulesModal } from "./CustomRulesModal";
 import { DiffPreviewCard } from "./DiffPreviewCard";
 import { OrchestrationProgress } from "./OrchestrationProgress";
 import { SchemaAST } from "@/packages/schema-core";
+
 
 const QUICK_ACTIONS = [
     { label: "Audit Schema", prompt: "Analyze the current schema for design issues, missing indexes, and normalization violations." },

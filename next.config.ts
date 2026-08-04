@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     optimizePackageImports: [
+      "@schema-flow/components",
       "lucide-react",
       "@xyflow/react",
       "zod",

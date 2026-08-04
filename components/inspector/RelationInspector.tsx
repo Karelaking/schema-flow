@@ -4,9 +4,9 @@ import React from "react";
 import { Trash2, ArrowLeftRight } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { Relation } from "@/packages/schema-core";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@schema-flow/components/ui/button";
+import { Input } from "@schema-flow/components/ui/input";
+import { Label } from "@schema-flow/components/ui/label";
 import {
     Select,
     SelectContent,
@@ -14,7 +14,7 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select";
+} from "@schema-flow/components/ui/select";
 import { resolveRelationFK } from "@/lib/react-flow-utils";
 
 /**

@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { AlertCircle, ArrowLeft } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@schema-flow/components/ui/button";
 
 /**
  * Next.js App Router 404 Not Found Page Component.

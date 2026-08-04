@@ -5,10 +5,10 @@ import { Plus, Trash2, BookOpen, ToggleLeft, ToggleRight, Pencil, X, Check } fro
 import { useAIStore } from "@/lib/ai-store";
 import { RULE_PRESETS } from "@/lib/ai/types";
 import type { CustomRule } from "@/lib/ai/types";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@schema-flow/components/ui/button";
+import { Input } from "@schema-flow/components/ui/input";
+import { Label } from "@schema-flow/components/ui/label";
+import { Textarea } from "@schema-flow/components/ui/textarea";
 import {
     Dialog,
     DialogContent,
@@ -16,7 +16,7 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from "@/components/ui/dialog";
+} from "@schema-flow/components/ui/dialog";
 
 /**
  * Props for CustomRulesModal component.
