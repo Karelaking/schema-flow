@@ -21,7 +21,7 @@ describe("Explorer UI Component Edge Cases", () => {
           columns: []
         }
       },
-      selectedTableId: null
+      selectedTableId: undefined
     });
   });
 

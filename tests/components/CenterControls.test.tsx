@@ -41,7 +41,7 @@ describe("CenterControls UI Component Edge Cases", () => {
     const undoSpy = vi.spyOn(useStore.getState(), "undo");
 
     useStore.setState({
-      past: [{ tables: {}, relations: {} }],
+      past: [{ tables: {}, relations: {}, enums: {} }],
       future: []
     });
 

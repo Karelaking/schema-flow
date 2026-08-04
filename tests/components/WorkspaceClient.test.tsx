@@ -24,7 +24,8 @@ const mockInitialProject: SchemaAST = {
   tables: {
     "t-1": { id: "t-1", name: "users", position: { x: 10, y: 10 }, columns: [], indexes: [] }
   },
-  relations: {}
+  relations: {},
+  enums: {}
 };
 
 describe("WorkspaceClient UI Component Edge Cases", () => {
@@ -39,7 +40,7 @@ describe("WorkspaceClient UI Component Edge Cases", () => {
     await act(async () => {
       render(
         <ThemeProvider>
-          <WorkspaceClient initialProjectsList={[]} initialProject={null} />
+          <WorkspaceClient initialProjectsList={[]} initialProject={undefined} />
         </ThemeProvider>
       );
     });

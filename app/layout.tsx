@@ -108,7 +108,7 @@ function isValidClerkKey(key: string | undefined): boolean {
   const encoded = key.slice(prefix.length);
   try {
     const decoded = Buffer.from(encoded, "base64").toString();
-    return decoded.includes(".clerk.accounts.dev$") && decoded.split("$")[1]?.length > 0;
+    return decoded.includes(".clerk.accounts.dev$");
   } catch {
     return false;
   }

@@ -19,7 +19,7 @@ vi.mock("@/app/actions/projects", () => ({
 describe("CreateProjectDialog UI Component Edge Cases", () => {
   beforeEach(() => {
     useStore.setState({
-      projectId: null,
+      projectId: undefined,
       projectName: "Untitled",
       tables: {},
       relations: {}
