@@ -6,7 +6,6 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   typedRoutes: true,
   output: "standalone",
-  serverExternalPackages: ["better-sqlite3"],
   allowedDevOrigins: ['192.168.29.142'],
   compiler: {
     removeConsole: process.env.NODE_ENV === "production" ? { exclude: ["error", "warn"] } : false,
