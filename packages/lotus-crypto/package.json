@@ -5,6 +5,12 @@
   "sideEffects": false,
   "main": "./index.ts",
   "types": "./index.ts",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run"
+  },
   "dependencies": {
     "@schema-flow/schema-core": "workspace:*"
   },

@@ -9,8 +9,9 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
     title: "Visual ERD Canvas & Schema Workspace | Schema Flow Studio",
     description: "Interactive visual ERD canvas workspace for designing database tables, defining relational constraints, generating type-safe Drizzle ORM schemas, and exporting production SQL DDL.",
-    alternates: {
-        canonical: "/workspace",
+    robots: {
+        index: false,
+        follow: false,
     },
 };
 

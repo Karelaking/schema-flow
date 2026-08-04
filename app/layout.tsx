@@ -101,41 +101,58 @@ import { DevelopmentBanner } from "@schema-flow/components/ui/developmentBanner"
 import { FloatingThemeToggle } from "@schema-flow/components/ui/floatingThemeToggle";
 import { CookieConsent } from "@schema-flow/components/ui/cookieConsent";
 
+function isValidClerkKey(key: string | undefined): boolean {
+  if (!key) return false;
+  const prefix = key.startsWith("pk_test_") ? "pk_test_" : key.startsWith("pk_live_") ? "pk_live_" : null;
+  if (!prefix) return false;
+  const encoded = key.slice(prefix.length);
+  try {
+    const decoded = Buffer.from(encoded, "base64").toString();
+    return decoded.includes(".clerk.accounts.dev$") && decoded.split("$")[1]?.length > 0;
+  } catch {
+    return false;
+  }
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>): React.ReactElement {
-  return (
-    <ClerkProvider>
-      <html
-        lang="en"
-        className={`dark ${interSans.variable} ${jetbrainsMono.variable} h-full antialiased`}
-        suppressHydrationWarning
-      >
-        <head>
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `(function(){try{var s=localStorage.getItem("schema-flow-theme");if(s==="light"){document.documentElement.classList.remove("dark");document.documentElement.classList.add("light");}else{document.documentElement.classList.remove("light");document.documentElement.classList.add("dark");}}catch(e){}})();`,
-            }}
-          />
-        </head>
-        <body className="h-full min-h-screen flex flex-col bg-background text-foreground antialiased">
-          <ThemeProvider>
-            <ShortcutProvider>
-              <TooltipProvider delay={400}>
-                <DevelopmentBanner />
-                {children}
-                <CommandMenu />
-                <GlobalCreateTableDialog />
-                <FloatingThemeToggle />
-                <CookieConsent />
-                <Toaster position="bottom-right" richColors />
-              </TooltipProvider>
-            </ShortcutProvider>
-          </ThemeProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+  const clerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+  const content = (
+    <html
+      lang="en"
+      className={`dark ${interSans.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      suppressHydrationWarning
+    >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var s=localStorage.getItem("schema-flow-theme");if(s==="light"){document.documentElement.classList.remove("dark");document.documentElement.classList.add("light");}else{document.documentElement.classList.remove("light");document.documentElement.classList.add("dark");}}catch(e){}})();`,
+          }}
+        />
+      </head>
+      <body className="h-full min-h-screen flex flex-col bg-background text-foreground antialiased">
+        <ThemeProvider>
+          <ShortcutProvider>
+            <TooltipProvider delay={400}>
+              <DevelopmentBanner />
+              {children}
+              <CommandMenu />
+              <GlobalCreateTableDialog />
+              <FloatingThemeToggle />
+              <CookieConsent />
+              <Toaster position="bottom-right" richColors />
+            </TooltipProvider>
+          </ShortcutProvider>
+        </ThemeProvider>
+      </body>
+    </html>
   );
+
+  if (isValidClerkKey(clerkKey)) {
+    return <ClerkProvider>{content}</ClerkProvider>;
+  }
+  return content;
 }

@@ -1,6 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  transpilePackages: [
+    "@schema-flow/components",
+    "@schema-flow/datatypes",
+    "@schema-flow/db",
+    "@schema-flow/generators",
+    "@schema-flow/lotus-crypto",
+    "@schema-flow/schema-core",
+    "@schema-flow/validation"
+  ],
   compress: true,
   poweredByHeader: false,
   reactStrictMode: true,
