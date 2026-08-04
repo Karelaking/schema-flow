@@ -2,6 +2,8 @@ import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
 /**
  * Route matcher defining public routes that do not require authentication.
+ * Ensures search engine crawlers (Googlebot) and public visitors access landing,
+ * legal, auth, sitemap, and robots pages without authentication redirect loops.
  */
 const isPublicRoute = createRouteMatcher([
     "/",
@@ -16,7 +18,7 @@ const isPublicRoute = createRouteMatcher([
 ]);
 
 /**
- * Next.js Proxy enforcing Clerk authentication on protected routes without redirect loops.
+ * Next.js 16 Proxy enforcing Clerk authentication on protected routes without redirect loops.
  */
 export const proxy = clerkMiddleware(async (auth: any, req: any) => {
     if (!isPublicRoute(req)) {
