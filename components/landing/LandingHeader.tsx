@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { useAuth, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 import { ArrowUpRight, AlignJustify } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -83,6 +84,7 @@ const CollaborateButton = ({ className = "" }: CollaborateButtonProps): React.JS
 export const LandingHeader = (): React.JSX.Element => {
   const [sticky, setSticky] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const { isSignedIn } = useAuth();
 
   useEffect((): (() => void) => {
     let ticking = false;
@@ -152,6 +154,28 @@ export const LandingHeader = (): React.JSX.Element => {
 
         {/* Right Actions */}
         <div className="hidden md:flex items-center gap-3">
+          {isSignedIn ? (
+            <UserButton afterSignOutUrl="/" />
+          ) : (
+            <>
+              <SignInButton>
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center text-xs font-semibold rounded-full h-10 px-4 transition-all cursor-pointer border border-border/40 bg-transparent text-foreground hover:bg-muted"
+                >
+                  Sign in
+                </button>
+              </SignInButton>
+              <SignUpButton>
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center text-xs font-semibold rounded-full h-10 px-4 transition-all cursor-pointer bg-primary text-primary-foreground hover:bg-primary/80 shadow-xs"
+                >
+                  Sign up
+                </button>
+              </SignUpButton>
+            </>
+          )}
           <CollaborateButton />
         </div>
 
@@ -182,7 +206,32 @@ export const LandingHeader = (): React.JSX.Element => {
                   </a>
                 ))}
               </nav>
-              <div className="pt-6 border-t border-border/50 mt-6">
+              <div className="pt-6 border-t border-border/50 mt-6 flex flex-col gap-2">
+                {isSignedIn ? (
+                  <div className="flex items-center justify-between gap-3 rounded-full bg-muted/50 border border-border/40 px-4 py-2.5">
+                    <span className="text-sm font-medium text-muted-foreground">Account</span>
+                    <UserButton afterSignOutUrl="/" />
+                  </div>
+                ) : (
+                  <>
+                    <SignInButton>
+                      <button
+                        type="button"
+                        className="w-full inline-flex items-center justify-center text-sm font-semibold rounded-full h-11 px-4 transition-all cursor-pointer border border-border/40 bg-transparent text-foreground hover:bg-muted"
+                      >
+                        Sign in
+                      </button>
+                    </SignInButton>
+                    <SignUpButton>
+                      <button
+                        type="button"
+                        className="w-full inline-flex items-center justify-center text-sm font-semibold rounded-full h-11 px-4 transition-all cursor-pointer bg-primary text-primary-foreground hover:bg-primary/80 shadow-xs"
+                      >
+                        Sign up
+                      </button>
+                    </SignUpButton>
+                  </>
+                )}
                 <CollaborateButton className="w-full h-11" />
               </div>
             </SheetContent>

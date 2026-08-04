@@ -120,7 +120,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>): React.ReactElement {
   const clerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
-  const content = (
+
+  const providers = (
+    <ThemeProvider>
+      <ShortcutProvider>
+        <TooltipProvider delay={400}>
+          <DevelopmentBanner />
+          {children}
+          <CommandMenu />
+          <GlobalCreateTableDialog />
+          <FloatingThemeToggle />
+          <CookieConsent />
+          <Toaster position="bottom-right" richColors />
+        </TooltipProvider>
+      </ShortcutProvider>
+    </ThemeProvider>
+  );
+
+  return (
     <html
       lang="en"
       className={`dark ${interSans.variable} ${jetbrainsMono.variable} h-full antialiased`}
@@ -134,25 +151,8 @@ export default function RootLayout({
         />
       </head>
       <body className="h-full min-h-screen flex flex-col bg-background text-foreground antialiased">
-        <ThemeProvider>
-          <ShortcutProvider>
-            <TooltipProvider delay={400}>
-              <DevelopmentBanner />
-              {children}
-              <CommandMenu />
-              <GlobalCreateTableDialog />
-              <FloatingThemeToggle />
-              <CookieConsent />
-              <Toaster position="bottom-right" richColors />
-            </TooltipProvider>
-          </ShortcutProvider>
-        </ThemeProvider>
+        {isValidClerkKey(clerkKey) ? <ClerkProvider>{providers}</ClerkProvider> : providers}
       </body>
     </html>
   );
-
-  if (isValidClerkKey(clerkKey)) {
-    return <ClerkProvider>{content}</ClerkProvider>;
-  }
-  return content;
 }
