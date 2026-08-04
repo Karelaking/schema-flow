@@ -52,6 +52,41 @@ export function ThemeProvider({ children }: { children: React.ReactNode }): Reac
         setThemeState(newTheme);
     };
 
+    // Dark-mode keyboard shortcut listener ('d' or Cmd+Shift+D) ignoring interactive input elements
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent): void => {
+            const target = e.target as HTMLElement | null;
+            if (!target) {
+                return;
+            }
+
+            const isInputTarget =
+                target.tagName === "INPUT" ||
+                target.tagName === "TEXTAREA" ||
+                target.tagName === "SELECT" ||
+                target.isContentEditable ||
+                Boolean(target.closest && target.closest("input, textarea, select, [contenteditable='true']"));
+
+            if (isInputTarget) {
+                return;
+            }
+
+            const key = e.key ? e.key.toLowerCase() : "";
+            const isControl = e.metaKey || e.ctrlKey;
+
+            const isSingleD = key === "d" && !isControl && !e.altKey && !e.shiftKey;
+            const isCmdShiftD = key === "d" && isControl && e.shiftKey;
+
+            if (isSingleD || isCmdShiftD) {
+                e.preventDefault();
+                toggleTheme();
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown, { capture: true });
+        return () => window.removeEventListener("keydown", handleKeyDown, { capture: true });
+    }, [toggleTheme]);
+
     return (
         <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
             {children}

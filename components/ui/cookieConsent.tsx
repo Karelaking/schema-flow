@@ -63,7 +63,7 @@ export const CookieConsent: React.FC = (): React.ReactElement => {
                             onClick={handleAccept}
                             className="h-7 px-3 text-xs gap-1 rounded-lg font-semibold cursor-pointer"
                         >
-                            <Check className="size-3" />
+                            <Check className="size-3" data-icon="inline-start" />
                             <span>Accept Essential</span>
                         </Button>
                         <Link

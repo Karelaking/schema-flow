@@ -89,8 +89,8 @@ export function LogoCloudSection(): React.JSX.Element {
   ];
 
   return (
-    <section className="relative w-full border-b border-border/40 bg-background overflow-hidden py-4">
-      <div className="mx-auto max-w-7xl border-x border-border/40 px-6 sm:px-10 py-10 flex flex-col items-center justify-center">
+    <section className="relative w-full border-b border-border/40 bg-background overflow-hidden">
+      <div className="mx-auto max-w-7xl border-x border-border/40 px-6 sm:px-10 py-8 sm:py-10 flex flex-col items-center justify-center">
 
         {/* Infinite Scrolling Marquee Container */}
         <div className="relative flex-1 overflow-hidden w-full py-2">

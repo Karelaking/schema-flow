@@ -43,8 +43,9 @@ export async function POST(request: NextRequest): Promise<Response> {
       const hint = isFreeModel
         ? "Free models still require an OpenRouter API key (it's free to create). Go to openrouter.ai/keys to get one, then add it in AI Settings (⚙️ icon)."
         : "Add your API key in AI Settings (⚙️ icon in the chat header).";
+      const statusMessage = `API key required. ${hint}`;
       return Response.json(
-        { error: `API key required. ${hint}`, statusMessage: `API key required. ${hint}` },
+        { error: statusMessage, statusMessage },
         { status: 401 }
       );
     }

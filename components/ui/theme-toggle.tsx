@@ -22,6 +22,29 @@ export interface ThemeToggleProps {
 export function ThemeToggle({ className, showKbd = true }: ThemeToggleProps = {}): React.JSX.Element {
   const { theme, toggleTheme } = useTheme();
 
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent): void => {
+      const target = e.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.tagName === "SELECT" ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+      const isControl = e.metaKey || e.ctrlKey;
+      const isDKey = e.key && e.key.toLowerCase() === "d";
+      if ((isDKey && !isControl && !e.altKey && !e.shiftKey) || (isDKey && isControl && e.shiftKey)) {
+        e.preventDefault();
+        toggleTheme();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [toggleTheme]);
+
   return (
     <TooltipProvider>
       <Tooltip>
