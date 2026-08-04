@@ -97,6 +97,9 @@ export const metadata: Metadata = {
 
 import { Toaster } from "@/components/ui/sonner";
 import { ClerkProvider } from "@clerk/nextjs";
+import { DevelopmentBanner } from "@/components/ui/developmentBanner";
+import { FloatingThemeToggle } from "@/components/ui/floatingThemeToggle";
+import { CookieConsent } from "@/components/ui/cookieConsent";
 
 export default function RootLayout({
   children,
@@ -117,13 +120,16 @@ export default function RootLayout({
             }}
           />
         </head>
-        <body className="min-h-full flex flex-col bg-background text-foreground antialiased">
+        <body className="h-full min-h-screen flex flex-col bg-background text-foreground antialiased">
           <ThemeProvider>
             <ShortcutProvider>
               <TooltipProvider delay={400}>
+                <DevelopmentBanner />
                 {children}
                 <CommandMenu />
                 <GlobalCreateTableDialog />
+                <FloatingThemeToggle />
+                <CookieConsent />
                 <Toaster position="bottom-right" richColors />
               </TooltipProvider>
             </ShortcutProvider>

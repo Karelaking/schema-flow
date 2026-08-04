@@ -86,7 +86,7 @@ export const EmptyProjectView: React.FC<EmptyProjectViewProps> = ({ onProjectCre
     };
 
     return (
-        <div className="h-screen w-full flex flex-col justify-center items-center gap-6 bg-background text-foreground p-6 text-center select-none">
+        <div className="h-full flex-1 w-full flex flex-col justify-center items-center gap-6 bg-background text-foreground p-6 text-center select-none">
             <div className="flex size-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                 <Database className="size-8" />
             </div>

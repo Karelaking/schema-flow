@@ -66,6 +66,7 @@ export function Footer(): React.JSX.Element {
             <a href="#features" className="hover:text-foreground transition-colors">Features</a>
             <a href="#drizzle" className="hover:text-foreground transition-colors">Drizzle ORM</a>
             <a href="#pricing" className="hover:text-foreground transition-colors">Storage & Pricing</a>
+            <Link href={"/cookies" as any} className="hover:text-foreground transition-colors">Cookie Policy</Link>
             <a href="https://github.com/karelaking/schema-flow" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">GitHub</a>
           </nav>
         </div>

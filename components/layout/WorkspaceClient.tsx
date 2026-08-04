@@ -125,7 +125,7 @@ export const WorkspaceClient: React.FC<WorkspaceClientProps> = ({ initialProject
     }
 
     return (
-        <div className="h-screen w-full flex flex-col overflow-hidden bg-background">
+        <div className="h-full flex-1 w-full flex flex-col overflow-hidden bg-background">
             <Header />
 
             <div className="flex-1 flex overflow-hidden relative min-h-0">

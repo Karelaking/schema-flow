@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
  */
 export const WorkspaceSkeleton: React.FC = () => {
   return (
-    <div className="flex flex-col h-screen w-screen overflow-hidden bg-background text-foreground">
+    <div className="flex flex-col h-full flex-1 w-full overflow-hidden bg-background text-foreground">
       {/* Top Header Toolbar Skeleton */}
       <header className="h-14 border-b border-border bg-card/50 backdrop-blur px-4 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-4">

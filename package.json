@@ -4,7 +4,7 @@
   "author": "MK Katiyar <https://mk-katiyar.in>",
   "private": true,
   "scripts": {
-    "scan": "pnpm dlx @shadscan/cli --report",
+    "scan": "pnpm dlx @shadscan/cli",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
