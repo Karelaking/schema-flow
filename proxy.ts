@@ -1,8 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
 
-/**
- * Route matcher defining public routes that do not require authentication.
- */
 const isPublicRoute = createRouteMatcher([
   "/",
   "/cookies(.*)",
@@ -15,6 +13,14 @@ const isPublicRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware(async (auth: any, req: any) => {
+  const userAgent = req.headers.get("user-agent") || "";
+  const isBot = /googlebot|bingbot|yandexbot|duckduckbot|slurp|baiduspider/i.test(userAgent);
+
+  // Serve public pages directly to search engine bots without Clerk session sync handshakes
+  if (isBot && isPublicRoute(req)) {
+    return NextResponse.next();
+  }
+
   if (!isPublicRoute(req)) {
     await auth.protect();
   }
@@ -22,9 +28,7 @@ export default clerkMiddleware(async (auth: any, req: any) => {
 
 export const config = {
   matcher: [
-    // Exclude static extensions (including .xml and .txt) and Next.js internals
     "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|json|png|jpg|jpeg|webp|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest|xml|txt)).*)",
-    // Always run for API and TRPC routes
     "/(api|trpc)(.*)",
   ],
 };
