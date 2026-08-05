@@ -49,4 +49,4 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Return static routes gracefully if database access fails
     return staticRoutes;
   }
-}
+}

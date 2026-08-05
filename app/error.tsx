@@ -3,6 +3,7 @@
 import React, { useEffect } from "react";
 import { AlertTriangle, RefreshCw } from "lucide-react";
 import { Button } from "@schema-flow/components/ui/button";
+import { captureException } from "@/lib/sentry.util";
 
 export interface ErrorPageProps {
   error: Error & { digest?: string };
@@ -18,6 +19,7 @@ export default function Error({
 }: ErrorPageProps): React.ReactElement {
   useEffect(() => {
     console.error("Application runtime error:", error);
+    captureException(error, { digest: error.digest });
   }, [error]);
 
   return (

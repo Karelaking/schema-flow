@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { uploadToCloudStorage, downloadFromCloudStorage } from "@/lib/r2-client.service";
+import { captureException } from "@/lib/sentry.util";
 
 /**
  * POST /api/cloud-sync/upload
@@ -43,7 +44,9 @@ export async function POST(req: Request): Promise<NextResponse> {
         });
     }
     catch (error: unknown) {
+        captureException(error, { endpoint: "/api/cloud-sync/upload", method: "POST" });
         const message = error instanceof Error ? error.message : String(error);
         return NextResponse.json({ error: message }, { status: 500 });
     }
 }
+

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getDbService } from "@/packages/db";
+import { captureException } from "@/lib/sentry.util";
 
 /**
  * GET /api/projects/[id]
@@ -21,6 +22,7 @@ export async function GET(
         return NextResponse.json({ success: true, project });
     }
     catch (error: unknown) {
+        captureException(error, { endpoint: "/api/projects/[id]", method: "GET" });
         return NextResponse.json({ success: false, error: error instanceof Error ? error.message : String(error) }, { status: 500 });
     }
 }
@@ -46,6 +48,7 @@ export async function PUT(
         return NextResponse.json({ success: true });
     }
     catch (error: unknown) {
+        captureException(error, { endpoint: "/api/projects/[id]", method: "PUT" });
         return NextResponse.json({ success: false, error: error instanceof Error ? error.message : String(error) }, { status: 500 });
     }
 }
@@ -65,6 +68,8 @@ export async function DELETE(
         return NextResponse.json({ success: true });
     }
     catch (error: unknown) {
+        captureException(error, { endpoint: "/api/projects/[id]", method: "DELETE" });
         return NextResponse.json({ success: false, error: error instanceof Error ? error.message : String(error) }, { status: 500 });
     }
 }
+

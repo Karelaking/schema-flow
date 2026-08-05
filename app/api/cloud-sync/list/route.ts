@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { listUserCloudFiles, getUserCloudStorageUsage } from "@/lib/r2-client.service";
+import { captureException } from "@/lib/sentry.util";
 
 /**
  * GET /api/cloud-sync/list
@@ -24,7 +25,9 @@ export async function GET(): Promise<NextResponse> {
         });
     }
     catch (error: unknown) {
+        captureException(error, { endpoint: "/api/cloud-sync/list", method: "GET" });
         const message = error instanceof Error ? error.message : String(error);
         return NextResponse.json({ error: message }, { status: 500 });
     }
 }
+

@@ -7,6 +7,7 @@
 // =============================================================================
 
 import { NextRequest } from "next/server";
+import { captureException } from "@/lib/sentry.util";
 
 export const runtime = "nodejs";
 
@@ -87,8 +88,10 @@ export async function GET(request: NextRequest): Promise<Response> {
       });
 
     return Response.json({ models });
-  } catch (error) {
+  } catch (error: unknown) {
+    captureException(error, { endpoint: "/api/agent/models", method: "GET" });
     const message = error instanceof Error ? error.message : "Failed to fetch models";
     return Response.json({ error: message }, { status: 500 });
   }
 }
+

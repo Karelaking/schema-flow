@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDbService } from "@/packages/db";
 import { SchemaAST } from "@/packages/schema-core";
+import { captureException } from "@/lib/sentry.util";
 
 /**
  * GET /api/projects
@@ -13,6 +14,7 @@ export async function GET(): Promise<NextResponse> {
         return NextResponse.json({ success: true, projects });
     }
     catch (error: unknown) {
+        captureException(error, { endpoint: "/api/projects", method: "GET" });
         return NextResponse.json({ success: false, error: error instanceof Error ? error.message : String(error) }, { status: 500 });
     }
 }
@@ -46,6 +48,8 @@ export async function POST(request: Request): Promise<NextResponse> {
         return NextResponse.json({ success: true, project: initialAST.project });
     }
     catch (error: unknown) {
+        captureException(error, { endpoint: "/api/projects", method: "POST" });
         return NextResponse.json({ success: false, error: error instanceof Error ? error.message : String(error) }, { status: 500 });
     }
 }
+

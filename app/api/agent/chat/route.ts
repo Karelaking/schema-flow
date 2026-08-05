@@ -16,6 +16,7 @@ import { loadProjectMemory, buildMemoryPromptContext } from "@/lib/ai/agent-memo
 import type { AIProvider, ChatMessage, CustomRule } from "@/lib/ai/types";
 import type { SchemaAST } from "@/packages/schema-core";
 import type { ProviderMessage } from "@/lib/ai/provider-client";
+import { captureException } from "@/lib/sentry.util";
 
 export const runtime = "nodejs";
 
@@ -137,8 +138,10 @@ export async function POST(request: NextRequest): Promise<Response> {
         Connection: "keep-alive",
       },
     });
-  } catch (error) {
+  } catch (error: unknown) {
+    captureException(error, { endpoint: "/api/agent/chat", method: "POST" });
     const message = error instanceof Error ? error.message : "Internal server error";
     return Response.json({ error: message, statusMessage: message }, { status: 500 });
   }
 }
+

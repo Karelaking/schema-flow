@@ -14,10 +14,10 @@ import { SCHEMA_TOOLS, type ToolDefinition } from "./tools";
 // ---------------------------------------------------------------------------
 
 const PROVIDER_ENDPOINTS: Record<Exclude<AIProvider, "custom">, string> = {
-  openrouter: "https://openrouter.ai/api/v1/chat/completions",
-  gemini: "https://generativelanguage.googleapis.com/v1beta",
-  claude: "https://api.anthropic.com/v1/messages",
-  openai: "https://api.openai.com/v1/chat/completions",
+  openrouter: process.env.OPENROUTER_API_URL || "https://openrouter.ai/api/v1/chat/completions",
+  gemini: process.env.GEMINI_API_URL || "https://generativelanguage.googleapis.com/v1beta",
+  claude: process.env.CLAUDE_API_URL || "https://api.anthropic.com/v1/messages",
+  openai: process.env.OPENAI_API_URL || "https://api.openai.com/v1/chat/completions",
 };
 
 // ---------------------------------------------------------------------------

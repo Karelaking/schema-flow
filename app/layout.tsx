@@ -101,6 +101,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { DevelopmentBanner } from "@schema-flow/components/ui/developmentBanner";
 import { FloatingThemeToggle } from "@schema-flow/components/ui/floatingThemeToggle";
 import { CookieConsent } from "@schema-flow/components/ui/cookieConsent";
+import { SentryUserSync } from "@/components/providers/SentryUserSync";
 
 function isValidClerkKey(key: string | undefined): boolean {
   if (!key) return false;
@@ -133,6 +134,7 @@ export default function RootLayout({
           <GlobalCreateTableDialog />
           <FloatingThemeToggle />
           <CookieConsent />
+          {isValidClerkKey(clerkKey) && <SentryUserSync />}
           <Toaster position="bottom-right" richColors />
         </TooltipProvider>
       </ShortcutProvider>
