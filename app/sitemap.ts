@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { getDbService } from "@/packages/db";
 
 // Cache/revalidate sitemap every 24 hours (86,400 seconds)
 export const revalidate = 86400;
@@ -21,20 +22,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.3,
     },
+    {
+      url: `${baseUrl}/workspace`,
+      lastModified: currentDate,
+      changeFrequency: "daily",
+      priority: 0.9,
+    },
   ];
 
   try {
-    // 2. Fetch dynamic records (replace with your ORM / DB call, e.g., Prisma, Drizzle, or fetch)
-    // Example: const schemas = await db.schema.findMany({ select: { slug: true, updatedAt: true } });
-    const response = await fetch(`${baseUrl}/api/public-schemas`, {
-      next: { revalidate: 86400 },
-    });
-    const schemas: Array<{ slug: string; updatedAt?: string }> = await response.json();
+    // 2. Fetch dynamic projects from database service directly
+    const db = getDbService();
+    const projects = await db.listProjects();
 
-    // 3. Map dynamic records to sitemap entries
-    const dynamicRoutes: MetadataRoute.Sitemap = schemas.map((item) => ({
-      url: `${baseUrl}/schema/${item.slug}`,
-      lastModified: item.updatedAt ? new Date(item.updatedAt) : currentDate,
+    // 3. Map dynamic project records to sitemap entries
+    const dynamicRoutes: MetadataRoute.Sitemap = projects.map((project) => ({
+      url: `${baseUrl}/workspace?project=${project.id}`,
+      lastModified: project.updatedAt ? new Date(project.updatedAt) : currentDate,
       changeFrequency: "daily",
       priority: 0.8,
     }));
@@ -42,7 +46,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     return [...staticRoutes, ...dynamicRoutes];
   } catch (error) {
     console.error("Error generating dynamic sitemap routes:", error);
-    // Return static routes gracefully if API or DB fails
+    // Return static routes gracefully if database access fails
     return staticRoutes;
   }
-}
+}
