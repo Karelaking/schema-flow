@@ -9,16 +9,18 @@
 
 ---
 
-## 🌟 Key Features
+# Key Features
 
-- **Visual Schema Canvas**: Drag, drop, and interconnect database tables with custom handles and dynamic relationship lines using `@xyflow/react`.
-- **Modern Design System**: Powered by [shadcn/ui](file:///e:/schema-flow/components.json) with `@base-ui/react` primitives and Tailwind CSS v4 (`base-nova` design preset).
-- **Multi-Project Management**: Create, switch, and manage multiple database design projects seamlessly.
-- **Smart Column Defaults**: Automatic `id` (Primary Key) and `created_at` / `updated_at` (Timestamp) column generation with instant UI toggles.
-- **SQL & TypeScript Generator**: Generate clean SQL DDL (SQLite, PostgreSQL, MySQL) and TypeScript type declarations on the fly.
-- **Interactive Inspector & Modals**: Comprehensive project settings, query builders, and export dialogues built using accessible shadcn overlay primitives.
-- **Mobile Responsive**: Adaptive mobile drawer layout and bottom tab navigation for working on phones and tablets.
-- **Flexible Self-Hosting**: Run locally, on a server, or via Docker with zero vendor lock-in.
+| Feature | Status |
+| --- | --- |
+| Visual Schema Canvas | Drag, drop, and interconnect database tables with custom handles and dynamic relationship lines using @xyflow/react |
+| Modern Design System | Powered by shadcn/ui with @base-ui/react primitives and Tailwind CSS v4 (base-nova design preset) |
+| Multi-Project Management | Create, switch, and manage multiple database design projects seamlessly. |
+| Smart Column Defaults | Automatic id (Primary Key) and created_at / updated_at (Timestamp) column generation with instant UI toggles. |
+| SQL & TypeScript Generator | Generate clean SQL DDL (SQLite, PostgreSQL, MySQL) and TypeScript type declarations on the fly. |
+| Interactive Inspector & Modals | Comprehensive project settings, query builders, and export dialogues built using accessible shadcn overlay primitives. |
+| Mobile Responsive | Adaptive mobile drawer layout and bottom tab navigation for working on phones and tablets. |
+| Flexible Self-Hosting | Run locally, on a server, or via Docker with zero vendor lock-in. |
 
 ---
 
