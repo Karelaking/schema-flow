@@ -1,20 +1,9 @@
 import React from "react";
-import { SignIn } from "@clerk/nextjs";
+import { CustomSignIn } from "@/components/ui/customSignIn";
 
 /**
- * Clerk Sign In page component.
+ * Custom Sign In Page featuring 50-50 split layout.
  */
 export default function SignInPage(): React.ReactElement {
-    return (
-        <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4">
-            <SignIn
-                appearance={{
-                    elements: {
-                        rootBox: "mx-auto shadow-xl rounded-xl border border-border",
-                        card: "bg-card text-foreground",
-                    },
-                }}
-            />
-        </div>
-    );
+    return <CustomSignIn />;
 }

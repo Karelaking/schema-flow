@@ -3,21 +3,21 @@ import { NextResponse } from "next/server";
 
 const isPublicRoute = createRouteMatcher([
   "/",
+  "/monitoring(.*)",
   "/cookies(.*)",
   "/sign-in(.*)",
   "/sign-up(.*)",
   "/sitemap.xml",
+  "/sso-callback(.*)",
   "/robots.txt",
   "/favicon.ico",
   "/og-image.png",
 ]);
 
 export default clerkMiddleware(async (auth: any, req: any) => {
-  const userAgent = req.headers.get("user-agent") || "";
-  const isBot = /googlebot|bingbot|yandexbot|duckduckbot|slurp|baiduspider/i.test(userAgent);
 
   // Serve public pages directly to search engine bots without Clerk session sync handshakes
-  if (isBot && isPublicRoute(req)) {
+  if (isPublicRoute(req)) {
     return NextResponse.next();
   }
 

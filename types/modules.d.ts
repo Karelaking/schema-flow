@@ -75,14 +75,17 @@ interface FileSystemHandle {
 
 declare module "@clerk/nextjs" {
     import * as React from "react";
-    export const ClerkProvider: React.FC<{ children: React.ReactNode }>;
+    export const ClerkProvider: React.FC<{ children: React.ReactNode; appearance?: any }>;
     export const SignInButton: React.FC<{ children?: React.ReactNode; mode?: string }>;
     export const SignUpButton: React.FC<{ children?: React.ReactNode; mode?: string }>;
     export const UserButton: React.FC<any>;
     export const SignIn: React.FC<any>;
     export const SignUp: React.FC<any>;
+    export const AuthenticateWithRedirectCallback: React.FC<any>;
     export function useUser(): { isLoaded: boolean; isSignedIn?: boolean; user?: any };
     export function useAuth(): { isLoaded: boolean; isSignedIn?: boolean; userId?: string | null };
+    export function useSignIn(): { isLoaded: boolean; signIn: any; setActive: (opts: any) => Promise<any> };
+    export function useSignUp(): { isLoaded: boolean; signUp: any; setActive: (opts: any) => Promise<any> };
 }
 
 declare module "@clerk/nextjs/server" {
