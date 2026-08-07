@@ -33,16 +33,20 @@ export interface ProjectStore {
     autoAddTimestamps: boolean;
 
     // Lotus storage state
-    storageMode: "database" | "lotus-local" | "lotus-cloud";
+    storageMode: "database" | "lotus-local" | "lotus-cloud" | "byok-cloud";
     lotusFileHandle?: FileSystemFileHandle;
     isProSubscribed: boolean;
     lotusUnsavedChanges: boolean;
     lotusFileVersion: number;
     lotusDeviceId: string;
     cloudStorageUsedBytes: number;
+    /** User-provided API key for BYOK cloud storage (stored in browser only). */
+    byokApiKey: string;
+    /** User-provided endpoint URL for BYOK cloud storage. */
+    byokEndpoint: string;
 
     // Lotus storage actions
-    setStorageMode: (mode: "database" | "lotus-local" | "lotus-cloud") => void;
+    setStorageMode: (mode: "database" | "lotus-local" | "lotus-cloud" | "byok-cloud") => void;
     setLotusFileHandle: (handle?: FileSystemFileHandle) => void;
     setProSubscribed: (subscribed: boolean) => void;
     setLotusUnsavedChanges: (unsaved: boolean) => void;
@@ -52,6 +56,10 @@ export interface ProjectStore {
     saveLotusPortable: () => Promise<void>;
     convertToLotus: () => Promise<void>;
     importLotusToDatabase: () => Promise<void>;
+    /** Set BYOK cloud storage credentials. */
+    setByokCredentials: (apiKey: string, endpoint: string) => void;
+    /** Clear BYOK cloud storage credentials. */
+    clearByokCredentials: () => void;
 
     // Schema state
     projectsList: ProjectMetadata[];

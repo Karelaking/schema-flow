@@ -43,8 +43,10 @@ export const useStore = create<ProjectStore>((set, get) => ({
     lotusFileVersion: 1,
     lotusDeviceId: typeof window !== "undefined" ? getDeviceId() : "server-device",
     cloudStorageUsedBytes: 0,
+    byokApiKey: typeof window !== "undefined" ? (localStorage.getItem("schema-flow:byok-api-key") || "") : "",
+    byokEndpoint: typeof window !== "undefined" ? (localStorage.getItem("schema-flow:byok-endpoint") || "") : "",
 
-    setStorageMode: (storageMode: "database" | "lotus-local" | "lotus-cloud"): void => set({ storageMode }),
+    setStorageMode: (storageMode: "database" | "lotus-local" | "lotus-cloud" | "byok-cloud"): void => set({ storageMode }),
     setLotusFileHandle: (lotusFileHandle?: FileSystemFileHandle): void => set({ lotusFileHandle }),
     setProSubscribed: (isProSubscribed: boolean): void => set({ isProSubscribed }),
     setLotusUnsavedChanges: (lotusUnsavedChanges: boolean): void => set({ lotusUnsavedChanges }),
@@ -237,6 +239,22 @@ export const useStore = create<ProjectStore>((set, get) => ({
         set({ storageMode: "database", lotusFileHandle: undefined });
     },
 
+    setByokCredentials: (apiKey: string, endpoint: string): void => {
+        if (typeof window !== "undefined") {
+            localStorage.setItem("schema-flow:byok-api-key", apiKey);
+            localStorage.setItem("schema-flow:byok-endpoint", endpoint);
+        }
+        set({ byokApiKey: apiKey, byokEndpoint: endpoint });
+    },
+
+    clearByokCredentials: (): void => {
+        if (typeof window !== "undefined") {
+            localStorage.removeItem("schema-flow:byok-api-key");
+            localStorage.removeItem("schema-flow:byok-endpoint");
+        }
+        set({ byokApiKey: "", byokEndpoint: "" });
+    },
+
     projectsList: [],
     tables: {},
     relations: {},
@@ -288,6 +306,8 @@ export const useStore = create<ProjectStore>((set, get) => ({
             storageMode: ast.settings.storageMode || "database",
             lotusFileVersion: ast.settings.lotusFileVersion || 1,
             lotusUnsavedChanges: false,
+            byokApiKey: typeof window !== "undefined" ? (localStorage.getItem("schema-flow:byok-api-key") || "") : "",
+            byokEndpoint: typeof window !== "undefined" ? (localStorage.getItem("schema-flow:byok-endpoint") || "") : "",
             tables: ast.tables || {},
             relations: ast.relations || {},
             enums: ast.enums || {},

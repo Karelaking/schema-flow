@@ -63,6 +63,7 @@ export async function createProjectAction(input: CreateProjectInput): Promise<{ 
                 theme: "dark",
                 autoAddId: true,
                 autoAddTimestamps: true,
+                storageMode: validated.storageMode || "database",
             },
             tables: {},
             relations: {},

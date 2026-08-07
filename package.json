@@ -68,7 +68,7 @@
     "shadcn": "^4.13.0",
     "tailwindcss": "^4",
     "turbo": "^2.4.0",
-    "typescript": "^5",
+    "typescript": "^5.9.3",
     "vitest": "^2.0.0"
   }
 }

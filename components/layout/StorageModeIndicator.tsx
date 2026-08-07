@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { HardDrive, Database, Cloud, AlertCircle } from "lucide-react";
+import { HardDrive, Database, Cloud, AlertCircle, Key } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { isFileSystemAccessSupported } from "@/lib/lotus-file.service";
 import { Badge } from "@schema-flow/components/ui/badge";
@@ -66,6 +66,27 @@ export const StorageModeIndicator: React.FC<StorageModeIndicatorProps> = ({ clas
                     } />
                     <TooltipContent align="start" className="text-xs">
                         Cloud Sync Active: Synced with R2 cloud storage.
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
+        );
+    }
+
+    if (storageMode === "byok-cloud") {
+        return (
+            <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger render={
+                        <Badge
+                            variant="outline"
+                            className={`flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-medium bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 cursor-default ${className}`}
+                        >
+                            <Key className="size-3" />
+                            <span>Custom API Key</span>
+                        </Badge>
+                    } />
+                    <TooltipContent align="start" className="text-xs">
+                        BYOK Cloud Storage: Using your own API key for cloud file storage.
                     </TooltipContent>
                 </Tooltip>
             </TooltipProvider>

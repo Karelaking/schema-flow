@@ -157,7 +157,7 @@ importers:
         specifier: ^2.4.0
         version: 2.10.8
       typescript:
-        specifier: ^5
+        specifier: ^5.9.3
         version: 5.9.3
       vitest:
         specifier: ^2.0.0

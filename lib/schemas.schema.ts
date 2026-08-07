@@ -19,6 +19,7 @@ export const createProjectSchema = z.object({
     dialect: z.enum(["sqlite", "postgres", "mysql"], {
         errorMap: () => ({ message: "Please select a valid database dialect" }),
     }),
+    storageMode: z.enum(["database", "lotus-local", "lotus-cloud", "byok-cloud"]),
 });
 
 /**

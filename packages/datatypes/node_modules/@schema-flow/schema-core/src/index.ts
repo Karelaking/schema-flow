@@ -22,10 +22,14 @@ export interface ProjectSettings {
     theme: "dark" | "light";
     autoAddId?: boolean;
     autoAddTimestamps?: boolean;
-    storageMode?: "database" | "lotus-local" | "lotus-cloud";
+    storageMode?: "database" | "lotus-local" | "lotus-cloud" | "byok-cloud";
     lotusFileHint?: string;
     lastCloudSync?: string;
     lotusFileVersion?: number;
+    /** User-provided API key for BYOK cloud storage. */
+    byokApiKey?: string;
+    /** User-provided endpoint URL for BYOK cloud storage. */
+    byokEndpoint?: string;
 }
 
 /**

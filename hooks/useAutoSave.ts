@@ -53,7 +53,7 @@ export function useAutoSave(isLoaded: boolean): void {
                     };
                     await saveProjectAction(projectId, ast);
                 }
-                else if (storageMode === "lotus-local" || storageMode === "lotus-cloud") {
+                else if (storageMode === "lotus-local" || storageMode === "lotus-cloud" || storageMode === "byok-cloud") {
                     if (isFileSystemAccessSupported()) {
                         await saveLotusFile();
                     }
